@@ -10,11 +10,11 @@ Bipartition::Bipartition() {
 }
 
 // copy-constructor
-Bipartition::Bipartition(const Bipartition& e) {
+Bipartition::Bipartition(const Bipartition &e) {
     partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(*(e.partition)));
 }
 
-Bipartition::Bipartition(boost::dynamic_bitset<>& edge) {
+Bipartition::Bipartition(boost::dynamic_bitset<> &edge) {
     partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(edge));
 }
 
@@ -23,16 +23,16 @@ Bipartition::Bipartition(string s) {
 }
 
 void Bipartition::addOne(int index) {
-    (*partition)[index] = true; 
+    (*partition)[index] = true;
 }
 
 void Bipartition::complement(int numLeaves) {
-    for (int i=0; i < numLeaves; ++i) {
+    for (int i = 0; i < numLeaves; ++i) {
         (*partition)[i].flip();
     }
 }
 
-bool Bipartition::contains(const Bipartition& e) const {
+bool Bipartition::contains(const Bipartition &e) const {
     auto foreign_edge = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(*e.partition));
     (*foreign_edge) &= (*partition);
     return (*foreign_edge) == (*(e.partition));
@@ -43,19 +43,19 @@ bool Bipartition::contains(int i) {
     return (*partition)[i];
 }
 
-bool Bipartition::crosses(const Bipartition& e) const {
+bool Bipartition::crosses(const Bipartition &e) const {
     return !(disjointFrom(e) || this->contains(e) || e.contains(*this));
 }
 
-bool Bipartition::disjointFrom(const Bipartition& e) const {
+bool Bipartition::disjointFrom(const Bipartition &e) const {
     return !(*partition).intersects(*(e.partition));
 }
 
-bool Bipartition::equals(const Bipartition& e) {
+bool Bipartition::equals(const Bipartition &e) {
     return (*partition) == (*(e.partition));
 }
 
-unique_ptr<boost::dynamic_bitset<>> Bipartition::getPartition() {
+unique_ptr<boost::dynamic_bitset<>> Bipartition::getPartition() const {
     if (!partition) throw exception();
     return unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(*partition));
 }
@@ -69,15 +69,15 @@ bool Bipartition::isCompatibleWith(vector<Bipartition> splits) {
     return true;
 }
 
-bool Bipartition::isEmpty() { 
+bool Bipartition::isEmpty() {
     return partition->empty();
-} 
+}
 
 size_t Bipartition::size() {
     return partition->size();
 }
 
-bool Bipartition::properlyContains(const Bipartition& e) {
+bool Bipartition::properlyContains(const Bipartition &e) {
     return this->contains(e) && !e.contains(*this);
 }
 
@@ -85,7 +85,7 @@ void Bipartition::removeOne(int index) {
     (*partition)[index] = false;
 }
 
-void Bipartition::setPartition(boost::dynamic_bitset<>& edge) {
+void Bipartition::setPartition(boost::dynamic_bitset<> &edge) {
     partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(edge));
 }
 

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
 #define TOLERANCE 0.000000000000001
 
 std::vector<std::string> string_to_vect(std::string s) {
@@ -15,19 +16,19 @@ std::vector<std::string> string_to_vect(std::string s) {
 
 std::vector<double> string_vector_to_double_vector(std::vector<std::string> stringVector) {
     std::vector<double> doubleVector(stringVector.size());
-    std::transform(stringVector.begin(), stringVector.end(), doubleVector.begin(), [](const std::string& val)
-    {
+    std::transform(stringVector.begin(), stringVector.end(), doubleVector.begin(), [](const std::string &val) {
         try {
             return std::stod(val);
         }
-        catch (const std::invalid_argument& ia){
+        catch (const std::invalid_argument &ia) {
             throw std::invalid_argument("invalid argument: " + val);
         }
     });
-    return doubleVector;  
+    return doubleVector;
 }
 
-EdgeAttribute::EdgeAttribute() {}
+EdgeAttribute::EdgeAttribute() {
+}
 
 EdgeAttribute::EdgeAttribute(vector<double> v) {
     vect = v;
@@ -43,11 +44,11 @@ double EdgeAttribute::getAttribute() {
     return vect[0];
 }
 
-void EdgeAttribute::setEdgeAttribute(const EdgeAttribute& attrib) {
+void EdgeAttribute::setEdgeAttribute(const EdgeAttribute &attrib) {
     vect = attrib.vect;
 }
 
-EdgeAttribute::EdgeAttribute(const EdgeAttribute& other) {
+EdgeAttribute::EdgeAttribute(const EdgeAttribute &other) {
     vect = other.vect;
 }
 
@@ -61,7 +62,7 @@ std::string EdgeAttribute::toString() {
         ostringstream ss;
         ss << "[";
         if (vect.size() > 1) {
-            for (size_t i=0; i < (vect.size() - 1); ++i) {
+            for (size_t i = 0; i < (vect.size() - 1); ++i) {
                 ss << vect[i] << " ";
             }
         }
@@ -71,9 +72,9 @@ std::string EdgeAttribute::toString() {
     }
 }
 
-bool EdgeAttribute::equals(const EdgeAttribute& other) const {
+bool EdgeAttribute::equals(const EdgeAttribute &other) const {
     if (vect.size() != other.size()) return false;
-    for (size_t i=0; i < vect.size(); ++i) {
+    for (size_t i = 0; i < vect.size(); ++i) {
         if (std::fabs(vect[i] - other.vect[i]) > TOLERANCE) {
             return false;
         }
@@ -84,7 +85,7 @@ bool EdgeAttribute::equals(const EdgeAttribute& other) const {
 double EdgeAttribute::norm() {
     double norm = 0.0;
     for (auto e : vect) {
-        norm += e*e;
+        norm += e * e;
     }
     return std::sqrt(norm);
 }
@@ -92,7 +93,7 @@ double EdgeAttribute::norm() {
 EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
     if (a1.size() != a2.size()) throw std::invalid_argument("Edge attributes are not the same size");
     std::vector<double> diff;
-    for (size_t i=0; i < a1.size(); ++i) {
+    for (size_t i = 0; i < a1.size(); ++i) {
         diff.push_back(a1.vect[i] - a2.vect[i]);
     }
     return EdgeAttribute(diff);
@@ -101,7 +102,7 @@ EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
 EdgeAttribute EdgeAttribute::add(EdgeAttribute a1, EdgeAttribute a2) {
     if (a1.size() != a2.size()) throw std::invalid_argument("Edge attributes are not the same size");
     std::vector<double> diff;
-    for (size_t i=0; i < a1.size(); ++i) {
+    for (size_t i = 0; i < a1.size(); ++i) {
         diff.push_back(a1.vect[i] + a2.vect[i]);
     }
     return EdgeAttribute(diff);
@@ -131,7 +132,7 @@ EdgeAttribute EdgeAttribute::zeroAttribute(size_t size) {
 EdgeAttribute EdgeAttribute::weightedPairAverage(EdgeAttribute start, EdgeAttribute target, double position) {
     if (start.size() != target.size()) throw std::invalid_argument("Edge attributes are not the same size");
     std::vector<double> point(start.size(), 0.0);
-    for (size_t i=0; i < start.size(); ++i) {
+    for (size_t i = 0; i < start.size(); ++i) {
         point[i] = (1 - position) * start.vect[i] + position * target.vect[i];
     }
     return EdgeAttribute(point);
