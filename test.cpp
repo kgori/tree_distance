@@ -1,73 +1,85 @@
 #include "Bipartition.h"
 #include "EdgeAttribute.h"
 #include "PhyloTreeEdge.h"
-#include <iostream>
 #include "test_catch_helper.h"
 
-
-void test_bipartition() {
-    cout << "TESTING BIPARTITION" << endl;
-    {
+TEST_CASE("Bipartition") {
+    SECTION("Construction") {
         // test default constructor
         auto a = Bipartition();
-        cout << "a is empty ? " << a.isEmpty() << endl;
+        REQUIRE(a.isEmpty());
 
         // test string constructor
         auto b = Bipartition("0100101");
-
-        // test toString output
-        cout << b.toString() << endl;
+        REQUIRE(b.toString() == "0100101");
 
         // test copy constructor
         auto c = Bipartition(b);
-        cout << c.toString() << endl;
+        REQUIRE(c.toString() == b.toString());
 
         // test getting bitset
         auto bitset = c.getPartition();
 
         // test bitset constructor
         auto d = Bipartition(*bitset);
-        cout << d.toString() << endl;
+        REQUIRE(d.toString() == c.toString());
     }
 
-    {
+    SECTION("Equality") {
         auto a = Bipartition("1100101110");
         auto b = Bipartition("1100101110");
         auto c = Bipartition("0011010001");
 
-        cout << "a == b ? " << a.equals(b) << b.equals(a) << endl;
-        cout << "a == c ? " << a.equals(c) << c.equals(a) << endl;
-        cout << "b == c ? " << b.equals(c) << c.equals(b) << endl;
-
-        cout << "b Bipartition: " << b.toString() << endl;
-        b.complement(b.size());
-        cout << "b.complement:  " << b.toString() << endl;
-        cout << "b == c ? " << b.equals(c) << c.equals(b) << endl;
+        REQUIRE(a.equals(b));
+        REQUIRE(!a.equals(c));
+        REQUIRE(!b.equals(c));
+        CHECK(a == b);
+        CHECK(a != c);
+        CHECK(b != c);
     }
 
-    {
-        auto a = Bipartition("0101010101");
-        auto b = Bipartition("1010101010");
-        auto c = Bipartition("1111100000");
-
-        cout << "a crosses b: " << a.crosses(b) << b.crosses(a) << endl;
-        cout << "a crosses c: " << a.crosses(c) << c.crosses(a) << endl;
-        cout << "b crosses c: " << b.crosses(c) << c.crosses(b) << endl;
+    SECTION("Element-wise assignment") {
+        auto a = Bipartition("11000000");
+        auto b = Bipartition("00000000");
+        b.addOne(0);
+        b.addOne(1);
+        REQUIRE(a.equals(b));
     }
 
-    {
-        auto a = Bipartition("110011");
-        auto b = Bipartition("100001");
+    SECTION("Complement") {
+        auto a = Bipartition("11000000");
+        auto b = Bipartition("00110000");
+        auto c = Bipartition("00111111");
+        b.complement(4);
+        c.complement(c.size());
 
-        cout << "a contains b: " << a.contains(b) << endl;
-        cout << "b contains a: " << b.contains(a) << endl;
-        cout << "a properly contains b: " << a.properlyContains(b) << endl;
-        cout << "b properly contains a: " << b.properlyContains(a) << endl;
+        REQUIRE(a.equals(b));
+        REQUIRE(a.equals(c));
     }
+
+//    {
+//        auto a = Bipartition("0101010101");
+//        auto b = Bipartition("1010101010");
+//        auto c = Bipartition("1111100000");
+//
+//        cout << "a crosses b: " << a.crosses(b) << b.crosses(a) << endl;
+//        cout << "a crosses c: " << a.crosses(c) << c.crosses(a) << endl;
+//        cout << "b crosses c: " << b.crosses(c) << c.crosses(b) << endl;
+//    }
+//
+//    {
+//        auto a = Bipartition("110011");
+//        auto b = Bipartition("100001");
+//
+//        cout << "a contains b: " << a.contains(b) << endl;
+//        cout << "b contains a: " << b.contains(a) << endl;
+//        cout << "a properly contains b: " << a.properlyContains(b) << endl;
+//        cout << "b properly contains a: " << b.properlyContains(a) << endl;
+//    }
 }
 
 TEST_CASE("EdgeAttribute") {
-    SECTION("EdgeAttribute Construction") {
+    SECTION("Construction") {
         auto a = EdgeAttribute();
         auto b = EdgeAttribute(vector<double>{1, 2, 3, 4});
         auto c = EdgeAttribute("5, 6, 7, 8");
@@ -121,7 +133,7 @@ TEST_CASE("EdgeAttribute") {
 }
 
 TEST_CASE("PhyloTreeEdge") {
-    SECTION("PhyloTreeEdge Construction") {
+    SECTION("Construction") {
         auto a = PhyloTreeEdge();
         REQUIRE(a.toString() == "[] ");
         REQUIRE(a.getOriginalID() == -1);

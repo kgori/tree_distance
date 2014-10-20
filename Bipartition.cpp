@@ -1,7 +1,6 @@
-#include <memory>
-#include <string>
-#include <boost/dynamic_bitset.hpp>
 #include "Bipartition.h"
+#include <boost/dynamic_bitset.hpp>
+#include <memory>
 
 using namespace std;
 
@@ -22,13 +21,14 @@ Bipartition::Bipartition(string s) {
     partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(s));
 }
 
-void Bipartition::addOne(int index) {
-    (*partition)[index] = true;
+void Bipartition::addOne(size_t index) {
+    (*partition)[size() - index - 1] = true;
 }
 
 void Bipartition::complement(int numLeaves) {
-    for (int i = 0; i < numLeaves; ++i) {
-        (*partition)[i].flip();
+    size_t s = size();
+    for (size_t i = 0; i < numLeaves; ++i) {
+        (*partition)[s - i - 1].flip();
     }
 }
 
@@ -38,7 +38,7 @@ bool Bipartition::contains(const Bipartition &e) const {
     return (*foreign_edge) == (*(e.partition));
 }
 
-bool Bipartition::contains(int i) {
+bool Bipartition::contains(size_t i) {
     if (!partition) throw exception();
     return (*partition)[i];
 }
@@ -51,7 +51,7 @@ bool Bipartition::disjointFrom(const Bipartition &e) const {
     return !(*partition).intersects(*(e.partition));
 }
 
-bool Bipartition::equals(const Bipartition &e) {
+bool Bipartition::equals(const Bipartition &e) const {
     return (*partition) == (*(e.partition));
 }
 
@@ -81,8 +81,8 @@ bool Bipartition::properlyContains(const Bipartition &e) {
     return this->contains(e) && !e.contains(*this);
 }
 
-void Bipartition::removeOne(int index) {
-    (*partition)[index] = false;
+void Bipartition::removeOne(size_t index) {
+    (*partition)[size() - index - 1] = false;
 }
 
 void Bipartition::setPartition(boost::dynamic_bitset<> &edge) {

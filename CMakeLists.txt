@@ -7,6 +7,7 @@ set(SOURCE_FILES
     Bipartition.cpp
     EdgeAttribute.cpp
     PhyloTreeEdge.cpp
+    PhyloTree.cpp
     test.cpp)
 
 add_executable(GTP ${SOURCE_FILES})

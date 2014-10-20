@@ -1,9 +1,9 @@
 #ifndef __BIPARTITION_H__
 #define __BIPARTITION_H__
 
+#include <boost/dynamic_bitset.hpp>
 #include <memory>
 #include <string>
-#include <boost/dynamic_bitset.hpp>
 
 using namespace std;
 
@@ -19,19 +19,23 @@ public:
 
     unique_ptr<boost::dynamic_bitset<>> getPartition() const;
 
+    inline bool operator==(const Bipartition& rhs) const { return (*this).equals(rhs); }
+
+    inline bool operator!=(const Bipartition& rhs) const { return !(*this).equals(rhs); }
+
     void setPartition(boost::dynamic_bitset<> &edge);
 
     bool isEmpty();
 
-    void addOne(int index);
+    void addOne(size_t index);
 
-    void removeOne(int index);
+    void removeOne(size_t index);
 
     bool disjointFrom(const Bipartition &e) const;
 
     bool contains(const Bipartition &e) const;
 
-    bool contains(int i);
+    bool contains(size_t i);
 
     bool properlyContains(const Bipartition &e);
 
@@ -41,7 +45,7 @@ public:
 
     virtual string toString();
 
-    bool equals(const Bipartition &e);
+    bool equals(const Bipartition &e) const;
 
     bool isCompatibleWith(vector<Bipartition> splits);
     size_t size();

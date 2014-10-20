@@ -31,6 +31,16 @@ public:
 
     PhyloTreeEdge(const PhyloTreeEdge &other); // copy-constructor
 
+    PhyloTreeEdge& operator=(const PhyloTreeEdge &other) {
+        if (this != &other) {
+            super(*(other.partition));
+            attribute = unique_ptr<EdgeAttribute>(new EdgeAttribute(*(other.attribute)));
+            this->originalEdge = unique_ptr<Bipartition>(new Bipartition(*(other.originalEdge)));
+            this->originalID = other.originalID;
+        }
+        return *this;
+    }
+
     double getLength();
 
     bool isZero();

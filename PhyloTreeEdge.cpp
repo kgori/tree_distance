@@ -1,8 +1,4 @@
 #include "PhyloTreeEdge.h"
-#include <boost/dynamic_bitset.hpp>
-#include <cmath>
-#include <memory>
-
 #define TOLERANCE 0.000000000000001
 
 using namespace std;

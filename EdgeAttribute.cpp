@@ -1,9 +1,6 @@
 #include "EdgeAttribute.h"
 #include <boost/algorithm/string.hpp>
-#include <cmath>
 #include <sstream>
-#include <string>
-#include <vector>
 
 #define TOLERANCE 0.000000000000001
 
