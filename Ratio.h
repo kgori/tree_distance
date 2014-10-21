@@ -1,10 +1,10 @@
 #ifndef __RATIO_H__
 #define __RATIO_H__
 
+#include "Bipartition.h"
+#include "PhyloTreeEdge.h"
 #include <string>
 #include <vector>
-#include "PhyloTreeEdge.h"
-#include "Bipartition.h"
 
 using namespace std;
 

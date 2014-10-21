@@ -1,10 +1,11 @@
 #ifndef __GEODESIC_H__
 #define __GEODESIC_H__
 
-#include <string>
-#include <vector>
 #include "PhyloTree.h"
 #include "PhyloTreeEdge.h"
+#include "RatioSequence.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 

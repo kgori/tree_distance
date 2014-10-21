@@ -36,7 +36,7 @@ public:
     // string toString();
     PhyloTree clone();
     bool equals(PhyloTree t);
-    bool approxEquals(PhyloTree t, double epsilon);
+    // bool approxEquals(PhyloTree t, double epsilon);
     vector<EdgeAttribute> getLeafEdgeAttribs();
     void setLeafEdgeAttribs(vector<EdgeAttribute> leafEdgeAttribs);
     vector<EdgeAttribute> getCopyLeafEdgeAttribs();

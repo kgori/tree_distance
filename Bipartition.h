@@ -19,9 +19,17 @@ public:
 
     unique_ptr<boost::dynamic_bitset<>> getPartition() const;
 
-    inline bool operator==(const Bipartition& rhs) const { return (*this).equals(rhs); }
+    inline bool operator==(const Bipartition& other) const { return (*this).equals(other); }
 
-    inline bool operator!=(const Bipartition& rhs) const { return !(*this).equals(rhs); }
+    inline bool operator!=(const Bipartition& other) const { return !(*this == other); }
+
+    inline bool operator<(const Bipartition& other) const { return *(this->partition) < *(other.partition); }
+
+    inline bool operator>(const Bipartition& other) const { return other < *this; }
+
+    inline bool operator<=(const Bipartition& other) const { return !(*this > other); }
+
+    inline bool operator>=(const Bipartition& other) const { return !(*this < other); }
 
     void setPartition(boost::dynamic_bitset<> &edge);
 

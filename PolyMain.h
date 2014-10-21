@@ -1,9 +1,10 @@
 #ifndef __POLY_MAIN_H__
 #define __POLY_MAIN_H__ value
 
+#include "Geodesic.h'
+#include "PhyloTree.h"
 #include <string>
 #include <vector>
-#include "PhyloTree.h"
 
 class PolyMain {
 public:
@@ -12,7 +13,9 @@ public:
     ~PolyMain();
 
     static vector <PhyloTree> aTreesNoCommonEdges;
+
     static vector <PhyloTree> bTreesNoCommonEdges;
+
     static bool normalize = false;
 
     static void splitOnCommonEdge(PhyloTree t1, PhyloTree t2);

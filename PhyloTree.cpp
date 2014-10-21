@@ -80,7 +80,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                     leafEdgeAttribs[leafNum] = EdgeAttribute(length);
 
                     for (auto &e: q) {
-                        e.addOne(leafNum);
+                        e.addOne((size_t) leafNum);
                     }
                     i = end_of_length;
                 }
@@ -255,19 +255,22 @@ PhyloTree PhyloTree::clone() {
 }
 
 bool PhyloTree::equals(PhyloTree t) {
-    return false;
+    return (leaf2NumMap == t.leaf2NumMap) && Tools::vector_equal(leafEdgeAttribs, t.leafEdgeAttribs) && Tools::vector_equal(edges, t.edges);
 }
 
-bool PhyloTree::approxEquals(PhyloTree t, double epsilon) {
-    return false;
-}
+//bool PhyloTree::approxEquals(PhyloTree t, double epsilon) {
+//    return false;
+//}
 
 vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() {
-    return std::vector<EdgeAttribute, allocator<EdgeAttribute>>();
+    return leafEdgeAttribs;
 }
 
-void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute> leafEdgeAttribs) {
-
+void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute> otherEdgeAttribs) {
+    leafEdgeAttribs.clear();
+    for (auto e : otherEdgeAttribs) {
+        leafEdgeAttribs.push_back(e);
+    }
 }
 
 vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
@@ -275,7 +278,10 @@ vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
 }
 
 vector<double> PhyloTree::getIntEdgeAttribNorms() {
-    return std::vector<double, allocator<double>>();
+    vector<double> norms;
+    for (auto &e : edges) {
+        norms.push_back(e.getAttribute().norm());
+    }
 }
 
 string PhyloTree::getNewick(bool branchLengths) {

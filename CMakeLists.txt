@@ -8,6 +8,7 @@ set(SOURCE_FILES
     EdgeAttribute.cpp
     PhyloTreeEdge.cpp
     PhyloTree.cpp
+    Tools.cpp
     test.cpp)
 
 add_executable(GTP ${SOURCE_FILES})

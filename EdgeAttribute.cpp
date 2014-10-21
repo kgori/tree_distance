@@ -1,28 +1,9 @@
 #include "EdgeAttribute.h"
-#include <boost/algorithm/string.hpp>
+#include <cmath>
 #include <sstream>
+#include <stdexcept>
 
 #define TOLERANCE 0.000000000000001
-
-std::vector<std::string> string_to_vect(std::string s) {
-    std::vector<std::string> results;
-    boost::trim_if(s, boost::is_any_of("[]"));
-    boost::split(results, s, boost::is_any_of(" ,\t"), boost::token_compress_on);
-    return results;
-}
-
-std::vector<double> string_vector_to_double_vector(std::vector<std::string> stringVector) {
-    std::vector<double> doubleVector(stringVector.size());
-    std::transform(stringVector.begin(), stringVector.end(), doubleVector.begin(), [](const std::string &val) {
-        try {
-            return std::stod(val);
-        }
-        catch (const std::invalid_argument &ia) {
-            throw std::invalid_argument("invalid argument: " + val);
-        }
-    });
-    return doubleVector;
-}
 
 EdgeAttribute::EdgeAttribute() {
 }
@@ -32,8 +13,8 @@ EdgeAttribute::EdgeAttribute(vector<double> v) {
 }
 
 EdgeAttribute::EdgeAttribute(string s) {
-    std::vector<string> sv = string_to_vect(s);
-    std::vector<double> dv = string_vector_to_double_vector(sv);
+    std::vector<string> sv = Tools::string_split(s);
+    std::vector<double> dv = Tools::stringvec_to_doublevec(sv);
     vect = dv;
 }
 
@@ -79,7 +60,7 @@ bool EdgeAttribute::equals(const EdgeAttribute &other) const {
     return true;
 }
 
-double EdgeAttribute::norm() {
+double EdgeAttribute::norm() const {
     double norm = 0.0;
     for (auto e : vect) {
         norm += e * e;
@@ -117,7 +98,7 @@ size_t EdgeAttribute::size() const {
 
 void EdgeAttribute::ensurePositive() {
     if (vect.size() == 1) {
-        vect[0] = std::fabs(vect[0]);
+        vect[0] = (double) std::fabs(vect[0]);
     }
 }
 

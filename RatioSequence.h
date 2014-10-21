@@ -1,6 +1,7 @@
 #ifndef __RATIO_SEQUENCE_H__
 #define __RATIO_SEQUENCE_H__
 
+#include "Ratio.h"
 #include <string>
 #include <vector>
 

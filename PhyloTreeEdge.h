@@ -4,6 +4,7 @@
 #include <boost/dynamic_bitset.hpp>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 #include "Bipartition.h"
 #include "EdgeAttribute.h"
@@ -40,6 +41,20 @@ public:
         }
         return *this;
     }
+
+//    inline bool operator< (const EdgeAttribute& other) const {
+//        return Tools::vector_equal(this->vect, other.vect);
+//    }
+//
+//    inline bool operator>(const PhyloTreeEdge& other) const { return other < *this; }
+//
+//    inline bool operator<=(const PhyloTreeEdge& other) const { return !(*this > other); }
+//
+//    inline bool operator>=(const PhyloTreeEdge& other) const { return !(*this < other); }
+//
+//    inline bool operator==(const PhyloTreeEdge& other) const { return this->norm() < other.norm(); }
+//
+//    inline bool operator!=(const PhyloTreeEdge& other) const { return !(*this == other); }
 
     double getLength();
 
