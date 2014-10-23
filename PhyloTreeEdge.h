@@ -18,6 +18,8 @@ private:
 public:
     PhyloTreeEdge();
 
+    PhyloTreeEdge(string s);
+
     PhyloTreeEdge(boost::dynamic_bitset<> &edge);
 
     PhyloTreeEdge(EdgeAttribute attrib);

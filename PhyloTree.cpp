@@ -1,5 +1,7 @@
 #include "PhyloTree.h"
-#include <deque>
+#include "Tools.h"
+#include <cmath>
+#define LENGTH_DEFAULT 0.0
 
 using namespace std;
 
@@ -24,7 +26,6 @@ PhyloTree::PhyloTree(const PhyloTree &t) {
 PhyloTree::PhyloTree(string t, bool rooted) {
     int leafNum = 0;
     deque<PhyloTreeEdge> q;
-    vector<PhyloTreeEdge> edges;
     string label, length;
     size_t i = 0;
 
@@ -32,35 +33,47 @@ PhyloTree::PhyloTree(string t, bool rooted) {
     t = t.substr(t.find_first_of("("));
     newick = t;
 
+    // remove whitespace
+    vector<string> split_newick = Tools::string_split(newick, " \t\n", "");
+    t = Tools::string_join(split_newick, "");
+
     //pull off ';' if at end
     t = t.erase(t.find_last_of(";"));
 
     // pull off the first and last brackets (and a root length, between the last bracket and ;, if there is one.
-    t = t.substr(t.find_first_of("("));
+    t = t.substr(t.find_first_of("(") + 1);
     t = t.erase(t.find_last_of(")"));
 
     // do bracket counting sanity check
     if (count(t.begin(), t.end(), '(') != count(t.begin(), t.end(), ')')) {
-        throw invalid_argument("Bracket mismatch error in tree: " + newick);
+        throw invalid_argument("Bracket mismatch error in tree: " + t);
     }
 
     try {
+        size_t end_of_label, end_of_length, alt_end_of_label;
+        string label, length;
         setLeaf2NumMapFromNewick();
         leafEdgeAttribs = vector<EdgeAttribute>(leaf2NumMap.size());
         while (i < t.size()) {
             switch (t.at(i)) {
                 case '(': {
-                    q.push_front(PhyloTreeEdge());
+                    q.push_front(PhyloTreeEdge(string(leaf2NumMap.size(), '0')));
                     i++;
                     break;
                 }
 
                 case ')': {
-                    size_t j = nextIndex(t, i+2, ",)");
-                    q.front().setAttribute(EdgeAttribute(t.substr(i+2, j)));
+                    end_of_length = Tools::nextIndex(t, i+2, ",)");
+                    if(t[i+1] == ':') {
+                        length = Tools::substring(t, i+2, end_of_length);
+                    }
+                    else {
+                        length = LENGTH_DEFAULT;
+                    }
+                    q.front().setAttribute(EdgeAttribute(length));
                     edges.push_back(q.front());
                     q.pop_front();
-                    i = j;
+                    i = end_of_length;
                     break;
                 }
 
@@ -71,10 +84,19 @@ PhyloTree::PhyloTree(string t, bool rooted) {
 
                 // this char is the beginning of a leaf name
                 default: {
-                    size_t end_of_label = nextIndex(t, i, ":");
-                    size_t end_of_length = nextIndex(t, end_of_label, " ,)");
-                    label = t.substr(i, end_of_label - i);
-                    length = t.substr(end_of_label + 1, end_of_length - end_of_label - 1);
+                    end_of_label = Tools::nextIndex(t, i, ":");
+
+                    // check if 'correct' :-delimited length is missing
+                    alt_end_of_label = Tools::nextIndex(t, i, " ,()");
+                    if (alt_end_of_label < end_of_label) {
+                        end_of_label = end_of_length = alt_end_of_label;
+                        length = LENGTH_DEFAULT;
+                    }
+                    else {
+                        end_of_length = Tools::nextIndex(t, end_of_label, " ,)");
+                        length = Tools::substring(t, end_of_label+1, end_of_length);
+                    }
+                    label = Tools::substring(t, i, end_of_label);
                     leafNum = lower_bound(leaf2NumMap.begin(), leaf2NumMap.end(), label) - leaf2NumMap.begin();
                     if (leafNum == leaf2NumMap.size()) throw out_of_range("Could not find label (" + label + ") in leaf2NumMap");
                     leafEdgeAttribs[leafNum] = EdgeAttribute(length);
@@ -103,7 +125,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
     for (size_t k = 0; k < edges.size(); ++k) {
         edges[k].setOriginalEdge(edges[k].asSplit());
         edges[k].setOriginalID(k);
-    } 
+    }
 }
 
 vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree t1, PhyloTree t2) {
@@ -134,10 +156,6 @@ vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree t1, PhyloTree t2) {
         }
     }
     return commonEdges;
-}
-
-size_t PhyloTree::nextIndex(string t, size_t i, string s) {
-    return t.find_first_of(s, i);
 }
 
 vector<PhyloTreeEdge> PhyloTree::getEdges() {
@@ -282,22 +300,143 @@ vector<double> PhyloTree::getIntEdgeAttribNorms() {
     for (auto &e : edges) {
         norms.push_back(e.getAttribute().norm());
     }
+    return norms;
 }
 
 string PhyloTree::getNewick(bool branchLengths) {
-    return std::string();
+    std::string newNewick("();");
+    deque<string> strPieces;
+    deque<PhyloTreeEdge> corrEdges;
+
+    if (edges.size() == 0) // star-tree
+    {
+        strPieces.push_back("(");
+        for (size_t i=0; i < leaf2NumMap.size() - 1; ++i) {
+            strPieces.push_back(leaf2NumMap[i]);
+            if (branchLengths) {
+                strPieces.push_back(":");
+                strPieces.push_back(leafEdgeAttribs[i].toString());
+            }
+            strPieces.push_back(",");
+        }
+        strPieces.push_back(");");
+        return Tools::string_join(strPieces, "");
+    }
+
+    vector<PhyloTreeEdge> edgesLeft(edges);
+
+    while (edgesLeft.size() > 0) {
+        auto minEdge = edgesLeft.front();
+        size_t pos = 0;
+        for (size_t i = 1; i < edgesLeft.size(); ++i) {
+            if (minEdge.contains(edgesLeft[i])) {
+                minEdge = edgesLeft[i];
+                pos = i;
+            }
+        }
+        Tools::vector_remove_element_at_index(edgesLeft, pos);
+
+        corrEdges.push_front(minEdge.clone());
+        strPieces.push_front("");
+
+        // now we have a min element.
+        // Start its Newick string.
+        string str1 = "(";
+
+        // Since we are allowing degenerate trees, there could be an arbitrary number of such edges.
+        size_t k = 1;
+        while (k < corrEdges.size()) {
+            if (minEdge.contains(corrEdges[k])) {
+                // add it to the string
+                str1 += strPieces[k] + ",";
+
+                // remove each leaf in this split from minEdge
+                minEdge.andNot(corrEdges[k]);
+
+                // remove this split and its corresponding string from the vectors
+                Tools::deque_remove_element_at_index(strPieces, k);
+                Tools::deque_remove_element_at_index(corrEdges, k);
+            } else {
+                k++;
+            }
+        }
+
+        // add all the elements still in minEdge (These are leaves that weren't already added as part of
+        // a min split contained by minEdge.)
+        if (!minEdge.getPartition()->empty()) {
+            for (size_t i = 0; i < minEdge.getPartition()->size(); i++) {
+                if ((*(minEdge.getPartition()))[i]) {
+                    str1 += leaf2NumMap[i];
+                    if (branchLengths) {
+                        str1 += ":" + Tools::double_to_string(leafEdgeAttribs[i].getAttribute());
+                    }
+                    str1 += ",";
+                }
+            }
+        }
+        // remove the last , and add the bracket and minEdge length
+        str1 = Tools::substring(str1, 0, str1.length() - 1) + ")";
+        if (branchLengths) {
+            str1 += ":" + Tools::double_to_string(minEdge.getAttribute().getAttribute());
+        }
+        // store str1
+        strPieces.push_front(str1);
+    }
+
+    // now we need to combine all edges in corrEdges and all remaining leaves
+    Bipartition allLeaves = Bipartition(string(leaf2NumMap.size(), '1'));
+
+    string newickString = "(";
+    // add all the string pieces we've accumulated
+    for (int i = 0; i < corrEdges.size(); i++) {
+        newickString += strPieces[i] + ",";
+        allLeaves.andNot(corrEdges[i]);
+    }
+    // add all remaining leaves
+    if (!allLeaves.isEmpty()) {
+        for (size_t i = 0; i < allLeaves.size(); i++) {
+            if ((*(allLeaves.getPartition()))[i]) {
+                newickString = newickString + leaf2NumMap[i];
+                if (branchLengths) {
+                    newickString += ":" + Tools::double_to_string(leafEdgeAttribs[i].getAttribute());
+                }
+                newickString += ",";
+            }
+        }
+    }
+
+    // remove the last ,
+    newickString =  Tools::substring(newickString, 0, newickString.length() - 1) + ");";
+
+    return newNewick;
 }
 
 void PhyloTree::setNewick(string newick) {
-
+    this->newick = newick;
 }
 
 int PhyloTree::numEdges() {
-    return 0;
+    return edges.size();
 }
 
 void PhyloTree::setLeaf2NumMapFromNewick() {
-
+    // go through the string and pull out all the leaf labels:  any string between '(' and ':' or ',' and ':'
+    size_t i = 0;
+    vector<string> split_newick = Tools::string_split(newick, " \t\n", "");
+    string despaced_newick = Tools::string_join(split_newick, "");
+    while (i < despaced_newick.length()) {
+        // however, the first character might be the beginning of a leaf label
+        if ((despaced_newick[i] == '(' || despaced_newick[i] == ',') && (despaced_newick[i+1] != '(')) {
+            size_t end_of_label = Tools::nextIndex(despaced_newick, i, ":");
+            string label = Tools::substring(despaced_newick, i+1, end_of_label);
+            leaf2NumMap.push_back(label);
+            i = Tools::nextIndex(despaced_newick, i, ",)");
+        } else {
+            i++;
+        }
+    }
+    // sort the elements of leaf2NumMap
+    std::sort(leaf2NumMap.begin(), leaf2NumMap.end());
 }
 
 void PhyloTree::normalize(double constant) {

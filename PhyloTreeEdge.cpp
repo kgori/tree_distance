@@ -1,4 +1,5 @@
 #include "PhyloTreeEdge.h"
+#include <cmath>
 #define TOLERANCE 0.000000000000001
 
 using namespace std;
@@ -11,6 +12,12 @@ public:
 };
 
 PhyloTreeEdge::PhyloTreeEdge() : super() {
+    attribute = unique_ptr<EdgeAttribute>(new EdgeAttribute());
+    originalEdge = unique_ptr<Bipartition>(new Bipartition());
+    originalID = -1;
+}
+
+PhyloTreeEdge::PhyloTreeEdge(string s) : super(s) {
     attribute = unique_ptr<EdgeAttribute>(new EdgeAttribute());
     originalEdge = unique_ptr<Bipartition>(new Bipartition());
     originalID = -1;

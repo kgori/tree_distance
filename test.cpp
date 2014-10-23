@@ -1,6 +1,7 @@
 #include "Bipartition.h"
 #include "EdgeAttribute.h"
 #include "PhyloTreeEdge.h"
+#include "PhyloTree.h"
 #include "test_catch_helper.h"
 
 TEST_CASE("Bipartition") {
@@ -57,25 +58,40 @@ TEST_CASE("Bipartition") {
         REQUIRE(a.equals(c));
     }
 
-//    {
-//        auto a = Bipartition("0101010101");
-//        auto b = Bipartition("1010101010");
-//        auto c = Bipartition("1111100000");
-//
-//        cout << "a crosses b: " << a.crosses(b) << b.crosses(a) << endl;
-//        cout << "a crosses c: " << a.crosses(c) << c.crosses(a) << endl;
-//        cout << "b crosses c: " << b.crosses(c) << c.crosses(b) << endl;
-//    }
-//
-//    {
-//        auto a = Bipartition("110011");
-//        auto b = Bipartition("100001");
-//
-//        cout << "a contains b: " << a.contains(b) << endl;
-//        cout << "b contains a: " << b.contains(a) << endl;
-//        cout << "a properly contains b: " << a.properlyContains(b) << endl;
-//        cout << "b properly contains a: " << b.properlyContains(a) << endl;
-//    }
+    SECTION("Logical") {
+        auto a = Bipartition("11111");
+        auto b = Bipartition("01100");
+        a&=b;
+        REQUIRE(a == b);
+        REQUIRE(~b == Bipartition("10011"));
+        REQUIRE(Bipartition("11111111").andNot(Bipartition("10100011")) == Bipartition("01011100"));
+        REQUIRE((Bipartition("11111111")&=(Bipartition("10100011"))) == Bipartition("10100011"));
+        REQUIRE(Bipartition("1100100111").andNot(Bipartition("1011011100")) == Bipartition("0100100011"));
+        REQUIRE((Bipartition("1100100111")&=(Bipartition("1011011100"))) == Bipartition("1000000100"));
+    }
+
+    SECTION("Crosses") {
+        auto a = Bipartition("0101010101");
+        auto b = Bipartition("1010101010");
+        auto c = Bipartition("1111100000");
+
+        CHECK(!a.crosses(b));
+        CHECK(!b.crosses(a));
+        CHECK(a.crosses(c));
+        CHECK(c.crosses(a));
+        CHECK(b.crosses(c));
+        CHECK(c.crosses(b));
+    }
+
+    SECTION("Contains") {
+        auto a = Bipartition("110011");
+        auto b = Bipartition("100001");
+
+        CHECK(a.contains(b));
+        CHECK(!b.contains(a));
+        CHECK(a.properlyContains(b));
+        CHECK(!b.properlyContains(a));
+    }
 }
 
 TEST_CASE("EdgeAttribute") {
@@ -171,9 +187,43 @@ TEST_CASE("PhyloTreeEdge") {
     }
 }
 
-//int main(int argc, char const *argv[]) {
-////    test_bipartition();
-////    test_edge_attribute();
-//    test_phylotree_edge();
-//    return 0;
-//}
+
+TEST_CASE("Tools") {
+    SECTION("Next Index") {
+        string s = "(a:1,(b:2,c:3));";
+        CHECK(Tools::nextIndex(s, 0, ",)") == 4);
+        CHECK(Tools::nextIndex(s, 1, ",)") == 4);
+        CHECK(Tools::nextIndex(s, 2, ",)") == 4);
+        CHECK(Tools::nextIndex(s, 3, ",)") == 4);
+        CHECK(Tools::nextIndex(s, 4, ",)") == 9);
+        CHECK(Tools::nextIndex(s, 5, ",)") == 9);
+        CHECK(Tools::nextIndex(s, 6, ",)") == 9);
+        CHECK(Tools::nextIndex(s, 7, ",)") == 9);
+        CHECK(Tools::nextIndex(s, 8, ",)") == 9);
+        CHECK(Tools::nextIndex(s, 9, ",)") == 13);
+        CHECK(Tools::nextIndex(s, 10, ",)") == 13);
+        CHECK(Tools::nextIndex(s, 11, ",)") == 13);
+        CHECK(Tools::nextIndex(s, 12, ",)") == 13);
+        CHECK(Tools::nextIndex(s, 13, ",)") == 14);
+        CHECK(Tools::nextIndex(s, 14, ",)") == s.size());
+        CHECK(Tools::nextIndex(s, 15, ",)") == s.size());
+        cout << Tools::nextIndex(s, 16, ",)") << endl;
+        cout << Tools::nextIndex(s, 17, ",)") << endl;
+    }
+}
+
+TEST_CASE("PhyloTree") {
+    SECTION("Construction") {
+        auto edges = vector<PhyloTreeEdge>({},{});
+//        auto a = PhyloTree();
+        auto d = PhyloTree("(a:1,(b:2,c:3):4);", true);
+        auto e = PhyloTree("(a:1, (b:2, c:3):4);", true);
+        auto f = PhyloTree("(a:1, b:2, c:3);", false);
+        auto g = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        REQUIRE(d.getBranchLengthSum() == 10);
+        REQUIRE(e.getBranchLengthSum() == 10);
+        REQUIRE(f.getBranchLengthSum() == 6);
+        REQUIRE(g.getBranchLengthSum() == 34);
+    }
+
+}

@@ -17,7 +17,6 @@ public:
     PhyloTree(const PhyloTree& t); // copy-constructor
     PhyloTree(string t, bool rooted);
     static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2);
-    size_t nextIndex(string t, size_t i, string s);
     vector<PhyloTreeEdge> getEdges();
     void setEdges(vector<PhyloTreeEdge> edges);
     PhyloTreeEdge getEdge(int i);

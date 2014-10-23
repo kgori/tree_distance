@@ -31,6 +31,16 @@ public:
 
     inline bool operator>=(const Bipartition& other) const { return !(*this < other); }
 
+    inline Bipartition& operator&=(const Bipartition& other) {
+        *partition &= *(other.partition);
+        return *this;
+    }
+
+    inline Bipartition operator~() const {
+        boost::dynamic_bitset<> uncontroversial = ~*(this->getPartition());
+        return Bipartition(uncontroversial);
+    }
+
     void setPartition(boost::dynamic_bitset<> &edge);
 
     bool isEmpty();
@@ -56,6 +66,12 @@ public:
     bool equals(const Bipartition &e) const;
 
     bool isCompatibleWith(vector<Bipartition> splits);
+
+    Bipartition& andNot(const Bipartition& other) {
+        *partition &= ~*(other.partition);
+        return *this;
+    }
+
     size_t size();
 
 protected:
