@@ -2,7 +2,10 @@
 #include "EdgeAttribute.h"
 #include "PhyloTreeEdge.h"
 #include "PhyloTree.h"
+#include "Ratio.h"
 #include "test_catch_helper.h"
+
+#define TOLERANCE 0.00000001
 
 TEST_CASE("Bipartition") {
     SECTION("Construction") {
@@ -61,13 +64,13 @@ TEST_CASE("Bipartition") {
     SECTION("Logical") {
         auto a = Bipartition("11111");
         auto b = Bipartition("01100");
-        a&=b;
+        a &= b;
         REQUIRE(a == b);
         REQUIRE(~b == Bipartition("10011"));
         REQUIRE(Bipartition("11111111").andNot(Bipartition("10100011")) == Bipartition("01011100"));
-        REQUIRE((Bipartition("11111111")&=(Bipartition("10100011"))) == Bipartition("10100011"));
+        REQUIRE((Bipartition("11111111") &= (Bipartition("10100011"))) == Bipartition("10100011"));
         REQUIRE(Bipartition("1100100111").andNot(Bipartition("1011011100")) == Bipartition("0100100011"));
-        REQUIRE((Bipartition("1100100111")&=(Bipartition("1011011100"))) == Bipartition("1000000100"));
+        REQUIRE((Bipartition("1100100111") &= (Bipartition("1011011100"))) == Bipartition("1000000100"));
     }
 
     SECTION("Crosses") {
@@ -136,16 +139,12 @@ TEST_CASE("EdgeAttribute") {
         REQUIRE(b.toString() == "[6]");
     }
 
-//    {
-//        auto a = EdgeAttribute("1,2,3");
-//        auto b = EdgeAttribute("6,7,8,9,0");
-//        try {
-//            EdgeAttribute::add(a, b);
-//        }
-//        catch (const std::invalid_argument &ia) {
-//            cout << ia.what() << endl;
-//        }
-//    }
+    {
+        auto a = EdgeAttribute("1,2,3");
+        auto b = EdgeAttribute("6,7,8,9,0");
+        REQUIRE_THROWS_AS(EdgeAttribute::add(a, b), std::invalid_argument);
+
+    }
 }
 
 TEST_CASE("PhyloTreeEdge") {
@@ -207,15 +206,37 @@ TEST_CASE("Tools") {
         CHECK(Tools::nextIndex(s, 13, ",)") == 14);
         CHECK(Tools::nextIndex(s, 14, ",)") == s.size());
         CHECK(Tools::nextIndex(s, 15, ",)") == s.size());
-        cout << Tools::nextIndex(s, 16, ",)") << endl;
-        cout << Tools::nextIndex(s, 17, ",)") << endl;
+    }
+
+    SECTION("Split and join") {
+        string a("a|set|of|items");
+        string b("--a, set: of\t| items--");
+        vector<string> v{"a", "set", "of", "items"};
+        CHECK(Tools::string_split(a, "|", "") == v);
+        CHECK(Tools::string_split(b, ",:| \t", "-") == v);
+        CHECK(Tools::string_join(v, "|") == a);
+        CHECK(Tools::string_join(v, "*") == "a*set*of*items");
+        CHECK(Tools::vector_to_string(v) == "a set of items");
+        string c("(1,2,3,4)");
+        string d(",1,,2,,,3,,,,4,,,,,");
+        vector<string> w{"1", "2", "3", "4"};
+        CHECK(Tools::string_split(c, ", ", "(,)") == w);
+        CHECK(Tools::string_split(d, ", ", "(,)") == w);
+    }
+
+    SECTION("Double conversion") {
+        vector<string> a{"1", "2", "3", "4"};
+        vector<double> b{1.0, 2.0, 3.0, 4.0};
+        CHECK(Tools::stringvec_to_doublevec(a) == b);
+
+        vector<string> c{"a", "b", "c", "d"};
+        CHECK_THROWS(Tools::stringvec_to_doublevec(c));
     }
 }
 
 TEST_CASE("PhyloTree") {
     SECTION("Construction") {
         auto edges = vector<PhyloTreeEdge>({},{});
-//        auto a = PhyloTree();
         auto d = PhyloTree("(a:1,(b:2,c:3):4);", true);
         auto e = PhyloTree("(a:1, (b:2, c:3):4);", true);
         auto f = PhyloTree("(a:1, b:2, c:3);", false);
@@ -225,5 +246,73 @@ TEST_CASE("PhyloTree") {
         REQUIRE(f.getBranchLengthSum() == 6);
         REQUIRE(g.getBranchLengthSum() == 34);
     }
+}
 
+TEST_CASE("Ratio") {
+    SECTION("Construction") {
+        auto a = Ratio();
+        CHECK(a.getELength() == 0);
+        CHECK(a.getFLength() == 0);
+        CHECK(a.getEEdges() == vector<PhyloTreeEdge>());
+        CHECK(a.getFEdges() == vector<PhyloTreeEdge>());
+
+        auto b = Ratio(5.5, 10.9);
+        CHECK(b.getELength() == 5.5);
+        CHECK(b.getFLength() == 10.9);
+        CHECK(b.getEEdges() == vector<PhyloTreeEdge>());
+        CHECK(b.getFEdges() == vector<PhyloTreeEdge>());
+
+        auto c = Ratio(b);
+        CHECK(c.getELength() == 5.5);
+        CHECK(c.getFLength() == 10.9);
+        CHECK(c.getEEdges() == vector<PhyloTreeEdge>());
+        CHECK(c.getFEdges() == vector<PhyloTreeEdge>());
+
+        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        auto eEdges = t1.getEdges();
+        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
+        auto fEdges = t2.getEdges();
+        auto d = Ratio(eEdges, fEdges);
+        CHECK(abs(d.getELength() - sqrt(0.3)) < TOLERANCE);
+        CHECK(abs(d.getFLength() - sqrt(0.54)) < TOLERANCE);
+
+        auto e = d.reverse();
+        CHECK(abs(d.getELength() - e.getFLength()) < TOLERANCE);
+        CHECK(abs(d.getFLength() - e.getELength()) < TOLERANCE);
+
+        auto f = e.clone();
+        CHECK(abs(f.getFLength() - e.getFLength()) < TOLERANCE);
+        CHECK(abs(f.getELength() - e.getELength()) < TOLERANCE);
+
+        auto g = Ratio::combine(d, e);
+        CHECK(abs(g.getELength() - sqrt(0.84)) < TOLERANCE);
+        CHECK(abs(g.getFLength() - sqrt(0.84)) < TOLERANCE);
+    }
+    SECTION("Edge lengths") {
+        auto a = Ratio();
+        a.setELength(0.666);
+        a.setFLength(666);
+        REQUIRE(a.getELength() == 0.666);
+        REQUIRE(a.getFLength() == 666);
+    }
+
+    SECTION("Contains") {
+        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        auto eEdges = t1.getEdges();
+        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
+        auto fEdges = t2.getEdges();
+        auto a = Ratio(eEdges, fEdges);
+        CHECK(a.containsOriginalEEdge(Bipartition("110000")));
+        CHECK(a.containsOriginalEEdge(Bipartition("000110")));
+        CHECK(a.containsOriginalEEdge(Bipartition("000111")));
+        CHECK(a.containsOriginalEEdge(Bipartition("001111")));
+        CHECK(a.containsOriginalEEdge(Bipartition("101000")));
+        CHECK(a.containsOriginalEEdge(Bipartition("010010")));
+        CHECK(a.containsOriginalEEdge(Bipartition("010011")));
+        CHECK(a.containsOriginalEEdge(Bipartition("010111")));
+        CHECK_FALSE(a.containsOriginalEEdge(Bipartition("000000")));
+        CHECK_FALSE(a.containsOriginalEEdge(Bipartition("111111")));
+        CHECK_FALSE(a.containsOriginalEEdge(Bipartition("001000")));
+        CHECK_FALSE(a.containsOriginalEEdge(Bipartition("001100")));
+    }
 }

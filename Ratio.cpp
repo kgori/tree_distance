@@ -1,0 +1,161 @@
+#include "Ratio.h"
+#include <cmath>
+
+using namespace std;
+
+Ratio::Ratio() : eLength(0), fLength(0) {
+}
+
+Ratio::Ratio(vector<PhyloTreeEdge> e, vector<PhyloTreeEdge> f) :
+        eEdges(e), fEdges(f), eLength(geoAvg(e)), fLength(geoAvg(f)) {
+}
+
+Ratio::Ratio(double e, double f) : eLength(e), fLength(f) {
+}
+
+Ratio::Ratio(const Ratio &other) :
+        eLength(other.eLength), fLength(other.fLength),
+        eEdges(other.eEdges), fEdges(other.fEdges) {
+}
+
+Ratio Ratio::combine(Ratio r1, Ratio r2) {
+    Ratio r{};
+    if ((r1.eEdges.size() == 0) && (r2.eEdges.size() == 0)) {
+        r.setELength(geoAvg(r1.eLength, r2.eLength));
+    }
+    else {
+        r.addAllEEdges(r1.eEdges);
+        r.addAllEEdges(r2.eEdges);
+    }
+
+    if ((r1.fEdges.size() == 0) && (r2.fEdges.size() == 0)) {
+        r.setFLength(geoAvg(r1.fLength, r2.fLength));
+    }
+    else {
+        r.addAllFEdges(r1.fEdges);
+        r.addAllFEdges(r2.fEdges);
+    }
+
+    return r;
+}
+
+double Ratio::geoAvg(double d1, double d2) {
+    return sqrt(pow(d1, 2) + pow(d2, 2));
+}
+
+double Ratio::geoAvg(vector<PhyloTreeEdge> edges) {
+    double gAvg = 0.0;
+
+    for (PhyloTreeEdge e: edges) {
+        gAvg += pow(e.getLength(), 2);
+    }
+
+    return sqrt(gAvg);
+}
+
+vector<PhyloTreeEdge> Ratio::getEEdges() {
+    return eEdges;
+}
+
+void Ratio::addEEdge(PhyloTreeEdge edge) {
+    eEdges.push_back(edge);
+    eLength = geoAvg(eLength, edge.getLength());
+}
+
+void Ratio::addAllEEdges(vector<PhyloTreeEdge> edges) {
+    for (auto e : edges) {
+        eEdges.push_back(e);
+    }
+    eLength = geoAvg(eEdges);
+}
+
+double Ratio::getELength() {
+    if (eEdges.size() == 0)
+        return eLength;
+    return geoAvg(eEdges);
+}
+
+void Ratio::setELength(double eLen) {
+    if (eEdges.size() == 0)
+        eLength = eLen;
+}
+
+vector<PhyloTreeEdge> Ratio::getFEdges() {
+    return fEdges;
+}
+
+void Ratio::addFEdge(PhyloTreeEdge edge) {
+    fEdges.push_back(edge);
+    fLength = geoAvg(fLength, edge.getLength());
+}
+
+void Ratio::addAllFEdges(vector<PhyloTreeEdge> edges) {
+    for (auto f : edges) {
+        fEdges.push_back(f);
+    }
+    fLength = geoAvg(fEdges);
+}
+
+double Ratio::getFLength() {
+    if (fEdges.size() == 0)
+        return fLength;
+    return geoAvg(fEdges);
+}
+
+void Ratio::setFLength(double fLen) {
+    if (fEdges.size() == 0)
+        fLength = fLen;
+}
+
+double Ratio::getRatio() {
+    return eLength / fLength;
+}
+
+double Ratio::getTime() {
+    return eLength / (eLength + fLength);
+}
+
+Ratio Ratio::reverse() {
+    vector<PhyloTreeEdge> evec, fvec;
+    for (auto e : eEdges) {
+        evec.push_back(PhyloTreeEdge(e));
+    }
+    for (auto f : fEdges) {
+        fvec.push_back(PhyloTreeEdge(f));
+    }
+    return Ratio(fvec, evec);
+}
+
+bool Ratio::containsOriginalEEdge(Bipartition edge) {
+
+    for (PhyloTreeEdge ratio_edge : eEdges) {
+        if (ratio_edge.getOriginalEdge().equals(edge)) {
+            return true;
+        }
+    }
+
+    for (PhyloTreeEdge ratio_edge : fEdges) {
+        if (ratio_edge.getOriginalEdge().equals(edge)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+string Ratio::toString() {
+    std::ostringstream ss{};
+    for (auto e : eEdges) {
+        ss << e.toString() << " ";
+    }
+    ss << getELength() << " / " << getFLength() << " ";
+    for (auto f : fEdges) {
+        ss << f.toString() << " ";
+    }
+
+    return ss.str();
+}
+
+Ratio Ratio::clone() {
+    return Ratio(*this);
+}

@@ -1,5 +1,6 @@
 #include "PhyloTreeEdge.h"
 #include <cmath>
+
 #define TOLERANCE 0.000000000000001
 
 using namespace std;

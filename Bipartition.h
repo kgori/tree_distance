@@ -19,19 +19,31 @@ public:
 
     unique_ptr<boost::dynamic_bitset<>> getPartition() const;
 
-    inline bool operator==(const Bipartition& other) const { return (*this).equals(other); }
+    inline bool operator==(const Bipartition &other) const {
+        return (*this).equals(other);
+    }
 
-    inline bool operator!=(const Bipartition& other) const { return !(*this == other); }
+    inline bool operator!=(const Bipartition &other) const {
+        return !(*this == other);
+    }
 
-    inline bool operator<(const Bipartition& other) const { return *(this->partition) < *(other.partition); }
+    inline bool operator<(const Bipartition &other) const {
+        return *(this->partition) < *(other.partition);
+    }
 
-    inline bool operator>(const Bipartition& other) const { return other < *this; }
+    inline bool operator>(const Bipartition &other) const {
+        return other < *this;
+    }
 
-    inline bool operator<=(const Bipartition& other) const { return !(*this > other); }
+    inline bool operator<=(const Bipartition &other) const {
+        return !(*this > other);
+    }
 
-    inline bool operator>=(const Bipartition& other) const { return !(*this < other); }
+    inline bool operator>=(const Bipartition &other) const {
+        return !(*this < other);
+    }
 
-    inline Bipartition& operator&=(const Bipartition& other) {
+    inline Bipartition &operator&=(const Bipartition &other) {
         *partition &= *(other.partition);
         return *this;
     }
@@ -67,7 +79,7 @@ public:
 
     bool isCompatibleWith(vector<Bipartition> splits);
 
-    Bipartition& andNot(const Bipartition& other) {
+    Bipartition &andNot(const Bipartition &other) {
         *partition &= ~*(other.partition);
         return *this;
     }

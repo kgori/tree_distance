@@ -5,45 +5,55 @@
 #include <boost/algorithm/string.hpp>
 #include <deque>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class Tools
-{
+class Tools {
 public:
     template<typename T>
     static bool vector_equal(std::vector<T> x, std::vector<T> y) {
         std::sort(x.begin(), x.end());
         std::sort(y.begin(), y.end());
-        return x ==  y;
+        return x == y;
     }
 
     template<typename T>
     static void vector_print(std::vector<T> v) {
-        for (size_t i=0; i < v.size() - 1; ++i) {
+        for (size_t i = 0; i < v.size() - 1; ++i) {
             std::cout << v[i] << " ";
         }
         std::cout << v[v.size() - 1] << std::endl;
     }
 
-    template <typename T, template <typename> class C>
+    template<typename T>
+    static std::string vector_to_string(std::vector<T> v) {
+        std::stringstream ss{};
+        for (size_t i = 0; i < v.size() - 1; ++i) {
+            ss << v[i] << " ";
+        }
+        ss << v[v.size() - 1];
+        return ss.str();
+    }
+
+    template<typename T, template<typename> class C>
     static void remove_element_at_index(C<T> &c, size_t index) {
         c.erase(c.begin() + index);
     }
 
-    template <typename T>
+    template<typename T>
     static void deque_remove_element_at_index(deque<T> &c, size_t index) {
         c.erase(c.begin() + index);
     }
 
-    template <typename T>
+    template<typename T>
     static void vector_remove_element_at_index(vector<T> &c, size_t index) {
         c.erase(c.begin() + index);
     }
 
-    static vector<string> string_split(string to_split, string delimiters=", \t\n", string to_trim="[]");
+    static vector<string> string_split(string to_split, string delimiters = ", \t\n", string to_trim = "[]");
 
     static string string_join(vector<string> to_join, string delimiter);
 

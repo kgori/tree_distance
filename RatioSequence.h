@@ -13,11 +13,9 @@ public:
 
     RatioSequence(string ptA, string ptB);
 
-    ~RatioSequence();
+    static RatioSequence interleave(RatioSequence rs1, RatioSequence rs2);
 
-    RatioSequence interleave(RatioSequence rs1, RatioSequence rs2);
-
-    RatioSequence getRandomRS(int dim);
+    static RatioSequence getRandomRS(size_t dim);
 
     int getCombineCode();
 

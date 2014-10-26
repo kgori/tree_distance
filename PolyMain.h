@@ -12,9 +12,9 @@ public:
 
     ~PolyMain();
 
-    static vector <PhyloTree> aTreesNoCommonEdges;
+    static vector<PhyloTree> aTreesNoCommonEdges;
 
-    static vector <PhyloTree> bTreesNoCommonEdges;
+    static vector<PhyloTree> bTreesNoCommonEdges;
 
     static bool normalize = false;
 

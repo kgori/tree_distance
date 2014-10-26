@@ -8,6 +8,8 @@ set(SOURCE_FILES
     EdgeAttribute.cpp
     PhyloTreeEdge.cpp
     PhyloTree.cpp
+    Ratio.cpp
+    RatioSequence.cpp
     Tools.cpp
     test.cpp)
 

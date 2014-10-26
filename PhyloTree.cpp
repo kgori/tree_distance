@@ -1,6 +1,7 @@
 #include "PhyloTree.h"
 #include "Tools.h"
 #include <cmath>
+
 #define LENGTH_DEFAULT 0.0
 
 using namespace std;
@@ -63,9 +64,9 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                 }
 
                 case ')': {
-                    end_of_length = Tools::nextIndex(t, i+2, ",)");
-                    if(t[i+1] == ':') {
-                        length = Tools::substring(t, i+2, end_of_length);
+                    end_of_length = Tools::nextIndex(t, i + 2, ",)");
+                    if (t[i + 1] == ':') {
+                        length = Tools::substring(t, i + 2, end_of_length);
                     }
                     else {
                         length = LENGTH_DEFAULT;
@@ -82,7 +83,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                     break;
                 }
 
-                // this char is the beginning of a leaf name
+                    // this char is the beginning of a leaf name
                 default: {
                     end_of_label = Tools::nextIndex(t, i, ":");
 
@@ -94,7 +95,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                     }
                     else {
                         end_of_length = Tools::nextIndex(t, end_of_label, " ,)");
-                        length = Tools::substring(t, end_of_label+1, end_of_length);
+                        length = Tools::substring(t, end_of_label + 1, end_of_length);
                     }
                     label = Tools::substring(t, i, end_of_label);
                     leafNum = lower_bound(leaf2NumMap.begin(), leaf2NumMap.end(), label) - leaf2NumMap.begin();
@@ -109,7 +110,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
             }
         }
     }
-    catch (out_of_range& range_err) {
+    catch (out_of_range &range_err) {
         throw range_err;
     }
 
@@ -197,7 +198,7 @@ void PhyloTree::normalize() {
     normalize(vecLength);
 }
 
-void PhyloTree::normalize(PhyloTree& other) {
+void PhyloTree::normalize(PhyloTree &other) {
     double combinedVecLength = getDistanceFromOrigin() + other.getDistanceFromOrigin();
     normalize(combinedVecLength);
     other.normalize(combinedVecLength);
@@ -311,7 +312,7 @@ string PhyloTree::getNewick(bool branchLengths) {
     if (edges.size() == 0) // star-tree
     {
         strPieces.push_back("(");
-        for (size_t i=0; i < leaf2NumMap.size() - 1; ++i) {
+        for (size_t i = 0; i < leaf2NumMap.size() - 1; ++i) {
             strPieces.push_back(leaf2NumMap[i]);
             if (branchLengths) {
                 strPieces.push_back(":");
@@ -406,7 +407,7 @@ string PhyloTree::getNewick(bool branchLengths) {
     }
 
     // remove the last ,
-    newickString =  Tools::substring(newickString, 0, newickString.length() - 1) + ");";
+    newickString = Tools::substring(newickString, 0, newickString.length() - 1) + ");";
 
     return newNewick;
 }
@@ -426,9 +427,9 @@ void PhyloTree::setLeaf2NumMapFromNewick() {
     string despaced_newick = Tools::string_join(split_newick, "");
     while (i < despaced_newick.length()) {
         // however, the first character might be the beginning of a leaf label
-        if ((despaced_newick[i] == '(' || despaced_newick[i] == ',') && (despaced_newick[i+1] != '(')) {
+        if ((despaced_newick[i] == '(' || despaced_newick[i] == ',') && (despaced_newick[i + 1] != '(')) {
             size_t end_of_label = Tools::nextIndex(despaced_newick, i, ":");
-            string label = Tools::substring(despaced_newick, i+1, end_of_label);
+            string label = Tools::substring(despaced_newick, i + 1, end_of_label);
             leaf2NumMap.push_back(label);
             i = Tools::nextIndex(despaced_newick, i, ",)");
         } else {

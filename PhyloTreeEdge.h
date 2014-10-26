@@ -34,7 +34,7 @@ public:
 
     PhyloTreeEdge(const PhyloTreeEdge &other); // copy-constructor
 
-    PhyloTreeEdge& operator=(const PhyloTreeEdge &other) {
+    PhyloTreeEdge &operator=(const PhyloTreeEdge &other) {
         if (this != &other) {
             super(*(other.partition));
             attribute = unique_ptr<EdgeAttribute>(new EdgeAttribute(*(other.attribute)));

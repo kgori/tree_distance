@@ -25,17 +25,29 @@ public:
 
     static EdgeAttribute zeroAttribute(size_t size);
 
-    inline bool operator< (const EdgeAttribute& other) const { return Tools::vector_equal(this->vect, other.vect); }
+    inline bool operator<(const EdgeAttribute &other) const {
+        return Tools::vector_equal(this->vect, other.vect);
+    }
 
-    inline bool operator> (const EdgeAttribute& other) const { return other < *this; }
+    inline bool operator>(const EdgeAttribute &other) const {
+        return other < *this;
+    }
 
-    inline bool operator<=(const EdgeAttribute& other) const { return !(*this > other); }
+    inline bool operator<=(const EdgeAttribute &other) const {
+        return !(*this > other);
+    }
 
-    inline bool operator>=(const EdgeAttribute& other) const { return !(*this < other); }
+    inline bool operator>=(const EdgeAttribute &other) const {
+        return !(*this < other);
+    }
 
-    inline bool operator== (const EdgeAttribute& other) const { return this->norm() < other.norm(); }
+    inline bool operator==(const EdgeAttribute &other) const {
+        return this->norm() < other.norm();
+    }
 
-    inline bool operator!= (const EdgeAttribute& other) const { return !(*this == other); }
+    inline bool operator!=(const EdgeAttribute &other) const {
+        return !(*this == other);
+    }
 
     double getAttribute();
 

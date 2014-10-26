@@ -14,15 +14,15 @@ public:
 
     Ratio(vector<PhyloTreeEdge> eEdges, vector<PhyloTreeEdge> fEdges);
 
-    Ratio(double eLength, double fLength);
+    Ratio(double e, double f);
 
-    ~Ratio();
+    static Ratio combine(Ratio r1, Ratio r2);
 
-    Ratio combine(Ratio r1, Ratio r2);
+    Ratio(const Ratio &other); // copy-constructor
 
-    double geoAvg(double d1, double d2);
+    static double geoAvg(double d1, double d2);
 
-    double geoAvg(vector<PhyloTreeEdge> edges);
+    static double geoAvg(vector<PhyloTreeEdge> edges);
 
     vector<PhyloTreeEdge> getEEdges();
 
@@ -44,7 +44,7 @@ public:
 
     void setFLength(double fLen);
 
-    double getRation();
+    double getRatio();
 
     double getTime();
 
@@ -53,14 +53,6 @@ public:
     bool containsOriginalEEdge(Bipartition edge);
 
     string toString();
-
-    string toStringCombTypeAndValue();
-
-    string toStringCombType();
-
-    string toStringJustValue();
-
-    string toStringVerbose(vector<string> leaf2NumMap);
 
     Ratio clone();
 

@@ -1,6 +1,7 @@
 #include "Tools.h"
 #include <iomanip>
 #include <sstream>
+#define PRECISION 5
 
 std::vector<std::string> Tools::string_split(std::string to_split, std::string delimiters, std::string to_trim) {
     std::vector<std::string> results;
@@ -32,7 +33,7 @@ std::string Tools::string_join(std::deque<std::string> to_join, std::string deli
 
 std::string Tools::double_to_string(double d) {
     std::ostringstream ss;
-    double x = 5;
+    double x = PRECISION;
     ss << std::fixed << std::setprecision(8);
     ss << x;
     std::string s = ss.str();
@@ -40,16 +41,16 @@ std::string Tools::double_to_string(double d) {
 }
 
 size_t Tools::nextIndex(string t, size_t i, string s) {
-    size_t pos = t.find_first_of(s, i+1);
+    size_t pos = t.find_first_of(s, i + 1);
     return pos == std::string::npos ? t.size() : pos;
 }
 
 string Tools::substring(string s, size_t begin, size_t end) {
     if (begin > end) throw std::invalid_argument("'begin' can't be larger than 'end'");
-    try{
-        return s.substr(begin, end-begin);
+    try {
+        return s.substr(begin, end - begin);
     }
-    catch (std::out_of_range& range_error) {
+    catch (std::out_of_range &range_error) {
         return "";
     }
 }
