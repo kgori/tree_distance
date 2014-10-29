@@ -29,6 +29,14 @@ public:
     }
 
     template<typename T>
+    static void deque_print(std::deque<T> v) {
+        for (size_t i = 0; i < v.size() - 1; ++i) {
+            std::cout << v[i] << " ";
+        }
+        std::cout << v[v.size() - 1] << std::endl;
+    }
+
+    template<typename T>
     static std::string vector_to_string(std::vector<T> v) {
         std::stringstream ss{};
         for (size_t i = 0; i < v.size() - 1; ++i) {

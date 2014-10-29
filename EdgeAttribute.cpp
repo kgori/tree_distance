@@ -69,7 +69,7 @@ double EdgeAttribute::norm() const {
 }
 
 EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
-    if (a1.size() != a2.size()) throw std::invalid_argument("Edge attributes are not the same size");
+    if (a1.size() != a2.size()) throw std::invalid_argument("difference: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
         diff.push_back(a1.vect[i] - a2.vect[i]);
@@ -78,7 +78,7 @@ EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
 }
 
 EdgeAttribute EdgeAttribute::add(EdgeAttribute a1, EdgeAttribute a2) {
-    if (a1.size() != a2.size()) throw std::invalid_argument("Edge attributes are not the same size");
+    if (a1.size() != a2.size()) throw std::invalid_argument("add: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
         diff.push_back(a1.vect[i] + a2.vect[i]);
@@ -108,7 +108,7 @@ EdgeAttribute EdgeAttribute::zeroAttribute(size_t size) {
 }
 
 EdgeAttribute EdgeAttribute::weightedPairAverage(EdgeAttribute start, EdgeAttribute target, double position) {
-    if (start.size() != target.size()) throw std::invalid_argument("Edge attributes are not the same size");
+    if (start.size() != target.size()) throw std::invalid_argument("weighted pair average: Edge attributes are not the same size");
     std::vector<double> point(start.size(), 0.0);
     for (size_t i = 0; i < start.size(); ++i) {
         point[i] = (1 - position) * start.vect[i] + position * target.vect[i];

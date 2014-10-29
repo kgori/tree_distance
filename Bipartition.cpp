@@ -1,4 +1,5 @@
 #include "Bipartition.h"
+#include "Tools.h"
 #include <boost/dynamic_bitset.hpp>
 #include <memory>
 
@@ -40,7 +41,7 @@ bool Bipartition::contains(const Bipartition &e) const {
 
 bool Bipartition::contains(size_t i) {
     if (!partition) throw exception();
-    return (*partition)[i];
+    return (*partition)[size() - i -1];
 }
 
 bool Bipartition::crosses(const Bipartition &e) const {
@@ -70,7 +71,7 @@ bool Bipartition::isCompatibleWith(vector<Bipartition> splits) {
 }
 
 bool Bipartition::isEmpty() {
-    return partition->empty();
+    return partition->none();
 }
 
 size_t Bipartition::size() {
@@ -93,4 +94,16 @@ string Bipartition::toString() {
     string s;
     to_string(*partition, s);
     return s;
+}
+
+string Bipartition::toStringVerbose(boost::dynamic_bitset<> edge, vector<string> leaf2NumMap) {
+    string toDisplay = "";
+    size_t edge_size = edge.size();
+    for (size_t i = 0; i < edge_size; i++) {
+        if ((bool)edge[edge_size - i - 1]) {
+            toDisplay = toDisplay + leaf2NumMap[i] + ",";
+        }
+    }
+    // remove the last ,
+    return Tools::substring(toDisplay, 0, toDisplay.find_last_not_of(",")+1);
 }

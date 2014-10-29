@@ -33,9 +33,8 @@ std::string Tools::string_join(std::deque<std::string> to_join, std::string deli
 
 std::string Tools::double_to_string(double d) {
     std::ostringstream ss;
-    double x = PRECISION;
-    ss << std::fixed << std::setprecision(8);
-    ss << x;
+    ss << std::fixed << std::setprecision(PRECISION);
+    ss << d;
     std::string s = ss.str();
     return s;
 }

@@ -46,6 +46,8 @@ PhyloTreeEdge::PhyloTreeEdge(EdgeAttribute attrib, Bipartition originalEdge, int
     attribute = unique_ptr<EdgeAttribute>(new EdgeAttribute(attrib));
     this->originalEdge = unique_ptr<Bipartition>(new Bipartition(originalEdge));
     this->originalID = originalID;
+    auto empty_partition = boost::dynamic_bitset<>(originalEdge.size());
+    this->setPartition(empty_partition);
 }
 
 PhyloTreeEdge::PhyloTreeEdge(Bipartition edge, EdgeAttribute attrib, int originalID) : super(edge) {
@@ -129,4 +131,23 @@ void PhyloTreeEdge::setAttribute(const EdgeAttribute &attrib) {
 
 EdgeAttribute PhyloTreeEdge::getAttribute() {
     return *attribute;
+}
+
+void PhyloTreeEdge::printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap) {
+    string output = "";
+
+    cout << "Edge ID\t\tLength\t\tLeaves Below" << endl;
+    for (int i = 0; i < edges.size(); i++) {
+        if (!edges[i].getOriginalEdge().getPartition()->empty()) {
+            cout << edges[i].getOriginalID() << "\t\t" << edges[i].attribute->toString() << "\t\t" << Bipartition::toStringVerbose(*(edges[i].getOriginalEdge().getPartition()), leaf2NumMap) << endl;
+        } else {
+            cout << edges[i].toStringVerbose(leaf2NumMap);
+        }
+    }
+}
+
+string PhyloTreeEdge::toStringVerbose(vector<string> leaf2NumMap) {
+    ostringstream ss;
+    ss << originalID << "\t\t" << attribute->toString() << "\t\t" << Bipartition::toStringVerbose(*(this->partition), leaf2NumMap);
+    return ss.str();
 }

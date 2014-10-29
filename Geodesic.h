@@ -13,11 +13,11 @@ class Geodesic {
 public:
     Geodesic(RatioSequence rs);
 
-    Geodesic(RatioSequence rs, Vector <PhyloTreeEdge> cEdges);
+    Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges);
 
-    Geodesic(RatioSequence rs, Vector <PhyloTreeEdge> cEdges, double leafContributionSquared);
+    Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafContributionSquared);
 
-    ~Geodesic();
+    Geodesic(const Geodesic& other);
 
     PhyloTree getTreeAt(PhyloTree t1, PhyloTree t2, double position);
 
@@ -33,15 +33,15 @@ public:
 
     string toString();
 
-    vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2, double position);
+    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2, double position);
 
     vector<PhyloTreeEdge> getCommonEdges();
 
     void setCommonEdges(vector<PhyloTreeEdge> commonEdges);
 
-    int numCommonEdges();
+    size_t numCommonEdges();
 
-    int numTopologies();
+    size_t numTopologies();
 
     Geodesic reverse();
 
@@ -49,11 +49,15 @@ public:
 
     void setLeafContributionSquared(double leafContributionSquared);
 
+    static Geodesic getGeodesic(PhyloTree t1, PhyloTree t2);
+
+    static Geodesic getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2);
+
 private:
     RatioSequence rs;
     vector<PhyloTreeEdge> commonEdges;
     double leafContributionSquared = 0;
-
+    static void splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& destination_a, vector<PhyloTree>& destination_b);
 };
 
 #endif /* __GEODESIC_H__ */

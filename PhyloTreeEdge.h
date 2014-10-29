@@ -86,6 +86,10 @@ public:
 
     void setAttribute(const EdgeAttribute &attrib);
 
+    static void printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap);
+
+    string toStringVerbose(vector<string> leaf2NumMap);
+
 private:
     unique_ptr<EdgeAttribute> attribute = nullptr;
     unique_ptr<Bipartition> originalEdge = nullptr;

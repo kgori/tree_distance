@@ -16,6 +16,7 @@ public:
     PhyloTree(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap);
 
     PhyloTree(const PhyloTree &t); // copy-constructor
+
     PhyloTree(string t, bool rooted);
 
     static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2);
@@ -24,7 +25,7 @@ public:
 
     void setEdges(vector<PhyloTreeEdge> edges);
 
-    PhyloTreeEdge getEdge(int i);
+    PhyloTreeEdge getEdge(size_t i);
 
     vector<string> getLeaf2NumMap();
 
@@ -48,13 +49,14 @@ public:
 
     vector<PhyloTreeEdge> getEdgesNotInCommonWith(PhyloTree t);
 
-    // vector<Bipartition> getCrossingsWith(PhyloTree t);
-    // string toString();
     PhyloTree clone();
 
     bool equals(PhyloTree t);
 
-    // bool approxEquals(PhyloTree t, double epsilon);
+    bool removeSplit(Bipartition e);
+
+    void removeSplits(vector<Bipartition> splits);
+
     vector<EdgeAttribute> getLeafEdgeAttribs();
 
     void setLeafEdgeAttribs(vector<EdgeAttribute> leafEdgeAttribs);
@@ -68,6 +70,10 @@ public:
     void setNewick(string newick);
 
     int numEdges();
+
+    void addEdge(PhyloTreeEdge e) { edges.push_back(e); }
+
+    string toString();
 
 private:
     vector<PhyloTreeEdge> edges;

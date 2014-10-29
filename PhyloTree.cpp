@@ -13,8 +13,17 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap, ve
 }
 
 PhyloTree::PhyloTree(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap) {
-    this->edges = edges;
     this->leaf2NumMap = leaf2NumMap;
+    size_t len = leaf2NumMap.size();
+    for (auto &edge : edges) {
+        boost::dynamic_bitset<> new_bitset(len);
+        auto partition = *(edge.getPartition());
+        for (size_t i=0; i < len; ++i) {
+            new_bitset[len - i - 1] = partition[partition.size() - i - 1];
+        }
+        edge.setOriginalEdge(Bipartition(new_bitset));
+        this->edges.push_back(edge);
+    }
 }
 
 PhyloTree::PhyloTree(const PhyloTree &t) {
@@ -167,7 +176,7 @@ void PhyloTree::setEdges(vector<PhyloTreeEdge> edges) {
     this->edges = edges;
 }
 
-PhyloTreeEdge PhyloTree::getEdge(int i) {
+PhyloTreeEdge PhyloTree::getEdge(size_t i) {
     return edges[i];
 }
 
@@ -180,6 +189,11 @@ void PhyloTree::setLeaf2NumMap(vector<string> leaf2NumMap) {
 }
 
 EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition edge) {
+    for (auto e : edges) {
+        if (e.sameBipartition(edge)) {
+            return e.getAttribute();
+        }
+    }
     return EdgeAttribute();
 }
 
@@ -244,19 +258,22 @@ double PhyloTree::getBranchLengthSum() {
 
 vector<PhyloTreeEdge> PhyloTree::getEdgesNotInCommonWith(PhyloTree t) {
     vector<PhyloTreeEdge> notCommonEdges;
+    bool not_common;
     if (leaf2NumMap != t.leaf2NumMap) {
         throw runtime_error("leaf2NumMaps are not equal");
     }
-    for (auto &this_edge : edges) {
+    for (auto this_edge : edges) {
+        not_common = true;
         if (this_edge.isZero()) continue;
 
         for (auto &that_edge : t.edges) {
             if (that_edge.isZero()) continue;
             if (this_edge.sameBipartition(that_edge)) {
-                break;
+                not_common = false;
             }
-            notCommonEdges.push_back(this_edge.clone());
         }
+        if (not_common)
+            notCommonEdges.push_back(this_edge);
     }
     return notCommonEdges;
 }
@@ -305,7 +322,6 @@ vector<double> PhyloTree::getIntEdgeAttribNorms() {
 }
 
 string PhyloTree::getNewick(bool branchLengths) {
-    std::string newNewick("();");
     deque<string> strPieces;
     deque<PhyloTreeEdge> corrEdges;
 
@@ -316,10 +332,13 @@ string PhyloTree::getNewick(bool branchLengths) {
             strPieces.push_back(leaf2NumMap[i]);
             if (branchLengths) {
                 strPieces.push_back(":");
-                strPieces.push_back(leafEdgeAttribs[i].toString());
+                strPieces.push_back(Tools::double_to_string(leafEdgeAttribs[i].getAttribute()));
             }
             strPieces.push_back(",");
         }
+        strPieces.push_back(leaf2NumMap.back());
+        strPieces.push_back(":");
+        strPieces.push_back(Tools::double_to_string(leafEdgeAttribs.back().getAttribute()));
         strPieces.push_back(");");
         return Tools::string_join(strPieces, "");
     }
@@ -408,8 +427,7 @@ string PhyloTree::getNewick(bool branchLengths) {
 
     // remove the last ,
     newickString = Tools::substring(newickString, 0, newickString.length() - 1) + ");";
-
-    return newNewick;
+    return newickString;
 }
 
 void PhyloTree::setNewick(string newick) {
@@ -448,4 +466,51 @@ void PhyloTree::normalize(double constant) {
     for (int i = 0; i < edges.size(); i++) {
         edges[i].getAttribute().scaleBy(1.0 / constant);
     }
+}
+
+bool PhyloTree::removeSplit(Bipartition e) {
+    bool removed = false;
+
+    for (size_t i = 0; i < edges.size(); i++) {
+        if (edges[i].sameBipartition(e)) {
+            Tools::vector_remove_element_at_index(edges, i);
+            removed = true;
+            break;
+        }
+    }
+    return removed;
+}
+
+void PhyloTree::removeSplits(vector<Bipartition> splits) {
+    for (auto &split : splits) {
+        removeSplit(split);
+    }
+}
+
+string PhyloTree::toString() {
+    size_t nlabels = leaf2NumMap.size();
+    size_t nedges = edges.size();
+    size_t nleaves = leafEdgeAttribs.size();
+    if (nlabels == nedges == nleaves == 0) return "";
+    stringstream ss;
+    ss << "Leaves: ";
+    for (size_t i = 0; i < nlabels - 1; ++i) {
+        ss << leaf2NumMap[i] << " ";
+    }
+    ss << leaf2NumMap.back();
+    if (nedges > 0) {
+        ss << "; edges: ";
+        for (size_t i = 0; i < edges.size() - 1; ++i) {
+            ss << edges[i].toString() << " ";
+        }
+        ss << edges.back().toString();
+    }
+    if (nleaves > 0) {
+        ss << "; leaf edges: [";
+        for (size_t i = 0; i < nleaves - 1; ++i) {
+            ss << leafEdgeAttribs[i].toString() << " ";
+        }
+        ss << leafEdgeAttribs.back().toString() << "]";
+    }
+    return ss.str();
 }

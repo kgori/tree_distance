@@ -1,25 +1,23 @@
-#ifndef __BIPARTITE_GRAPH__
-#define __BIPARTITE_GRAPH__
+#ifndef __BIPARTITE_GRAPH_H__
+#define __BIPARTITE_GRAPH_H__
 
+#include <deque>
 #include <vector>
+#include "PhyloTreeEdge.h"
 #include "Vertex.h"
 
-using namespace std;
-
 class BipartiteGraph {
-public:
-    BipartiteGraph(vector<vector<bool>> IncidenceMatrix, vector<double> Aweight, vector<double> Bweight);
 
-    ~BipartiteGraph();
+public :
+    BipartiteGraph(std::vector<std::deque<bool>> IncidenceMatrix, std::vector<double> Aweight, std::vector<double> Bweight);
+    vector<vector<size_t>> vertex_cover(vector<size_t> Aindex, vector<size_t> Bindex);
+    static std::vector<std::deque<bool>> getIncidenceMatrix(std::vector<PhyloTreeEdge> edges1, std::vector<PhyloTreeEdge> edges2);
 
-    vector<vector<int>> vertex_cover(vector<int> Aindex, vector<int> Bindex);
-
-private:
-    vector<vector<bool>> edge;
-    int nA, nB, n, i, j;
-    vector<Vertex> Avertex, Bvertex;
-    bool debug = false;
-
+public :
+    std::vector<std::deque<bool>> edge;
+    size_t nA, nB, n;
+    int i, j;
+    std::vector<Vertex> Avertex, Bvertex;
 };
 
-#endif /* __BIPARTITE_GRAPH__ */
+#endif /* __BIPARTITE_GRAPH_H__ */

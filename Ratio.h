@@ -20,6 +20,16 @@ public:
 
     Ratio(const Ratio &other); // copy-constructor
 
+    inline bool operator< (const Ratio& other) const {
+        return this->getRatio() < other.getRatio();
+    }
+
+    inline bool operator>(const Ratio& other) const { return other < *this; }
+
+    inline bool operator<=(const Ratio& other) const { return !(*this > other); }
+
+    inline bool operator>=(const Ratio& other) const { return !(*this < other); }
+
     static double geoAvg(double d1, double d2);
 
     static double geoAvg(vector<PhyloTreeEdge> edges);
@@ -44,7 +54,7 @@ public:
 
     void setFLength(double fLen);
 
-    double getRatio();
+    double getRatio() const;
 
     double getTime();
 
@@ -53,6 +63,10 @@ public:
     bool containsOriginalEEdge(Bipartition edge);
 
     string toString();
+
+    string toStringCombType();
+
+    string toStringVerbose(vector<string> leaf2NumMap);
 
     Ratio clone();
 

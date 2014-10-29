@@ -17,6 +17,20 @@ public:
 
     Bipartition(string s);
 
+    inline Bipartition& operator=(Bipartition rhs) {
+        swap(*this, rhs);
+        return *this;
+    }
+
+    friend void swap(Bipartition& first, Bipartition& second) {
+        // enable ADL (not necessary in our case, but good practice)
+        using std::swap;
+
+        // by swapping the members of two classes,
+        // the two classes are effectively swapped
+        swap(first.partition, second.partition);
+    }
+
     unique_ptr<boost::dynamic_bitset<>> getPartition() const;
 
     inline bool operator==(const Bipartition &other) const {
@@ -85,6 +99,8 @@ public:
     }
 
     size_t size();
+
+    static string toStringVerbose(boost::dynamic_bitset<> edge, vector<string> leaf2NumMap);
 
 protected:
     unique_ptr<boost::dynamic_bitset<>> partition = nullptr;

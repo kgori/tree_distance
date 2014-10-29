@@ -1,11 +1,13 @@
+#include "BipartiteGraph.h"
 #include "Bipartition.h"
 #include "EdgeAttribute.h"
 #include "PhyloTreeEdge.h"
 #include "PhyloTree.h"
 #include "Ratio.h"
 #include "test_catch_helper.h"
+#include "PolyMain.h"
 
-#define TOLERANCE 0.00000001
+#define TOLERANCE 0.0000001
 
 TEST_CASE("Bipartition") {
     SECTION("Construction") {
@@ -84,16 +86,44 @@ TEST_CASE("Bipartition") {
         CHECK(c.crosses(a));
         CHECK(b.crosses(c));
         CHECK(c.crosses(b));
+
+        auto d = Bipartition("1100101110110");
+        auto e = Bipartition("1010101100100");
+        auto f = Bipartition("0011010001001");
+        auto g = Bipartition("0101010011011");
+
+        REQUIRE(d.crosses(e) == e.crosses(d));
+        REQUIRE(d.crosses(f) == f.crosses(d));
+        REQUIRE(d.crosses(g) == g.crosses(d));
+        REQUIRE(e.crosses(f) == f.crosses(e));
+        REQUIRE(e.crosses(g) == g.crosses(e));
+        REQUIRE(f.crosses(g) == g.crosses(f));
     }
 
     SECTION("Contains") {
         auto a = Bipartition("110011");
         auto b = Bipartition("100001");
+        auto c = Bipartition("001000");
 
         CHECK(a.contains(b));
         CHECK(!b.contains(a));
         CHECK(a.properlyContains(b));
         CHECK(!b.properlyContains(a));
+        CHECK(c.contains(2));
+        REQUIRE_FALSE(c.contains(3));
+    }
+
+    SECTION("Empty") {
+        auto a = Bipartition("0000000");
+        auto b = Bipartition("1100000");
+        auto c = Bipartition("0011000");
+        auto d = Bipartition("0011100");
+        auto e = Bipartition("0001100");
+        REQUIRE(a.isEmpty());
+        REQUIRE_FALSE(b.isEmpty());
+        REQUIRE_FALSE(c.isEmpty());
+        REQUIRE_FALSE(d.isEmpty());
+        REQUIRE_FALSE(e.isEmpty());
     }
 }
 
@@ -168,8 +198,9 @@ TEST_CASE("PhyloTreeEdge") {
         REQUIRE(d.getOriginalID() == 10);
 
         auto e = PhyloTreeEdge(attrib, bip, 11);
-        REQUIRE(e.toString() == attrib.toString() + " ");
+        REQUIRE(e.toString() == attrib.toString() + " " + "00000000");
         REQUIRE(e.getOriginalID() == 11);
+        REQUIRE(e.isEmpty());
 
         auto f = PhyloTreeEdge(bip, attrib, 12);
         REQUIRE(f.toString() == attrib.toString() + " " + bip.toString());
@@ -183,6 +214,20 @@ TEST_CASE("PhyloTreeEdge") {
         auto h = PhyloTreeEdge(g);
         REQUIRE(h.toString() == g.toString());
         REQUIRE(h.getOriginalID() == g.getOriginalID());
+    }
+    SECTION("Empty") {
+        SECTION("Empty") {
+            auto a = PhyloTreeEdge(*(Bipartition("0000000").getPartition()));
+            auto b = PhyloTreeEdge(*(Bipartition("1100000").getPartition()));
+            auto c = PhyloTreeEdge(*(Bipartition("0011000").getPartition()));
+            auto d = PhyloTreeEdge(*(Bipartition("0011100").getPartition()));
+            auto e = PhyloTreeEdge(*(Bipartition("0001100").getPartition()));
+            REQUIRE(a.isEmpty());
+            REQUIRE_FALSE(b.isEmpty());
+            REQUIRE_FALSE(c.isEmpty());
+            REQUIRE_FALSE(d.isEmpty());
+            REQUIRE_FALSE(e.isEmpty());
+        }
     }
 }
 
@@ -225,6 +270,8 @@ TEST_CASE("Tools") {
     }
 
     SECTION("Double conversion") {
+        double x = 1;
+        CHECK(Tools::double_to_string(x) == "1.00000");
         vector<string> a{"1", "2", "3", "4"};
         vector<double> b{1.0, 2.0, 3.0, 4.0};
         CHECK(Tools::stringvec_to_doublevec(a) == b);
@@ -237,14 +284,139 @@ TEST_CASE("Tools") {
 TEST_CASE("PhyloTree") {
     SECTION("Construction") {
         auto edges = vector<PhyloTreeEdge>({},{});
-        auto d = PhyloTree("(a:1,(b:2,c:3):4);", true);
-        auto e = PhyloTree("(a:1, (b:2, c:3):4);", true);
-        auto f = PhyloTree("(a:1, b:2, c:3);", false);
-        auto g = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
-        REQUIRE(d.getBranchLengthSum() == 10);
-        REQUIRE(e.getBranchLengthSum() == 10);
-        REQUIRE(f.getBranchLengthSum() == 6);
-        REQUIRE(g.getBranchLengthSum() == 34);
+        auto a = PhyloTree("(a:1,(b:2,c:3):4);", true);
+        auto b = PhyloTree("(a:1, (b:2, c:3):4);", true);
+        auto c = PhyloTree("(a:1, b:2, c:3);", false);
+        auto d = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        REQUIRE(a.getBranchLengthSum() == 10);
+        REQUIRE(b.getBranchLengthSum() == 10);
+        REQUIRE(c.getBranchLengthSum() == 6);
+        REQUIRE(d.getBranchLengthSum() == 34);
+
+        edges = d.getEdges();
+        auto e = PhyloTree(edges, d.getLeaf2NumMap());
+        cout << e.toString() << endl;
+    }
+
+    SECTION("Leaf to num maps") {
+        auto a = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
+        auto b = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+        vector<string> expected{"a","b","c","d","e","f","g"};
+        REQUIRE(a.getLeaf2NumMap() == expected);
+        REQUIRE(b.getLeaf2NumMap() == expected);
+
+        // rooted
+        auto c = PhyloTree("((g:1,(a:1,(b:1,c:1):1):1):1,(f:1,(e:1,d:1):1):1);", true);
+        auto d = PhyloTree("((g:2,(a:2,(b:2,c:2):2):2):2,(d:2,(e:2,f:2):2):2);", true);
+        REQUIRE(c.getLeaf2NumMap() == expected);
+        REQUIRE(d.getLeaf2NumMap() == expected);
+    }
+
+    SECTION("Get edges") {
+        // unrooted
+        auto a = PhyloTree("(g:1,(a:1,(b:1,c:1):2):3,(f:1,(e:1,d:1):4):5);", false);
+        auto b = PhyloTree("(g:2,(a:2,(b:2,c:2):3):4,(d:2,(e:2,f:2):5):6);", false);
+        auto a_edges = a.getEdges();
+        auto b_edges = b.getEdges();
+        REQUIRE(a_edges.size() == 4);
+        REQUIRE(b_edges.size() == 4);
+        for (size_t i = 0; i < 4; ++i) {
+            CHECK(a_edges[i] == a.getEdge(i));
+            CHECK(a_edges[i].getLength() == i + 2);
+            CHECK(b_edges[i] == b.getEdge(i));
+            CHECK(b_edges[i].getLength() == i + 3);
+        }
+
+        // rooted
+        auto c = PhyloTree("((g:1,(a:1,(b:1,c:1):1):2):3,(f:1,(e:1,d:1):4):5);", true);
+        auto d = PhyloTree("((g:2,(a:2,(b:2,c:2):2):3):4,(d:2,(e:2,f:2):5):6);", true);
+        auto c_edges = c.getEdges();
+        auto d_edges = d.getEdges();
+        REQUIRE(c_edges.size() == 5);
+        REQUIRE(d_edges.size() == 5);
+        for (size_t i = 0; i < 5; ++i) {
+            CHECK(c_edges[i] == c.getEdge(i));
+            CHECK(c_edges[i].getLength() == i+1);
+            CHECK(d_edges[i] == d.getEdge(i));
+            CHECK(d_edges[i].getLength() == i+2);
+        }
+    }
+
+    SECTION("Edge Attributes") {
+        double test;
+
+        // unrooted
+        auto a = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
+        auto b = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+        auto a_attribs = a.getLeafEdgeAttribs();
+        auto b_attribs = b.getLeafEdgeAttribs();
+        CHECK(a_attribs.size() == a.numLeaves());
+        CHECK(a_attribs.size() == 7);
+        CHECK(b_attribs.size() == b.numLeaves());
+        CHECK(b_attribs.size() == 7);
+
+        // rooted
+        auto c = PhyloTree("((g:0.7,(a:0.1,(b:0.2,c:0.3):1):1):1,(f:0.6,(e:0.5,d:0.4):1):1);", true);
+        auto d = PhyloTree("((g:1.4,(a:0.2,(b:0.4,c:0.6):2):2):2,(d:0.8,(e:1.0,f:1.2):2):2);", true);
+        auto c_attribs = c.getLeafEdgeAttribs();
+        auto d_attribs = d.getLeafEdgeAttribs();
+        CHECK(c_attribs.size() == c.numLeaves());
+        CHECK(d_attribs.size() == d.numLeaves());
+        CHECK(c_attribs.size() == 7);
+        CHECK(d_attribs.size() == 7);
+
+        for (size_t i = 0; i < 7; i++) {
+            test = ((double) i + 1) / 10;
+            CHECK(a_attribs[i].getAttribute() == 1);
+            CHECK(b_attribs[i].getAttribute() == 2);
+            CHECK(c_attribs[i].getAttribute() == test);
+            CHECK(d_attribs[i].getAttribute() == 2 * test);
+        }
+    }
+
+    SECTION("Distance from origin") {
+        auto a = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
+        auto b = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+        auto c = PhyloTree("((g:0.7,(a:0.1,(b:0.2,c:0.3):1):1):1,(f:0.6,(e:0.5,d:0.4):1):1);", true);
+        auto d = PhyloTree("((g:1.4,(a:0.2,(b:0.4,c:0.6):2):2):2,(d:0.8,(e:1.0,f:1.2):2):2);", true);
+
+        REQUIRE(abs(a.getDistanceFromOrigin() - sqrt(11)) < TOLERANCE);
+        REQUIRE(abs(a.getDistanceFromOriginNoLeaves() - sqrt(4)) < TOLERANCE);
+        REQUIRE(abs(b.getDistanceFromOrigin() - sqrt(44)) < TOLERANCE);
+        REQUIRE(abs(b.getDistanceFromOriginNoLeaves() - sqrt(16)) < TOLERANCE);
+        REQUIRE(abs(c.getDistanceFromOrigin() - sqrt(6.4)) < TOLERANCE);
+        REQUIRE(abs(c.getDistanceFromOriginNoLeaves() - sqrt(5)) < TOLERANCE);
+        REQUIRE(abs(d.getDistanceFromOrigin() - sqrt(25.6)) < TOLERANCE);
+        REQUIRE(abs(d.getDistanceFromOriginNoLeaves() - sqrt(20)) < TOLERANCE);
+
+        REQUIRE(abs(a.getBranchLengthSum() - 11) < TOLERANCE);
+        REQUIRE(abs(b.getBranchLengthSum() - 22) < TOLERANCE);
+        REQUIRE(abs(c.getBranchLengthSum() - 7.8) < TOLERANCE);
+        REQUIRE(abs(d.getBranchLengthSum() - 15.6) < TOLERANCE);
+    }
+
+    SECTION("Edges in common") {
+        auto a = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
+        auto b = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+        auto enic = a.getEdgesNotInCommonWith(b);
+        auto eic = PhyloTree::getCommonEdges(a, b);
+    }
+
+    SECTION("Newick") {
+        auto a = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
+        auto b = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+        auto star1 = PhyloTree("(a:1, b:2, c:3, d:4, e:5, f:7);", false);
+        auto star2 = PhyloTree("(b:2, a:1, d:4, c:3, e:5);", false);
+
+//        cout << a.getNewick(true) << endl;
+//        cout << b.getNewick(true) << endl;
+//        cout << star1.getNewick(true) << endl;
+//        cout << star2.getNewick(true) << endl;
+//        for (size_t i = 0; i < star1.getLeafEdgeAttribs().size(); ++i) {
+//            cout << star1.getLeafEdgeAttribs()[i].getAttribute() << " ";
+//        }
+//        cout << endl;
+//        cout << star1.getBranchLengthSum() << endl;
     }
 }
 
@@ -287,7 +459,22 @@ TEST_CASE("Ratio") {
         auto g = Ratio::combine(d, e);
         CHECK(abs(g.getELength() - sqrt(0.84)) < TOLERANCE);
         CHECK(abs(g.getFLength() - sqrt(0.84)) < TOLERANCE);
+
+        deque<Ratio> queue;
+        {
+            queue.push_front(d);
+        }
+        {
+            auto h = queue.front();
+            CHECK(h.getEEdges() == queue.front().getEEdges());
+            CHECK(h.getFEdges() == queue.front().getFEdges());
+            CHECK(h.getELength() == queue.front().getELength());
+            CHECK(h.getFLength() == queue.front().getFLength());
+            queue.pop_front();
+            cout << h.toStringVerbose(t1.getLeaf2NumMap());
+        }
     }
+
     SECTION("Edge lengths") {
         auto a = Ratio();
         a.setELength(0.666);
@@ -314,5 +501,69 @@ TEST_CASE("Ratio") {
         CHECK_FALSE(a.containsOriginalEEdge(Bipartition("111111")));
         CHECK_FALSE(a.containsOriginalEEdge(Bipartition("001000")));
         CHECK_FALSE(a.containsOriginalEEdge(Bipartition("001100")));
+    }
+}
+
+TEST_CASE("RatioSequence") {
+
+}
+
+TEST_CASE("Geodesic") {
+
+}
+
+TEST_CASE("Bipartite Graph") {
+    SECTION("Vertex Cover") {
+        vector<int> aVertices{0,1,2,3};
+        vector<int> bVertices{0,1,2,3};
+//        auto g = BipartiteGraph();
+    }
+}
+
+TEST_CASE("Vertex") {
+    auto a = Vertex(0);
+    auto b = Vertex(0.1);
+    auto c = Vertex(0.2);
+    auto d = Vertex(0.3);
+    auto e = Vertex(0.4);
+    CHECK(a.weight == 0);
+    CHECK(abs(b.weight - 0.01) < TOLERANCE);
+    CHECK(abs(c.weight - 0.04) < TOLERANCE);
+    CHECK(abs(d.weight - 0.09) < TOLERANCE);
+    CHECK(abs(e.weight - 0.16) < TOLERANCE);
+}
+
+TEST_CASE("PolyMain") {
+    SECTION("Robinson-Foulds") {
+        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
+        CHECK(abs(PolyMain::getRobinsonFouldsDistance(t1, t2, false) - 8) < TOLERANCE);
+        CHECK(abs(PolyMain::getRobinsonFouldsDistance(t1, t2, true) - 1) < TOLERANCE);
+    }
+
+    SECTION("Weighted Robinson-Foulds") {
+        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
+        CHECK(abs(PolyMain::getWeightedRobinsonFouldsDistance(t1, t2, false) - 6.4) < TOLERANCE);
+        CHECK(abs(PolyMain::getWeightedRobinsonFouldsDistance(t1, t2, true) - 0.0935672514619883) < TOLERANCE);
+    }
+
+    SECTION("Euclidean") {
+        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
+        CHECK(abs(PolyMain::getEuclideanDistance(t1, t2, false) - 2.615339366124404) < TOLERANCE);
+        CHECK(abs(PolyMain::getEuclideanDistance(t1, t2, true) - 0.09260058256224009) < TOLERANCE);
+    }
+
+    SECTION("Geodesic") {
+        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
+        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
+        auto t3 = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
+        auto t4 = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+
+        CHECK(abs(PolyMain::getGeodesicDistance(t1, t2, false) - 2.76188615828) < TOLERANCE);
+        CHECK(abs(PolyMain::getGeodesicDistance(t1, t2, true) - 0.0977893234584) < TOLERANCE);
+        CHECK(abs(PolyMain::getGeodesicDistance(t3, t4, false) - 4.35889894354) < TOLERANCE);
+        CHECK(abs(PolyMain::getGeodesicDistance(t3, t4, true) - 0.438085827115) < TOLERANCE);
     }
 }

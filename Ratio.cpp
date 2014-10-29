@@ -1,5 +1,7 @@
 #include "Ratio.h"
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 
@@ -13,8 +15,7 @@ Ratio::Ratio(vector<PhyloTreeEdge> e, vector<PhyloTreeEdge> f) :
 Ratio::Ratio(double e, double f) : eLength(e), fLength(f) {
 }
 
-Ratio::Ratio(const Ratio &other) :
-        eLength(other.eLength), fLength(other.fLength),
+Ratio::Ratio(const Ratio &other) : eLength(other.eLength), fLength(other.fLength),
         eEdges(other.eEdges), fEdges(other.fEdges) {
 }
 
@@ -35,7 +36,6 @@ Ratio Ratio::combine(Ratio r1, Ratio r2) {
         r.addAllFEdges(r1.fEdges);
         r.addAllFEdges(r2.fEdges);
     }
-
     return r;
 }
 
@@ -107,7 +107,7 @@ void Ratio::setFLength(double fLen) {
         fLength = fLen;
 }
 
-double Ratio::getRatio() {
+double Ratio::getRatio() const {
     return eLength / fLength;
 }
 
@@ -144,7 +144,7 @@ bool Ratio::containsOriginalEEdge(Bipartition edge) {
 }
 
 string Ratio::toString() {
-    std::ostringstream ss{};
+    std::ostringstream ss;
     for (auto e : eEdges) {
         ss << e.toString() << " ";
     }
@@ -158,4 +158,62 @@ string Ratio::toString() {
 
 Ratio Ratio::clone() {
     return Ratio(*this);
+}
+
+string Ratio::toStringCombType() {
+    ostringstream ss;
+    ss << "{";
+
+    for (size_t i = 0; i < eEdges.size(); i++) {
+        ss << eEdges[i].getOriginalID();
+        if (i < eEdges.size() - 1) {
+            ss << ",";
+        }
+    }
+    ss << "}/{";
+
+    for (size_t i = 0; i < fEdges.size(); i++) {
+        ss << fEdges[i].getOriginalID();
+        if (i < fEdges.size() - 1) {
+            ss << ",";
+        }
+    }
+    ss << "}";
+    return ss.str();
+}
+
+string Ratio::toStringVerbose(vector<string> leaf2NumMap) {
+    std::ostringstream ss;
+    ss << std::fixed << std::setprecision(8);
+
+    ss << getRatio() << endl;
+
+    ss << "Total length and corresponding edges dropped:" << endl;
+
+    ss << eLength << "\t";
+
+    // list the edges dropped
+    for (int i = 0; i < eEdges.size(); i++) {
+        if (i == 0) {   // nice formatting
+            ss << Bipartition::toStringVerbose(*(eEdges[i].getPartition()), leaf2NumMap) << endl;
+        } else {
+            ss << "\t\t" << Bipartition::toStringVerbose(*(eEdges[i].getPartition()), leaf2NumMap) << endl;
+        }
+    }
+
+    ss << "\nTotal length and corresponding edges added:" << endl;
+
+    ss << fLength << "\t";
+
+    // list the edges added
+    for (int i = 0; i < fEdges.size(); i++) {
+        if (i == 0) {   // nice formatting
+            ss << Bipartition::toStringVerbose(*(fEdges[i].getPartition()), leaf2NumMap) << endl;
+        } else {
+            ss << "\t\t" << Bipartition::toStringVerbose(*(fEdges[i].getPartition()), leaf2NumMap) << endl;
+        }
+    }
+
+    return ss.str();
+
 }

@@ -7,21 +7,28 @@
 
 using namespace std;
 
-class RatioSequence : vector<Ratio> {
+class RatioSequence {
+
 public:
     RatioSequence();
 
     RatioSequence(string ptA, string ptB);
 
+    RatioSequence(const RatioSequence& other);
+
     static RatioSequence interleave(RatioSequence rs1, RatioSequence rs2);
 
     static RatioSequence getRandomRS(size_t dim);
 
-    int getCombineCode();
+    Ratio& operator[](size_t index) { return _RatioSequence[index]; }
 
-    void setCombineCode(int c);
+    const Ratio& operator[](size_t index) const { return _RatioSequence[index]; }
 
-    Ratio getRatio(int i);
+    long getCombineCode();
+
+    void setCombineCode(long c);
+
+    Ratio getRatio(size_t i);
 
     bool isAscending();
 
@@ -31,7 +38,7 @@ public:
 
     RatioSequence clone();
 
-    RatioSequence getCombinedRS(int combineCode);
+    RatioSequence getCombinedRS(long combineCode);
 
     RatioSequence getNonDesRSWithMinDist();
 
@@ -39,18 +46,34 @@ public:
 
     RatioSequence reverse();
 
-    string toStringValueAndRatio();
+    void push_back(Ratio item);
 
-    string toStringValue();
+    void erase(size_t index);
 
+    void insert(vector<Ratio>::iterator index, Ratio item);
+
+    vector<Ratio>::iterator begin();
+
+    vector<Ratio>::iterator end();
+
+    size_t size();
+
+    string toString();
+
+//    string toStringValueAndRatio();
+//
+//    string toStringValue();
+//
     string toStringVerbose(vector<string> leaf2NumMap);
 
     string toStringCombType();
 
-    string toStringCombTypeAndValue();
+//
+//    string toStringCombTypeAndValue();
 
 private:
-    int combineCode = 0;
+    long combineCode = 0;
+    vector<Ratio> _RatioSequence;
 };
 
 #endif /* __RATIO_SEQUENCE_H__ */
