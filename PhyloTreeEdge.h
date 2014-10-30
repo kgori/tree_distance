@@ -60,6 +60,8 @@ public:
 
     double getLength();
 
+    double getLength() const;
+
     bool isZero();
 
     string toString();

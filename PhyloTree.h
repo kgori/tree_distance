@@ -19,7 +19,7 @@ public:
 
     PhyloTree(string t, bool rooted);
 
-    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2);
+    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree &t1, PhyloTree &t2);
 
     vector<PhyloTreeEdge> getEdges();
 
@@ -42,6 +42,8 @@ public:
     size_t numLeaves();
 
     double getDistanceFromOrigin();
+
+    double getDistanceFromOrigin() const;
 
     double getDistanceFromOriginNoLeaves();
 

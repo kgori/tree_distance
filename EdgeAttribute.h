@@ -17,9 +17,9 @@ public:
 
     EdgeAttribute(const EdgeAttribute &other); // copy-constructor
     // ~EdgeAttribute();
-    static EdgeAttribute difference(EdgeAttribute a1, EdgeAttribute a2);
+    static EdgeAttribute difference(EdgeAttribute &a1, EdgeAttribute &a2);
 
-    static EdgeAttribute add(EdgeAttribute a1, EdgeAttribute a2);
+    static EdgeAttribute add(EdgeAttribute &a1, EdgeAttribute &a2);
 
     static EdgeAttribute weightedPairAverage(EdgeAttribute start, EdgeAttribute target, double position);
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(GTPcppconv)
 set(MACOSX_RPATH ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 
 set(SOURCE_FILES
     BipartiteGraph.cpp
@@ -15,6 +15,5 @@ set(SOURCE_FILES
     RatioSequence.cpp
     Tools.cpp)
 
-set(TEST_FILES ${SOURCE_FILES} test.cpp)
-
-add_library(treedist SHARED ${TEST_FILES})
+add_executable(GTPcppconv ${SOURCE_FILES} test.cpp)
+add_executable(timer ${SOURCE_FILES} main.cpp)

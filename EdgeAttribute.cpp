@@ -68,7 +68,7 @@ double EdgeAttribute::norm() const {
     return std::sqrt(norm);
 }
 
-EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
+EdgeAttribute EdgeAttribute::difference(EdgeAttribute &a1, EdgeAttribute &a2) {
     if (a1.size() != a2.size()) throw std::invalid_argument("difference: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
@@ -77,7 +77,7 @@ EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
     return EdgeAttribute(diff);
 }
 
-EdgeAttribute EdgeAttribute::add(EdgeAttribute a1, EdgeAttribute a2) {
+EdgeAttribute EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2) {
     if (a1.size() != a2.size()) throw std::invalid_argument("add: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {

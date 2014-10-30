@@ -137,8 +137,9 @@ PhyloTree::PhyloTree(string t, bool rooted) {
     }
 }
 
-vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree t1, PhyloTree t2) {
+vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     vector<PhyloTreeEdge> commonEdges;
+    EdgeAttribute l_attr, r_attr;
     if (t1.leaf2NumMap != t2.leaf2NumMap) {
         throw runtime_error("leaf2NumMaps are not equal");
     }
@@ -146,7 +147,9 @@ vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree t1, PhyloTree t2) {
         if (!e1.isZero()) {
             auto splits = t2.getSplits();
             if (std::find(splits.begin(), splits.end(), e1.asSplit()) != splits.end()) {
-                auto commonAttrib = EdgeAttribute::difference(e1.getAttribute(), t2.getAttribOfSplit(e1.asSplit()));
+                l_attr = e1.getAttribute();
+                r_attr = t2.getAttribOfSplit(e1.asSplit());
+                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
                 commonEdges.push_back(PhyloTreeEdge(e1.asSplit(), commonAttrib, e1.getOriginalID()));
             }
             else if (e1.isCompatibleWith(t2.getSplits())) {
@@ -199,7 +202,7 @@ EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition edge) {
 vector<Bipartition> PhyloTree::getSplits() {
     vector<Bipartition> splits;
 
-    for (auto edge : edges) {
+    for (auto &edge : edges) {
         splits.push_back(edge.asSplit());
     }
 
@@ -512,4 +515,17 @@ string PhyloTree::toString() {
         ss << leafEdgeAttribs.back().toString() << "]";
     }
     return ss.str();
+}
+
+double PhyloTree::getDistanceFromOrigin() const {
+    double dist = 0;
+    for (auto &edge : edges) {
+        dist += std::pow(edge.getLength(), 2);
+    }
+
+    for (auto &attrib : leafEdgeAttribs) {
+        dist += std::pow(attrib.norm(), 2);
+    }
+
+    return std::sqrt(dist);
 }

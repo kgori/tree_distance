@@ -151,3 +151,8 @@ string PhyloTreeEdge::toStringVerbose(vector<string> leaf2NumMap) {
     ss << originalID << "\t\t" << attribute->toString() << "\t\t" << Bipartition::toStringVerbose(*(this->partition), leaf2NumMap);
     return ss.str();
 }
+
+double PhyloTreeEdge::getLength() const {
+    if (!attribute) throw uninitialised_data("No attribute set");
+    return attribute->norm();
+}

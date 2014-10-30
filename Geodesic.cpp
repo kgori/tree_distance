@@ -404,7 +404,7 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
     return Geodesic(rs);
 }
 
-void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& destination_a, vector<PhyloTree>& destination_b) {
+void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b) {
     size_t numEdges1 = t1.getEdges().size(); // number of edges in tree 1
     size_t numEdges2 = t2.getEdges().size(); /// number of edges in tree 2
 
@@ -434,12 +434,12 @@ void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& 
     vector<PhyloTreeEdge> edgesB1;
     vector<PhyloTreeEdge> edgesB2;
 
-    for (PhyloTreeEdge e : t1.getEdges()) {
+    for (PhyloTreeEdge &e : t1.getEdges()) {
         edgesA1.push_back(PhyloTreeEdge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID()));
         edgesB1.push_back(PhyloTreeEdge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID()));
     }
 
-    for (PhyloTreeEdge e : t2.getEdges()) {
+    for (PhyloTreeEdge &e : t2.getEdges()) {
         edgesA2.push_back(PhyloTreeEdge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID()));
         edgesB2.push_back(PhyloTreeEdge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID()));
     }

@@ -75,7 +75,7 @@ double Distance::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise
     return sqrt(euc_value);
 }
 
-double Distance::getGeodesicDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getGeodesicDistance(PhyloTree const &t1, PhyloTree const &t2, bool normalise) {
     double distance = Geodesic::getGeodesic(t1, t2).getDist();
     if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
     return distance;

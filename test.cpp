@@ -580,5 +580,8 @@ TEST_CASE("Distance") {
         CHECK(abs(Distance::getGeodesicDistance(t3, t4, true) - Distance::getGeodesicDistance(s3, s4, true, false, false)) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t5, t6, false) - Distance::getGeodesicDistance(s5, s6, false, true, true)) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t5, t6, true) - Distance::getGeodesicDistance(s5, s6, true, true, true)) < TOLERANCE);
+        clock_t start = clock();
+        Distance::getGeodesicDistance(t5, t6, false);
+        printf("Time taken: %.3f microsec\n", 1000 * (double)(clock() - start)/CLOCKS_PER_SEC);
     }
 }
