@@ -80,3 +80,19 @@ double Distance::getGeodesicDistance(PhyloTree t1, PhyloTree t2, bool normalise)
     if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
     return distance;
 }
+
+double Distance::getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    return getEuclideanDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+}
+
+double Distance::getGeodesicDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    return getGeodesicDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+}
+
+double Distance::getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    return getRobinsonFouldsDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+}
+
+double Distance::getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    return getWeightedRobinsonFouldsDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+}

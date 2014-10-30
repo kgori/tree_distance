@@ -17,6 +17,14 @@ public:
     static double getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise);
 
     static double getGeodesicDistance(PhyloTree t1, PhyloTree t2, bool normalise);
+
+    static double getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
+
+    static double getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
+
+    static double getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
+
+    static double getGeodesicDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
 };
 
 #endif /* __DISTANCE_H__ */

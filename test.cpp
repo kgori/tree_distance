@@ -554,12 +554,18 @@ TEST_CASE("Distance") {
     }
 
     SECTION("Geodesic") {
-        auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
-        auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
-        auto t3 = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
-        auto t4 = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
-        auto t5 = PhyloTree("((g:1,(a:1,(b:1,c:1):1):1):1,(f:1,(e:1,d:1):1):1);", true);
-        auto t6 = PhyloTree("((g:2,(a:2,(b:2,c:2):2):2):2,(d:2,(e:2,f:2):2):2);", true);
+        string s1("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);");
+        string s2("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);");
+        string s3("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);");
+        string s4("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);");
+        string s5("((g:1,(a:1,(b:1,c:1):1):1):1,(f:1,(e:1,d:1):1):1);");
+        string s6("((g:2,(a:2,(b:2,c:2):2):2):2,(d:2,(e:2,f:2):2):2);");
+        auto t1 = PhyloTree(s1, true);
+        auto t2 = PhyloTree(s2, true);
+        auto t3 = PhyloTree(s3, false);
+        auto t4 = PhyloTree(s4, false);
+        auto t5 = PhyloTree(s5, true);
+        auto t6 = PhyloTree(s6, true);
 
         CHECK(abs(Distance::getGeodesicDistance(t1, t2, false) - 2.76188615828) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t1, t2, true) - 0.0977893234584) < TOLERANCE);
@@ -567,5 +573,12 @@ TEST_CASE("Distance") {
         CHECK(abs(Distance::getGeodesicDistance(t3, t4, true) - 0.438085827115) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t5, t6, false) - 4.472135955) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t5, t6, true) - 0.430331482912) < TOLERANCE);
+
+        CHECK(abs(Distance::getGeodesicDistance(t1, t2, false) - Distance::getGeodesicDistance(s1, s2, false, true, true)) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t1, t2, true) - Distance::getGeodesicDistance(s1, s2, true, true, true)) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t3, t4, false) - Distance::getGeodesicDistance(s3, s4, false, false, false)) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t3, t4, true) - Distance::getGeodesicDistance(s3, s4, true, false, false)) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t5, t6, false) - Distance::getGeodesicDistance(s5, s6, false, true, true)) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t5, t6, true) - Distance::getGeodesicDistance(s5, s6, true, true, true)) < TOLERANCE);
     }
 }
