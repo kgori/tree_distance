@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(GTPcppconv)
-
+set(MACOSX_RPATH ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
@@ -13,7 +13,8 @@ set(SOURCE_FILES
     Distance.cpp
     Ratio.cpp
     RatioSequence.cpp
-    test.cpp
     Tools.cpp)
 
-add_executable(GTPcppconv ${SOURCE_FILES})
+set(TEST_FILES ${SOURCE_FILES} test.cpp)
+
+add_library(treedist SHARED ${TEST_FILES})
