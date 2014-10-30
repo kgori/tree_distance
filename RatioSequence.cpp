@@ -1,7 +1,7 @@
 #include "RatioSequence.h"
 #include <random>
-#include <algorithm>
-#include <stddef.h>
+//#include <algorithm>
+//#include <stddef.h>
 
 RatioSequence::RatioSequence(){
 

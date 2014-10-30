@@ -1,14 +1,14 @@
-#ifndef __POLY_MAIN_H__
-#define __POLY_MAIN_H__
+#ifndef __DISTANCE_H__
+#define __DISTANCE_H__
 
 #include "Geodesic.h"
 #include "PhyloTree.h"
 #include <string>
 #include <vector>
 
-class PolyMain {
+class Distance {
 public:
-    PolyMain();
+//    Distance();
 
     static double getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise);
 
@@ -19,4 +19,4 @@ public:
     static double getGeodesicDistance(PhyloTree t1, PhyloTree t2, bool normalise);
 };
 
-#endif /* __POLY_MAIN_H__ */
+#endif /* __DISTANCE_H__ */

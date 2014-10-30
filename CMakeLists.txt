@@ -10,7 +10,7 @@ set(SOURCE_FILES
     Geodesic.cpp
     PhyloTree.cpp
     PhyloTreeEdge.cpp
-    PolyMain.cpp
+    Distance.cpp
     Ratio.cpp
     RatioSequence.cpp
     test.cpp

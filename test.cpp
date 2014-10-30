@@ -1,11 +1,11 @@
 #include "BipartiteGraph.h"
-#include "Bipartition.h"
-#include "EdgeAttribute.h"
-#include "PhyloTreeEdge.h"
+//#include "Bipartition.h"
+//#include "EdgeAttribute.h"
+//#include "PhyloTreeEdge.h"
 #include "PhyloTree.h"
 #include "Ratio.h"
 #include "test_catch_helper.h"
-#include "PolyMain.h"
+#include "Distance.h"
 
 #define TOLERANCE 0.0000001
 
@@ -295,7 +295,6 @@ TEST_CASE("PhyloTree") {
 
         edges = d.getEdges();
         auto e = PhyloTree(edges, d.getLeaf2NumMap());
-        cout << e.toString() << endl;
     }
 
     SECTION("Leaf to num maps") {
@@ -471,7 +470,6 @@ TEST_CASE("Ratio") {
             CHECK(h.getELength() == queue.front().getELength());
             CHECK(h.getFLength() == queue.front().getFLength());
             queue.pop_front();
-            cout << h.toStringVerbose(t1.getLeaf2NumMap());
         }
     }
 
@@ -533,26 +531,26 @@ TEST_CASE("Vertex") {
     CHECK(abs(e.weight - 0.16) < TOLERANCE);
 }
 
-TEST_CASE("PolyMain") {
+TEST_CASE("Distance") {
     SECTION("Robinson-Foulds") {
         auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
         auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
-        CHECK(abs(PolyMain::getRobinsonFouldsDistance(t1, t2, false) - 8) < TOLERANCE);
-        CHECK(abs(PolyMain::getRobinsonFouldsDistance(t1, t2, true) - 1) < TOLERANCE);
+        CHECK(abs(Distance::getRobinsonFouldsDistance(t1, t2, false) - 8) < TOLERANCE);
+        CHECK(abs(Distance::getRobinsonFouldsDistance(t1, t2, true) - 1) < TOLERANCE);
     }
 
     SECTION("Weighted Robinson-Foulds") {
         auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
         auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
-        CHECK(abs(PolyMain::getWeightedRobinsonFouldsDistance(t1, t2, false) - 6.4) < TOLERANCE);
-        CHECK(abs(PolyMain::getWeightedRobinsonFouldsDistance(t1, t2, true) - 0.0935672514619883) < TOLERANCE);
+        CHECK(abs(Distance::getWeightedRobinsonFouldsDistance(t1, t2, false) - 6.4) < TOLERANCE);
+        CHECK(abs(Distance::getWeightedRobinsonFouldsDistance(t1, t2, true) - 0.0935672514619883) < TOLERANCE);
     }
 
     SECTION("Euclidean") {
         auto t1 = PhyloTree("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);", true);
         auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
-        CHECK(abs(PolyMain::getEuclideanDistance(t1, t2, false) - 2.615339366124404) < TOLERANCE);
-        CHECK(abs(PolyMain::getEuclideanDistance(t1, t2, true) - 0.09260058256224009) < TOLERANCE);
+        CHECK(abs(Distance::getEuclideanDistance(t1, t2, false) - 2.615339366124404) < TOLERANCE);
+        CHECK(abs(Distance::getEuclideanDistance(t1, t2, true) - 0.09260058256224009) < TOLERANCE);
     }
 
     SECTION("Geodesic") {
@@ -560,10 +558,14 @@ TEST_CASE("PolyMain") {
         auto t2 = PhyloTree("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);", true);
         auto t3 = PhyloTree("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);", false);
         auto t4 = PhyloTree("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);", false);
+        auto t5 = PhyloTree("((g:1,(a:1,(b:1,c:1):1):1):1,(f:1,(e:1,d:1):1):1);", true);
+        auto t6 = PhyloTree("((g:2,(a:2,(b:2,c:2):2):2):2,(d:2,(e:2,f:2):2):2);", true);
 
-        CHECK(abs(PolyMain::getGeodesicDistance(t1, t2, false) - 2.76188615828) < TOLERANCE);
-        CHECK(abs(PolyMain::getGeodesicDistance(t1, t2, true) - 0.0977893234584) < TOLERANCE);
-        CHECK(abs(PolyMain::getGeodesicDistance(t3, t4, false) - 4.35889894354) < TOLERANCE);
-        CHECK(abs(PolyMain::getGeodesicDistance(t3, t4, true) - 0.438085827115) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t1, t2, false) - 2.76188615828) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t1, t2, true) - 0.0977893234584) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t3, t4, false) - 4.35889894354) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t3, t4, true) - 0.438085827115) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t5, t6, false) - 4.472135955) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t5, t6, true) - 0.430331482912) < TOLERANCE);
     }
 }

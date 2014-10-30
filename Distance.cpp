@@ -1,7 +1,7 @@
-#include "PolyMain.h"
+#include "Distance.h"
 #include <cmath>
 
-double PolyMain::getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
     double rf_value = 0;
     vector<PhyloTreeEdge> enic = t1.getEdgesNotInCommonWith(t2);
     for (auto &edge : t2.getEdgesNotInCommonWith(t1)) {
@@ -13,7 +13,7 @@ double PolyMain::getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool norm
     return rf_value;
 }
 
-double PolyMain::getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
     double wrf_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
@@ -44,7 +44,7 @@ double PolyMain::getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, b
     return wrf_value;
 }
 
-double PolyMain::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
     double euc_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
@@ -75,7 +75,7 @@ double PolyMain::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise
     return sqrt(euc_value);
 }
 
-double PolyMain::getGeodesicDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getGeodesicDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
     double distance = Geodesic::getGeodesic(t1, t2).getDist();
     if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
     return distance;

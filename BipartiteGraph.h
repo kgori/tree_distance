@@ -16,7 +16,6 @@ public :
 public :
     std::vector<std::deque<bool>> edge;
     size_t nA, nB, n;
-    int i, j;
     std::vector<Vertex> Avertex, Bvertex;
 };
 

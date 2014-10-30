@@ -1,5 +1,5 @@
 #include "PhyloTree.h"
-#include "Tools.h"
+//#include "Tools.h"
 #include <cmath>
 
 #define LENGTH_DEFAULT 0.0
@@ -61,7 +61,6 @@ PhyloTree::PhyloTree(string t, bool rooted) {
 
     try {
         size_t end_of_label, end_of_length, alt_end_of_label;
-        string label, length;
         setLeaf2NumMapFromNewick();
         leafEdgeAttribs = vector<EdgeAttribute>(leaf2NumMap.size());
         while (i < t.size()) {

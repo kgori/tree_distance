@@ -178,11 +178,6 @@ double Geodesic::getDist() {
     for (size_t i = 0; i < commonEdges.size(); ++i) {
         commonEdgeDistSquared += pow(commonEdges[i].getLength(), 2);
     }
-//    cout << "Components: " << endl;
-//    cout << "rs = " << rs.toString() << endl;
-//    cout << "rs.gNDRSWMD = " << pow(rs.getNonDesRSWithMinDist().getDistance(), 2) << endl;
-//    cout << "cEDS = " << commonEdgeDistSquared << endl;
-//    cout << "lCS = " << leafContributionSquared << endl;
     return sqrt(pow(rs.getNonDesRSWithMinDist().getDistance(), 2) + commonEdgeDistSquared + leafContributionSquared);
 }
 
@@ -207,7 +202,7 @@ vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, doubl
     vector<PhyloTreeEdge> commonEdges;
 
     // if the two trees do not have the same leaf2NumMap
-    if (!(t1.getLeaf2NumMap() == (t2.getLeaf2NumMap()))) {
+    if (t1.getLeaf2NumMap() != t2.getLeaf2NumMap()) {
         throw invalid_argument("Trees have mismatched leaves");
     }
 
@@ -270,7 +265,6 @@ void Geodesic::setLeafContributionSquared(double leafContributionSquared) {
 }
 
 Geodesic Geodesic::getGeodesic(PhyloTree t1, PhyloTree t2) {
-    bool verbose = true;
     double leafContributionSquared = 0;
     vector<EdgeAttribute> t1LeafEdgeAttribs = t1.getLeafEdgeAttribs();
     vector<EdgeAttribute> t2LeafEdgeAttribs = t2.getLeafEdgeAttribs();
@@ -285,92 +279,28 @@ Geodesic Geodesic::getGeodesic(PhyloTree t1, PhyloTree t2) {
     }
     geo.setLeafContributionSquared(leafContributionSquared);
 
-    if (verbose) {
-        cout << endl;
-        cout << "Geodesic::getGeodesic" << endl;
-        cout << "Starting tree: " << t1.getNewick(true) << endl;
-        cout << "Target tree: " << t2.getNewick(true) << endl;
-
-        cout << "Starting tree edges:" << endl;
-        PhyloTreeEdge::printEdgesVerbose(t1.getEdges(), t1.getLeaf2NumMap());
-
-
-        cout << "Target tree edges:" << endl;
-        PhyloTreeEdge::printEdgesVerbose(t2.getEdges(), t2.getLeaf2NumMap());
-
-        // leaf contributions
-        cout << "Leaf contribution squared " << leafContributionSquared << endl;
-    }
-
     vector<PhyloTree> aTreesNoCommonEdges;
     vector<PhyloTree> bTreesNoCommonEdges;
 
     // get the pairs of trees with no common edges put into aTreesNoCommonEdges and bTreesNoCommonEdges
     //  aTreesNoCommonEdges[i] goes with bTreesNoCommonEdges[i]
-    cout << "312" << endl;
     splitOnCommonEdge(t1, t2, aTreesNoCommonEdges, bTreesNoCommonEdges);
-    cout << "314" << endl;
     //set the common edges
     geo.setCommonEdges(PhyloTree::getCommonEdges(t1, t2));
-
-    if (verbose) {
-        cout << "Common edges are:  (Length = abs. value of difference in length between the two trees)" << endl;
-
-        vector<PhyloTreeEdge> commonEdges = geo.getCommonEdges();
-        PhyloTreeEdge::printEdgesVerbose(commonEdges, t1.getLeaf2NumMap());
-
-        double commonEdgeContributionSquared = 0;
-        for (auto &edge : commonEdges) {
-            commonEdgeContributionSquared += pow(edge.getLength(), 2);
-        }
-        cout << "Common edges contribution squared: " << commonEdgeContributionSquared << endl;
-        cout << "(sum of squares of above differences in length)" << endl;
-        cout << "=============================================================================================================================" << endl;
-        cout << "Now finding the geodesic between the following subtrees, which have no edges in common:" << endl;
-    }
 
     // find the geodesic between each pair of subtrees found by removing the common edges
     for (size_t i = 0; i < aTreesNoCommonEdges.size(); i++) {
         PhyloTree subTreeA = aTreesNoCommonEdges[i];
         PhyloTree subTreeB = bTreesNoCommonEdges[i];
-
-        if (verbose) {
-            cout << "Leaves or subtree representatives in subtrees:" << endl;
-            for (size_t j = 0; j < subTreeA.getLeaf2NumMap().size(); j++) {
-                cout <<  subTreeA.getLeaf2NumMap()[j] << endl;
-            }
-
-            cout << "Starting subtree edges:" << endl;
-            PhyloTreeEdge::printEdgesVerbose(subTreeA.getEdges(), subTreeA.getLeaf2NumMap());
-            cout << "Target subtree edges:" << endl;
-            PhyloTreeEdge::printEdgesVerbose(subTreeB.getEdges(), subTreeB.getLeaf2NumMap());
-        }
-
         Geodesic newGeo = getGeodesicNoCommonEdges(subTreeA, subTreeB);
-
-        if (verbose) {
-            cout << "Geodesic distance between above subtrees, ignoring edges ending in leaves: " << newGeo.getRS().getNonDesRSWithMinDist().getDistance() << endl;
-            cout << "\nnewGeo, as String: " << newGeo.toString() << endl;
-//            cout << "newGeo.getRS()" << newGeo.getRS().toString() << endl;
-            cout << "Ratio sequence corresponding to the geodesic:\nCombinatorial type: " + newGeo.getRS().getNonDesRSWithMinDist().toStringCombType() << endl;
-            cout << newGeo.getRS().getNonDesRSWithMinDist().toStringVerbose(subTreeA.getLeaf2NumMap()) << endl;
-            cout << "------------------------------------------------------------------------------------------------------------" << endl;
-        }
         geo.setRS(RatioSequence::interleave(geo.getRS(), newGeo.getRS()));
     }
-
-    if (verbose) {
-        cout << "Geodesic distance between start and target tree is " << geo.getDist() << endl;
-    }
-
     return geo;
 }
 
 Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
-    cout << "In getGeodesicNoCommonEdges" << endl;
     size_t numEdges1 = t1.getEdges().size(); // number of edges in tree 1
     size_t numEdges2 = t2.getEdges().size(); // number of edges in tree 2
-    cout << "numEdges1 = " << numEdges1 << "\tnumEdges2 = " << numEdges2 << endl;
     auto rs = RatioSequence();
     vector<size_t> aVertices, bVertices;
     deque<Ratio> queue;
@@ -400,53 +330,21 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
     }
 
     // initialize BipartiteGraph
-    cout << "Incidence Matrix" << endl;
     auto incidenceMatrix = BipartiteGraph::getIncidenceMatrix(t1.getEdges(), t2.getEdges());
-    for (auto el : incidenceMatrix) {
-        Tools::deque_print(el);
-    }
-
-    cout << "t1:IntEdgeAttribNorms = "; Tools::vector_print(t1.getIntEdgeAttribNorms());
-    cout << "t2:IntEdgeAttribNorms = "; Tools::vector_print(t2.getIntEdgeAttribNorms());
     BipartiteGraph bg(incidenceMatrix, t1.getIntEdgeAttribNorms(), t2.getIntEdgeAttribNorms());
-
-    cout << "bg.n = " << bg.n << endl;
-    cout << "bg.nA = " << bg.nA << endl;
-    cout << "bg.nB = " << bg.nA << endl;
-    cout << "bg.Avertex" << endl;
-    for (auto v : bg.Avertex) {
-        cout << "label, " << v.label << " weight, " << v.weight << " residual, " << v.residual << " pred, " << v.pred << endl;
-    }
-    cout << "bg.Bvertex" << endl;
-    for( auto v : bg.Bvertex) {
-        cout << "label, " << v.label << " weight, " << v.weight << " residual, " << v.residual << " pred, " << v.pred << endl;
-    }
-
     queue.push_back(Ratio(t1.getEdges(), t2.getEdges()));
 
     while (queue.size() > 0) {
-        cout << "in while loop" << endl;
-        cout << "sQueue size = " << queue.size() << endl;
-        cout << "sQueue[0] = " << queue[0].toStringVerbose(t1.getLeaf2NumMap()) << endl;
-        if (queue.size() > 1) cout << "sQueue[1] = " << queue[1].toStringVerbose(t1.getLeaf2NumMap());
         ratio = Ratio();
         ratio.addAllEEdges(queue[0].getEEdges());
         ratio.addAllFEdges(queue[0].getFEdges());
         ratio.setELength(queue[0].getELength());
         ratio.setFLength(queue[0].getFLength());
         queue.pop_front();
-        cout << "equality check" << endl;
-        cout << (ratio.getEEdges() == queue[0].getEEdges()) << endl;
-        cout << (ratio.getFEdges() == queue[0].getFEdges()) << endl;
-
-
-        cout << "ratio: " << ratio.toStringVerbose(t1.getLeaf2NumMap()) << endl;
         aVertices.clear();
         bVertices.clear();
         aVertices.resize(ratio.getEEdges().size());
         bVertices.resize(ratio.getFEdges().size());
-        cout << "eEdges size = " << ratio.getEEdges().size() << endl;
-        cout << "fEdges size = " << ratio.getFEdges().size() << endl;
 
         // convert the ratio to what we pass to vertex cover
         edges = t1.getEdges();
@@ -462,35 +360,16 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
             bVertices[i] = index;
         }
 
-        cout << "aVertices" << endl;
-        for (size_t i=0; i < aVertices.size(); i++) {
-            cout << i << ": " << aVertices[i] << " ";
-        }
-        cout << endl;
-
-        cout << "bVertices" << endl;
-        for (size_t i=0; i < bVertices.size(); i++) {
-            cout << i << ": " << bVertices[i] << " ";
-        }
-        cout << endl;
-
         // get the cover
         auto cover = bg.vertex_cover(aVertices, bVertices);
-        cout << "Cover: " << endl;
-        for (size_t i = 0; i < cover.size(); ++i) {
-            Tools::vector_print(cover[i]);
-        }
-
         // check if cover is trivial
         if ((cover[0][0] == 0) || (cover[0][0] == aVertices.size())) {
             // add ratio to geodesic
-            cout << "Cover is trivial" << endl;
             rs.push_back(ratio);
 
 
         } else {  // cover not trivial
             // make two new ratios
-            cout << "Cover is not trivial" << endl;
             auto r1 = Ratio();
             auto r2 = Ratio();
 
@@ -499,15 +378,9 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
             // split the ratio based on the cover
             for (size_t i = 0; i < aVertices.size(); i++) {
                 if ((j < cover[2].size()) && (aVertices[i] == cover[2][j])) {
-                    cout << "EEDGES: (Split is in the cover)" << endl;
-                    cout << "i = " << i << ", aVertices[" << i << "] = " << aVertices[i] << endl;
-                    cout << "Adding Eedge to r1: " << t1.getEdge(aVertices[i]).toString() << endl;
                     r1.addEEdge(t1.getEdge(aVertices[i]));
                     j++;
                 } else { // the split is not in the cover, and hence dropped first
-                    cout << "EEDGES: (Split is not in the cover, and dropped" << endl;
-                    cout << "i = " << i << ", aVertices[" << i << "] = " << aVertices[i] << endl;
-                    cout << "Adding Eedge to r2: " << t1.getEdge(aVertices[i]).toString() << endl;
                     r2.addEEdge(t1.getEdge(aVertices[i]));
                 }
             }
@@ -516,15 +389,9 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
             // split the ratio based on the cover
             for (size_t i = 0; i < bVertices.size(); i++) {
                 if ((j < cover[3].size()) && (bVertices[i] == cover[3][j])) {
-                    cout << "FEDGES: (Split is in the cover)" << endl;
-                    cout << "i = " << i << ", bVertices[" << i << "] = " << bVertices[i] << endl;
-                    cout << "Adding Fedge to r2: " << t2.getEdge(bVertices[i]).toString() << endl;
                     r2.addFEdge(t2.getEdge(bVertices[i]));
                     j++;
                 } else { // the split is not in the cover, and hence dropped first
-                    cout << "FEDGES: (Split is not in the cover, and dropped" << endl;
-                    cout << "i = " << i << ", bVertices[" << i << "] = " << bVertices[i] << endl;
-                    cout << "Adding Fedge to r1: " << t2.getEdge(bVertices[i]).toString() << endl;
                     r1.addFEdge(t2.getEdge(bVertices[i]));
                 }
             }
@@ -533,33 +400,15 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2) {
             queue.push_front(r2);
             queue.push_front(r1);
         }
-        cout << "AFTER ITER" << endl;
-        cout << "bg.n = " << bg.n << endl;
-        cout << "bg.nA = " << bg.nA << endl;
-        cout << "bg.nB = " << bg.nA << endl;
-        cout << "bg.Avertex" << endl;
-        for (auto v : bg.Avertex) {
-            cout << "label, " << v.label << " weight, " << v.weight << " residual, " << v.residual << " pred, " << v.pred << endl;
-        }
-        cout << "bg.Bvertex" << endl;
-        for( auto v : bg.Bvertex) {
-            cout << "label, " << v.label << " weight, " << v.weight << " residual, " << v.residual << " pred, " << v.pred << endl;
-        }
-        cout << "Queue size = " << queue.size() << endl;
-        cout << "Queue[0] = " << queue[0].toStringVerbose(t1.getLeaf2NumMap());
-        cout << "Queue[1] = " << queue[1].toStringVerbose(t1.getLeaf2NumMap());
-
     }
     return Geodesic(rs);
 }
 
 void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& destination_a, vector<PhyloTree>& destination_b) {
-    cout << "\n\nin splitOnCommonEdge\n\n" << endl;
     size_t numEdges1 = t1.getEdges().size(); // number of edges in tree 1
     size_t numEdges2 = t2.getEdges().size(); /// number of edges in tree 2
 
     if (numEdges1 == 0 || numEdges2 == 0) {
-        cout << "Early exit ..." << endl;
         return;
     }
     // look for common edges
@@ -568,19 +417,13 @@ void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& 
     // if there are no common edges
     // XXX: need to check the following methods don't require the trees to have the same number of edges
     if (commonEdges.size() == 0) {
-        cout << "No common edges" << endl;
         destination_a.push_back(t1);
         destination_b.push_back(t2);
         return;
     }
-    cout << "At least one common edge, edges are: ";
-    for (auto edge : commonEdges) { cout << edge.toString() << " "; }
-    cout << endl;
-
     // else if there exists a common split: split the trees along the first split in commonEdges
     // and recursively call getDistance for the two new pairs of trees.
     PhyloTreeEdge commonEdge = commonEdges.front();
-    cout << "Common Edge is  " << commonEdge.toString() << endl;
 
     // A will be the tree with leaves corresponding to 1's in commonEdge
     vector<string> leaf2NumMapA;
@@ -590,9 +433,6 @@ void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& 
     vector<PhyloTreeEdge> edgesA2;
     vector<PhyloTreeEdge> edgesB1;
     vector<PhyloTreeEdge> edgesB2;
-
-    cout << "Tree 1 is " << t1.toString() << endl;
-    cout << "Tree 2 is " << t2.toString() << endl;
 
     for (PhyloTreeEdge e : t1.getEdges()) {
         edgesA1.push_back(PhyloTreeEdge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID()));
@@ -611,28 +451,21 @@ void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& 
     // step through the leaves represented in commonEdge
     // (there should be two more leaves than edges)
     for (size_t i = 0; i < t1.getLeaf2NumMap().size(); i++) {
-        cout << "leaf i = " << i << endl;
         if (commonEdge.contains(i)) {
-            cout << "Common edge contains leaf " << i << endl;
             // commonEdge contains leaf i
-
             leaf2NumMapA.push_back(t1.getLeaf2NumMap()[i]);
-            cout << "LEAF2NUMMAPa:  "; Tools::vector_print(leaf2NumMapA);
 
             // these leaves must be added as a group to the B trees
             if (!aLeavesAdded) {
                 leaf2NumMapB.push_back(t1.getLeaf2NumMap()[i] + "*");    // add a one of the leaves of the A tree to represent all the A trees leaves
-                cout << "LEAF2NUMMAPb:  "; Tools::vector_print(leaf2NumMapB);
                 for (size_t j = 0; j < numEdges1; j++) {
                     if (t1.getEdge(j).properlyContains(commonEdge)) {
                         edgesB1[j].addOne(indexBleaves);
-                        cout << "Adding 1 in split j = " << j << " in position " << indexBleaves << " to represent subtree A1" << endl;
                     }
                 }
                 for (size_t j = 0; j < numEdges2; j++) {
                     if (t2.getEdge(j).properlyContains(commonEdge)) {
                         edgesB2[j].addOne(indexBleaves);
-                        cout << "Adding 1 in split j = " << j << " in position " << indexBleaves + " to represent subtree A2" << endl;
                     }
                 }
                 indexBleaves++;
@@ -657,56 +490,26 @@ void Geodesic::splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& 
             for (int j = 0; j < numEdges1; j++) {
                 if (t1.getEdge(j).contains(i)) {
                     edgesB1[j].addOne(indexBleaves);
-                    cout << "t1 contains i = " << i << " in split j = " << j <<" so added at 1 at position " << indexBleaves << " in B1 edge j" << endl;
                 }
             }
             for (int j = 0; j < numEdges2; j++) {
                 if (t2.getEdges()[j].contains(i)) {
                     edgesB2[j].addOne(indexBleaves);
-                    cout << "t2 contains i = " << i << " in split j = " << j << " so added at 1 at position " << indexBleaves << " in B2 edge j" << endl;
                 }
             }
             indexBleaves++;
         }
     }
-    cout << "PRE-DELETE\nA1 edges are ";
-    for (auto edge : edgesA1) { cout << edge.toString() << " "; }
-    cout << endl;
-    cout << "A2 edges are ";
-    for (auto edge : edgesA2) { cout << edge.toString() << " "; }
-    cout << endl;
-    cout << "B1 edges are ";
-    for (auto edge : edgesB1) { cout << edge.toString() << " "; }
-    cout << endl;
-    cout << "B2 edges are ";
-    for (auto edge : edgesB2) { cout << edge.toString() << " "; }
-    cout << endl;
     edgesA1 = deleteEmptyEdges(edgesA1);
     edgesA2 = deleteEmptyEdges(edgesA2);
     edgesB1 = deleteEmptyEdges(edgesB1);
     edgesB2 = deleteEmptyEdges(edgesB2);
-    cout << "POST-DELETE\nA1 edges are ";
-    for (auto edge : edgesA1) { cout << edge.toString() << " "; }
-    cout << endl;
-    cout << "A2 edges are ";
-    for (auto edge : edgesA2) { cout << edge.toString() << " "; }
-    cout << endl;
-    cout << "B1 edges are ";
-    for (auto edge : edgesB1) { cout << edge.toString() << " "; }
-    cout << endl;
-    cout << "B2 edges are ";
-    for (auto edge : edgesB2) { cout << edge.toString() << " "; }
-    cout << endl;
 
     // make the 4 trees
     PhyloTree tA1(edgesA1, leaf2NumMapA);
     PhyloTree tB1(edgesB1, leaf2NumMapB);
     PhyloTree tA2(edgesA2, leaf2NumMapA);
     PhyloTree tB2(edgesB2, leaf2NumMapB);
-    cout << "Tree tA1 is " << tA1.toString() << endl;
-    cout << "Tree tB1 is " << tB1.toString() << endl;
-    cout << "Tree tA2 is " << tA2.toString() << endl;
-    cout << "Tree tB2 is " << tB2.toString() << endl;
 
     splitOnCommonEdge(tA1, tA2, destination_a, destination_b);
     splitOnCommonEdge(tB1, tB2, destination_a, destination_b);

@@ -1,7 +1,7 @@
 #include "Bipartition.h"
 #include "Tools.h"
-#include <boost/dynamic_bitset.hpp>
-#include <memory>
+//#include <boost/dynamic_bitset.hpp>
+//#include <memory>
 
 using namespace std;
 
