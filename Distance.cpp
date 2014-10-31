@@ -1,7 +1,7 @@
 #include "Distance.h"
 #include <cmath>
 
-double Distance::getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
     double rf_value = 0;
     vector<PhyloTreeEdge> enic = t1.getEdgesNotInCommonWith(t2);
     for (auto &edge : t2.getEdgesNotInCommonWith(t1)) {
@@ -13,7 +13,7 @@ double Distance::getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool norm
     return rf_value;
 }
 
-double Distance::getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
     double wrf_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
@@ -31,7 +31,7 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, b
         wrf_value += pte.getLength();
     }
 
-    for (PhyloTreeEdge pte : enic) {
+    for (PhyloTreeEdge &pte : enic) {
         wrf_value += pte.getLength();
     }
 
@@ -44,7 +44,7 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, b
     return wrf_value;
 }
 
-double Distance::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise) {
+double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
     double euc_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
@@ -58,11 +58,11 @@ double Distance::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise
     vector<EdgeAttribute> leaves2 = t2.getLeafEdgeAttribs(); // Assuming these are the same
 
     // Collect length differences for internal edges...
-    for (PhyloTreeEdge pte : eic) {
+    for (PhyloTreeEdge &pte : eic) {
         euc_value += pow(pte.getLength(), 2);
     }
 
-    for (PhyloTreeEdge pte : enic) {
+    for (PhyloTreeEdge &pte : enic) {
         euc_value += pow(pte.getLength(), 2);
     }
 
@@ -75,24 +75,32 @@ double Distance::getEuclideanDistance(PhyloTree t1, PhyloTree t2, bool normalise
     return sqrt(euc_value);
 }
 
-double Distance::getGeodesicDistance(PhyloTree const &t1, PhyloTree const &t2, bool normalise) {
+double Distance::getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
     double distance = Geodesic::getGeodesic(t1, t2).getDist();
     if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
     return distance;
 }
 
 double Distance::getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
-    return getEuclideanDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+    PhyloTree a(t1, rooted1);
+    PhyloTree b(t2, rooted2);
+    return getEuclideanDistance(a, b, normalise);
 }
 
-double Distance::getGeodesicDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
-    return getGeodesicDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+double Distance::getGeodesicDistance(string &t1, string &t2, bool normalise, bool rooted1, bool rooted2) {
+    PhyloTree a(t1, rooted1);
+    PhyloTree b(t2, rooted2);
+    return getGeodesicDistance(a, b, normalise);
 }
 
 double Distance::getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
-    return getRobinsonFouldsDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+    PhyloTree a(t1, rooted1);
+    PhyloTree b(t2, rooted2);
+    return getRobinsonFouldsDistance(a, b, normalise);
 }
 
 double Distance::getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
-    return getWeightedRobinsonFouldsDistance(PhyloTree(t1, rooted1), PhyloTree(t2, rooted2), normalise);
+    PhyloTree a(t1, rooted1);
+    PhyloTree b(t2, rooted2);
+    return getWeightedRobinsonFouldsDistance(a, b, normalise);
 }

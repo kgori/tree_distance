@@ -63,7 +63,7 @@ void Ratio::addEEdge(PhyloTreeEdge edge) {
 }
 
 void Ratio::addAllEEdges(vector<PhyloTreeEdge> edges) {
-    for (auto e : edges) {
+    for (auto &e : edges) {
         eEdges.push_back(e);
     }
     eLength = geoAvg(eEdges);
@@ -90,7 +90,7 @@ void Ratio::addFEdge(PhyloTreeEdge edge) {
 }
 
 void Ratio::addAllFEdges(vector<PhyloTreeEdge> edges) {
-    for (auto f : edges) {
+    for (auto &f : edges) {
         fEdges.push_back(f);
     }
     fLength = geoAvg(fEdges);
@@ -117,39 +117,38 @@ double Ratio::getTime() {
 
 Ratio Ratio::reverse() {
     vector<PhyloTreeEdge> evec, fvec;
-    for (auto e : eEdges) {
+    for (auto &e : eEdges) {
         evec.push_back(PhyloTreeEdge(e));
     }
-    for (auto f : fEdges) {
+    for (auto &f : fEdges) {
         fvec.push_back(PhyloTreeEdge(f));
     }
     return Ratio(fvec, evec);
 }
 
-bool Ratio::containsOriginalEEdge(Bipartition edge) {
+bool Ratio::containsOriginalEEdge(const Bipartition &edge) {
 
-    for (PhyloTreeEdge ratio_edge : eEdges) {
+    for (PhyloTreeEdge &ratio_edge : eEdges) {
         if (ratio_edge.getOriginalEdge().equals(edge)) {
             return true;
         }
     }
 
-    for (PhyloTreeEdge ratio_edge : fEdges) {
+    for (PhyloTreeEdge &ratio_edge : fEdges) {
         if (ratio_edge.getOriginalEdge().equals(edge)) {
             return true;
         }
     }
-
     return false;
 }
 
 string Ratio::toString() {
     std::ostringstream ss;
-    for (auto e : eEdges) {
+    for (auto &e : eEdges) {
         ss << e.toString() << " ";
     }
     ss << getELength() << " / " << getFLength() << " ";
-    for (auto f : fEdges) {
+    for (auto &f : fEdges) {
         ss << f.toString() << " ";
     }
 

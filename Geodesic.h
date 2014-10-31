@@ -49,9 +49,9 @@ public:
 
     void setLeafContributionSquared(double leafContributionSquared);
 
-    static Geodesic getGeodesic(PhyloTree t1, PhyloTree t2);
+    static Geodesic getGeodesic(PhyloTree &t1, PhyloTree &t2);
 
-    static Geodesic getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2);
+    static Geodesic getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2);
 
 private:
     RatioSequence rs;

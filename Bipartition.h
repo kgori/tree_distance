@@ -91,7 +91,7 @@ public:
 
     bool equals(const Bipartition &e) const;
 
-    bool isCompatibleWith(vector<Bipartition> splits);
+    bool isCompatibleWith(const vector<Bipartition>& splits);
 
     Bipartition &andNot(const Bipartition &other) {
         *partition &= ~*(other.partition);

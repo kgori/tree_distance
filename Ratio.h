@@ -60,7 +60,7 @@ public:
 
     Ratio reverse();
 
-    bool containsOriginalEEdge(Bipartition edge);
+    bool containsOriginalEEdge(const Bipartition& edge);
 
     string toString();
 

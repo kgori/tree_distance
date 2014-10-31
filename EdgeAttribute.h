@@ -11,7 +11,7 @@ class EdgeAttribute {
 public:
     EdgeAttribute();
 
-    EdgeAttribute(vector<double> v);
+    EdgeAttribute(const vector<double>& v);
 
     EdgeAttribute(string s);
 
@@ -21,12 +21,12 @@ public:
 
     static EdgeAttribute add(EdgeAttribute &a1, EdgeAttribute &a2);
 
-    static EdgeAttribute weightedPairAverage(EdgeAttribute start, EdgeAttribute target, double position);
+    static EdgeAttribute weightedPairAverage(const EdgeAttribute& start, const EdgeAttribute& target, double position);
 
     static EdgeAttribute zeroAttribute(size_t size);
 
     inline bool operator<(const EdgeAttribute &other) const {
-        return Tools::vector_equal(this->vect, other.vect);
+        return this->norm() < other.norm();
     }
 
     inline bool operator>(const EdgeAttribute &other) const {
@@ -42,7 +42,7 @@ public:
     }
 
     inline bool operator==(const EdgeAttribute &other) const {
-        return this->norm() < other.norm();
+        return this->norm() == other.norm();
     }
 
     inline bool operator!=(const EdgeAttribute &other) const {
