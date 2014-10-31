@@ -6,35 +6,43 @@
 #define TOLERANCE 0.000000000000001
 
 EdgeAttribute::EdgeAttribute() {
+    std::cout << "EdgeAttribute::EdgeAttribute()" << std::endl;
 }
 
 EdgeAttribute::EdgeAttribute(const vector<double>& v) {
+    std::cout << "EdgeAttribute::EdgeAttribute(const vector<double>& v)" << std::endl;
     vect = v;
 }
 
 EdgeAttribute::EdgeAttribute(string s) {
+    std::cout << "EdgeAttribute::EdgeAttribute(string s)" << std::endl;
     std::vector<string> sv = Tools::string_split(s);
     std::vector<double> dv = Tools::stringvec_to_doublevec(sv);
     vect = dv;
 }
 
 double EdgeAttribute::getAttribute() {
+    std::cout << "EdgeAttribute::getAttribute()" << std::endl;
     return vect[0];
 }
 
 void EdgeAttribute::setEdgeAttribute(const EdgeAttribute &attrib) {
+    std::cout << "EdgeAttribute::setEdgeAttribute(const EdgeAttribute &attrib)" << std::endl;
     vect = attrib.vect;
 }
 
 EdgeAttribute::EdgeAttribute(const EdgeAttribute &other) {
+    std::cout << "EdgeAttribute::EdgeAttribute(const EdgeAttribute &other)" << std::endl;
     vect = other.vect;
 }
 
 EdgeAttribute EdgeAttribute::clone() {
+    std::cout << "EdgeAttribute::clone()" << std::endl;
     return EdgeAttribute(*this);
 }
 
 std::string EdgeAttribute::toString() {
+    std::cout << "EdgeAttribute::toString()" << std::endl;
     if (vect.size() == 0) return "[]";
     else {
         ostringstream ss;
@@ -51,6 +59,7 @@ std::string EdgeAttribute::toString() {
 }
 
 bool EdgeAttribute::equals(const EdgeAttribute &other) const {
+    std::cout << "EdgeAttribute::equals(const EdgeAttribute &other) const" << std::endl;
     if (vect.size() != other.size()) return false;
     for (size_t i = 0; i < vect.size(); ++i) {
         if (std::fabs(vect[i] - other.vect[i]) > TOLERANCE) {
@@ -61,6 +70,7 @@ bool EdgeAttribute::equals(const EdgeAttribute &other) const {
 }
 
 double EdgeAttribute::norm() const {
+    std::cout << "EdgeAttribute::norm() const" << std::endl;
     double norm = 0.0;
     for (auto &e : vect) {
         norm += e * e;
@@ -69,6 +79,7 @@ double EdgeAttribute::norm() const {
 }
 
 EdgeAttribute EdgeAttribute::difference(EdgeAttribute &a1, EdgeAttribute &a2) {
+    std::cout << "EdgeAttribute::difference(EdgeAttribute &a1, EdgeAttribute &a2)" << std::endl;
     if (a1.size() != a2.size()) throw std::invalid_argument("difference: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
@@ -78,6 +89,7 @@ EdgeAttribute EdgeAttribute::difference(EdgeAttribute &a1, EdgeAttribute &a2) {
 }
 
 EdgeAttribute EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2) {
+    std::cout << "EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2)" << std::endl;
     if (a1.size() != a2.size()) throw std::invalid_argument("add: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
@@ -87,27 +99,32 @@ EdgeAttribute EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2) {
 }
 
 void EdgeAttribute::scaleBy(double a) {
+    std::cout << "EdgeAttribute::scaleBy(double a)" << std::endl;
     for (auto &e : vect) {
         e *= a;
     }
 }
 
 size_t EdgeAttribute::size() const {
+    std::cout << "EdgeAttribute::size()" << std::endl;
     return vect.size();
 }
 
 void EdgeAttribute::ensurePositive() {
+    std::cout << "EdgeAttribute::ensurePositive()" << std::endl;
     if (vect.size() == 1) {
         vect[0] = (double) std::fabs(vect[0]);
     }
 }
 
 EdgeAttribute EdgeAttribute::zeroAttribute(size_t size) {
+    std::cout << "EdgeAttribute::zeroAttribute(size_t size)" << std::endl;
     std::vector<double> zeros(size, 0.0);
     return EdgeAttribute(zeros);
 }
 
 EdgeAttribute EdgeAttribute::weightedPairAverage(const EdgeAttribute& start, const EdgeAttribute& target, double position) {
+    std::cout << "EdgeAttribute::weightedPairAverage(const EdgeAttribute& start, const EdgeAttribute& target, double position)" << std::endl;
     size_t start_size = start.size();
     if (start_size != target.size()) throw std::invalid_argument("weighted pair average: Edge attributes are not the same size");
     auto attr = EdgeAttribute();

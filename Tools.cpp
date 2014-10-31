@@ -4,6 +4,7 @@
 #define PRECISION 5
 
 std::vector<std::string> Tools::string_split(std::string& to_split, const std::string& delimiters, const std::string& to_trim) {
+    std::cout << "Tools::string_split(std::string& to_split, const std::string& delimiters, const std::string& to_trim)" << std::endl;
     std::vector<std::string> results;
     boost::trim_if(to_split, boost::is_any_of(to_trim));
     boost::split(results, to_split, boost::is_any_of(delimiters), boost::token_compress_on);
@@ -11,6 +12,7 @@ std::vector<std::string> Tools::string_split(std::string& to_split, const std::s
 }
 
 std::vector<std::string> Tools::string_split(std::string& to_split, const char* delimiters, const char* to_trim) {
+    std::cout << "Tools::string_split(std::string& to_split, const char* delimiters, const char* to_trim)" << std::endl;
     std::vector<std::string> results;
     boost::trim_if(to_split, boost::is_any_of(to_trim));
     boost::split(results, to_split, boost::is_any_of(delimiters), boost::token_compress_on);
@@ -18,6 +20,7 @@ std::vector<std::string> Tools::string_split(std::string& to_split, const char* 
 }
 
 std::vector<double> Tools::stringvec_to_doublevec(std::vector<std::string> stringvec) {
+    std::cout << "Tools::stringvec_to_doublevec(std::vector<std::string> stringvec)" << std::endl;
     std::vector<double> doublevec(stringvec.size());
     std::transform(stringvec.begin(), stringvec.end(), doublevec.begin(), [](const std::string &val) {
         try {
@@ -31,14 +34,17 @@ std::vector<double> Tools::stringvec_to_doublevec(std::vector<std::string> strin
 }
 
 std::string Tools::string_join(std::vector<std::string> to_join, std::string delimiter) {
+    std::cout << "Tools::string_join(std::vector<std::string> to_join, std::string delimiter)" << std::endl;
     return boost::algorithm::join(to_join, delimiter);
 }
 
 std::string Tools::string_join(std::deque<std::string> to_join, std::string delimiter) {
+    std::cout << "Tools::string_join(std::deque<std::string> to_join, std::string delimiter)" << std::endl;
     return boost::algorithm::join(to_join, delimiter);
 }
 
 std::string Tools::double_to_string(double d) {
+    std::cout << "Tools::double_to_string(double d)" << std::endl;
     std::ostringstream ss;
     ss << std::fixed << std::setprecision(PRECISION);
     ss << d;
@@ -52,6 +58,7 @@ std::string Tools::double_to_string(double d) {
 //}
 
 string Tools::substring(string s, size_t begin, size_t end) {
+    std::cout << "Tools::substring(string s, size_t begin, size_t end)" << std::endl;
     if (begin > end) throw std::invalid_argument("'begin' can't be larger than 'end'");
     try {
         return s.substr(begin, end - begin);
@@ -62,10 +69,12 @@ string Tools::substring(string s, size_t begin, size_t end) {
 }
 
 void Tools::despace(string &s) {
+    std::cout << "Tools::despace(string &s)" << std::endl;
     s.erase(std::remove_if(s.begin(), s.end(), [](char x){return std::isspace(x);}), s.end());
 }
 
 size_t Tools::nextIndex(const string &t, size_t i, const char *s) {
+    std::cout << "Tools::nextIndex(const string &t, size_t i, const char *s)" << std::endl;
     size_t pos = t.find_first_of(s, i + 1);
     return pos == std::string::npos ? t.size() : pos;
 }

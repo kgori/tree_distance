@@ -7,12 +7,14 @@
 using namespace std;
 
 PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<EdgeAttribute> &leafEdgeLengths) {
+    std::cout << "PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<EdgeAttribute> &leafEdgeLengths)" << std::endl;
     this->edges = edges;
     this->leaf2NumMap = leaf2NumMap;
     this->leafEdgeAttribs = leafEdgeLengths;
 }
 
 PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) {
+    std::cout << "PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap)" << std::endl;
     this->leaf2NumMap = leaf2NumMap;
     size_t len = leaf2NumMap.size();
     for (auto &edge : edges) {
@@ -27,6 +29,7 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) 
 }
 
 PhyloTree::PhyloTree(const PhyloTree &t) {
+    std::cout << "PhyloTree::PhyloTree(const PhyloTree &t)" << std::endl;
     edges = vector<PhyloTreeEdge>(t.edges);
     leaf2NumMap = vector<string>(t.leaf2NumMap);
     leafEdgeAttribs = vector<EdgeAttribute>(t.leafEdgeAttribs);
@@ -34,6 +37,7 @@ PhyloTree::PhyloTree(const PhyloTree &t) {
 }
 
 PhyloTree::PhyloTree(string t, bool rooted) {
+    std::cout << "PhyloTree::PhyloTree(string t, bool rooted)" << std::endl;
     // do bracket counting sanity check
     if (count(t.begin(), t.end(), '(') != count(t.begin(), t.end(), ')')) {
         throw invalid_argument("Bracket mismatch error in tree: " + t);
@@ -136,6 +140,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
 }
 
 vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2) {
+    std::cout << "PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2)" << std::endl;
     vector<PhyloTreeEdge> commonEdges;
     EdgeAttribute l_attr, r_attr;
     Bipartition search_split;
@@ -172,30 +177,37 @@ vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2) {
 }
 
 vector<PhyloTreeEdge> PhyloTree::getEdges() {
+    std::cout << "PhyloTree::getEdges()" << std::endl;
     return edges;
 }
 
 void PhyloTree::setEdges(vector<PhyloTreeEdge> edges) {
+    std::cout << "PhyloTree::setEdges(vector<PhyloTreeEdge> edges)" << std::endl;
     this->edges = edges;
 }
 
 PhyloTreeEdge PhyloTree::getEdge(size_t i) {
+    std::cout << "PhyloTree::getEdge(size_t i)" << std::endl;
     return edges[i];
 }
 
 vector<string> PhyloTree::getLeaf2NumMap() {
+    std::cout << "PhyloTree::getLeaf2NumMap()" << std::endl;
     return leaf2NumMap;
 }
 
 vector<string> PhyloTree::getLeaf2NumMap() const {
+    std::cout << "PhyloTree::getLeaf2NumMap() const" << std::endl;
     return leaf2NumMap;
 }
 
 void PhyloTree::setLeaf2NumMap(vector<string> leaf2NumMap) {
+    std::cout << "PhyloTree::setLeaf2NumMap(vector<string> leaf2NumMap)" << std::endl;
     this->leaf2NumMap = leaf2NumMap;
 }
 
 EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition& edge) {
+    std::cout << "PhyloTree::getAttribOfSplit(Bipartition& edge)" << std::endl;
     for (auto &e : edges) {
         if (e.sameBipartition(edge)) {
             return e.getAttribute();
@@ -205,6 +217,7 @@ EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition& edge) {
 }
 
 vector<Bipartition> PhyloTree::getSplits() {
+    std::cout << "PhyloTree::getSplits()" << std::endl;
     vector<Bipartition> splits;
 
     for (auto &edge : edges) {
@@ -215,21 +228,25 @@ vector<Bipartition> PhyloTree::getSplits() {
 }
 
 void PhyloTree::normalize() {
+    std::cout << "PhyloTree::normalize()" << std::endl;
     double vecLength = getDistanceFromOrigin();
     normalize(vecLength);
 }
 
 void PhyloTree::normalize(PhyloTree &other) {
+    std::cout << "PhyloTree::normalize(PhyloTree &other)" << std::endl;
     double combinedVecLength = getDistanceFromOrigin() + other.getDistanceFromOrigin();
     normalize(combinedVecLength);
     other.normalize(combinedVecLength);
 }
 
 size_t PhyloTree::numLeaves() {
+    std::cout << "PhyloTree::numLeaves()" << std::endl;
     return leaf2NumMap.size();
 }
 
 double PhyloTree::getDistanceFromOrigin() {
+    std::cout << "PhyloTree::getDistanceFromOrigin()" << std::endl;
     double dist = 0;
     for (auto &edge : edges) {
         dist += std::pow(edge.getLength(), 2);
@@ -238,11 +255,11 @@ double PhyloTree::getDistanceFromOrigin() {
     for (auto &attrib : leafEdgeAttribs) {
         dist += std::pow(attrib.norm(), 2);
     }
-
     return std::sqrt(dist);
 }
 
 double PhyloTree::getDistanceFromOriginNoLeaves() {
+    std::cout << "PhyloTree::getDistanceFromOriginNoLeaves()" << std::endl;
     double dist = 0;
     for (auto &edge : edges) {
         dist += std::pow(edge.getLength(), 2);
@@ -251,6 +268,7 @@ double PhyloTree::getDistanceFromOriginNoLeaves() {
 }
 
 double PhyloTree::getBranchLengthSum() {
+    std::cout << "PhyloTree::getBranchLengthSum()" << std::endl;
     double sum = 0;
     for (auto &edge : edges) {
         sum += edge.getLength();
@@ -264,6 +282,7 @@ double PhyloTree::getBranchLengthSum() {
 }
 
 vector<PhyloTreeEdge> PhyloTree::getEdgesNotInCommonWith(PhyloTree &t) {
+    std::cout << "PhyloTree::getEdgesNotInCommonWith(PhyloTree &t)" << std::endl;
     vector<PhyloTreeEdge> notCommonEdges;
     bool not_common;
     if (leaf2NumMap != t.leaf2NumMap) {
@@ -294,10 +313,12 @@ vector<PhyloTreeEdge> PhyloTree::getEdgesNotInCommonWith(PhyloTree &t) {
 //}
 
 PhyloTree PhyloTree::clone() {
+    std::cout << "PhyloTree::clone()" << std::endl;
     return PhyloTree(*this);
 }
 
 bool PhyloTree::equals(PhyloTree t) {
+    std::cout << "PhyloTree::equals(PhyloTree t)" << std::endl;
     return (leaf2NumMap == t.leaf2NumMap) && Tools::vector_equal(leafEdgeAttribs, t.leafEdgeAttribs) && Tools::vector_equal(edges, t.edges);
 }
 
@@ -306,10 +327,12 @@ bool PhyloTree::equals(PhyloTree t) {
 //}
 
 vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() {
+    std::cout << "PhyloTree::getLeafEdgeAttribs()" << std::endl;
     return leafEdgeAttribs;
 }
 
 void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs) {
+    std::cout << "PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs)" << std::endl;
     leafEdgeAttribs.clear();
     for (auto &e : otherEdgeAttribs) {
         leafEdgeAttribs.push_back(e);
@@ -317,10 +340,12 @@ void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs) {
 }
 
 vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
+    std::cout << "PhyloTree::getCopyLeafEdgeAttribs()" << std::endl;
     return std::vector<EdgeAttribute, allocator<EdgeAttribute>>();
 }
 
 vector<double> PhyloTree::getIntEdgeAttribNorms() {
+    std::cout << "PhyloTree::getIntEdgeAttribNorms()" << std::endl;
     vector<double> norms;
     for (auto &e : edges) {
         norms.push_back(e.getAttribute().norm());
@@ -329,6 +354,7 @@ vector<double> PhyloTree::getIntEdgeAttribNorms() {
 }
 
 string PhyloTree::getNewick(bool branchLengths) {
+    std::cout << "PhyloTree::getNewick(bool branchLengths)" << std::endl;
     deque<string> strPieces;
     deque<PhyloTreeEdge> corrEdges;
 
@@ -438,14 +464,17 @@ string PhyloTree::getNewick(bool branchLengths) {
 }
 
 void PhyloTree::setNewick(string newick) {
+    std::cout << "PhyloTree::setNewick(string newick)" << std::endl;
     this->newick = newick;
 }
 
-int PhyloTree::numEdges() {
+size_t PhyloTree::numEdges() {
+    std::cout << "PhyloTree::numEdges()" << std::endl;
     return edges.size();
 }
 
 void PhyloTree::setLeaf2NumMapFromNewick(string& s) {
+    std::cout << "PhyloTree::setLeaf2NumMapFromNewick(string& s)" << std::endl;
     // go through the string and pull out all the leaf labels:  any string between '(' and ':' or ',' and ':'
     size_t i = 0;
     while (i < s.length()) {
@@ -464,6 +493,7 @@ void PhyloTree::setLeaf2NumMapFromNewick(string& s) {
 }
 
 void PhyloTree::normalize(double constant) {
+    std::cout << "PhyloTree::normalize(double constant)" << std::endl;
     // divide by the length of the split length vector to normalize
     for (int i = 0; i < leafEdgeAttribs.size(); i++) {
         leafEdgeAttribs[i].scaleBy(1.0 / constant);
@@ -474,6 +504,7 @@ void PhyloTree::normalize(double constant) {
 }
 
 bool PhyloTree::removeSplit(const Bipartition &e) {
+    std::cout << "PhyloTree::removeSplit(const Bipartition &e)" << std::endl;
     bool removed = false;
     size_t i = 0;
     while (i < edges.size() && !removed) {
@@ -487,12 +518,14 @@ bool PhyloTree::removeSplit(const Bipartition &e) {
 }
 
 void PhyloTree::removeSplits(const vector<Bipartition>& splits) {
+    std::cout << "PhyloTree::removeSplits(const vector<Bipartition>& splits)" << std::endl;
     for (auto &split : splits) {
         removeSplit(split);
     }
 }
 
 string PhyloTree::toString() {
+    std::cout << "PhyloTree::toString()" << std::endl;
     size_t nlabels = leaf2NumMap.size();
     size_t nedges = edges.size();
     size_t nleaves = leafEdgeAttribs.size();
@@ -521,6 +554,7 @@ string PhyloTree::toString() {
 }
 
 double PhyloTree::getDistanceFromOrigin() const {
+    std::cout << "PhyloTree::getDistanceFromOrigin() const" << std::endl;
     double dist = 0;
     for (auto &edge : edges) {
         dist += std::pow(edge.getLength(), 2);
@@ -534,5 +568,6 @@ double PhyloTree::getDistanceFromOrigin() const {
 }
 
 vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() const {
+    std::cout << "PhyloTree::getLeafEdgeAttribs() const" << std::endl;
     return leafEdgeAttribs;
 }

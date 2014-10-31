@@ -2,6 +2,7 @@
 #include <cmath>
 
 double Distance::getRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
+    std::cout << "Distance::getRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise)" << std::endl;
     double rf_value = 0;
     vector<PhyloTreeEdge> enic = t1.getEdgesNotInCommonWith(t2);
     for (auto &edge : t2.getEdgesNotInCommonWith(t1)) {
@@ -14,6 +15,7 @@ double Distance::getRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool no
 }
 
 double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
+    std::cout << "Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise)" << std::endl;
     double wrf_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
@@ -45,6 +47,7 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2,
 }
 
 double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
+    std::cout << "Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normalise)" << std::endl;
     double euc_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
@@ -76,30 +79,35 @@ double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normali
 }
 
 double Distance::getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
+    std::cout << "Distance::getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalise)" << std::endl;
     double distance = Geodesic::getGeodesic(t1, t2).getDist();
     if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
     return distance;
 }
 
 double Distance::getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    std::cout << "Distance::getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2)" << std::endl;
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getEuclideanDistance(a, b, normalise);
 }
 
 double Distance::getGeodesicDistance(string &t1, string &t2, bool normalise, bool rooted1, bool rooted2) {
+    std::cout << "Distance::getGeodesicDistance(string &t1, string &t2, bool normalise, bool rooted1, bool rooted2)" << std::endl;
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getGeodesicDistance(a, b, normalise);
 }
 
 double Distance::getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    std::cout << "Distance::getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2)" << std::endl;
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getRobinsonFouldsDistance(a, b, normalise);
 }
 
 double Distance::getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+    std::cout << "Distance::getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2)" << std::endl;
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getWeightedRobinsonFouldsDistance(a, b, normalise);

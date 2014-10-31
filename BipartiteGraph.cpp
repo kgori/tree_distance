@@ -1,6 +1,7 @@
 #include "BipartiteGraph.h"
 
 BipartiteGraph::BipartiteGraph(vector<deque<bool>> IncidenceMatrix, vector<double> Aweight, vector<double> Bweight) {
+    std::cout << "BipartiteGraph::BipartiteGraph(vector<deque<bool>> IncidenceMatrix, vector<double> Aweight, vector<double> Bweight)" << std::endl;
     this->nA = Aweight.size();
     this->nB = Bweight.size();
     this->n = max(nA, nB);
@@ -12,6 +13,7 @@ BipartiteGraph::BipartiteGraph(vector<deque<bool>> IncidenceMatrix, vector<doubl
 }
 
 vector<deque<bool>> BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge> edges1, vector<PhyloTreeEdge> edges2) {
+    std::cout << "BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge> edges1, vector<PhyloTreeEdge> edges2)" << std::endl;
     std::vector<std::deque<bool>> incidenceMatrix(edges1.size(), std::deque<bool>(edges2.size(), false));
     for (size_t i = 0; i < edges1.size(); i++) {
         for (size_t j = 0; j < edges2.size(); j++) {
@@ -22,6 +24,7 @@ vector<deque<bool>> BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge> edg
 };
 
 vector<vector<size_t>> BipartiteGraph::vertex_cover(vector<size_t> Aindex, vector<size_t> Bindex) {
+    std::cout << "BipartiteGraph::vertex_cover(vector<size_t> Aindex, vector<size_t> Bindex)" << std::endl;
     size_t nAVC = Aindex.size(), nBVC = Bindex.size(); //nAVC,nBVC=size of A and B
     double total = 0;
     vector<vector<double>> ABflow(nA, vector<double>(nB, 0.0));

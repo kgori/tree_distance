@@ -17,6 +17,7 @@ class Tools {
 public:
     template<typename T>
     static bool vector_equal(std::vector<T> x, std::vector<T> y) {
+        std::cout << "Tools::vector_equal(std::vector<T> x, std::vector<T> y)" << std::endl;
         std::sort(x.begin(), x.end());
         std::sort(y.begin(), y.end());
         return x == y;
@@ -24,6 +25,7 @@ public:
 
     template<typename T>
     static void vector_print(std::vector<T> v) {
+        std::cout << "Tools::vector_print(std::vector<T> v)" << std::endl;
         for (size_t i = 0; i < v.size() - 1; ++i) {
             std::cout << v[i] << " ";
         }
@@ -32,6 +34,7 @@ public:
 
     template<typename T>
     static void deque_print(std::deque<T> v) {
+        std::cout << "Tools::deque_print(std::deque<T> v)" << std::endl;
         for (size_t i = 0; i < v.size() - 1; ++i) {
             std::cout << v[i] << " ";
         }
@@ -40,6 +43,7 @@ public:
 
     template<typename T>
     static std::string vector_to_string(std::vector<T> v) {
+        std::cout << "Tools::vector_to_string(std::vector<T> v)" << std::endl;
         std::stringstream ss{};
         for (size_t i = 0; i < v.size() - 1; ++i) {
             ss << v[i] << " ";
@@ -48,18 +52,15 @@ public:
         return ss.str();
     }
 
-    template<typename T, template<typename> class C>
-    static void remove_element_at_index(C<T> &c, size_t index) {
-        c.erase(c.begin() + index);
-    }
-
     template<typename T>
     static void deque_remove_element_at_index(deque<T> &c, size_t index) {
+        std::cout << "deque_remove_element_at_index(deque<T> &c, size_t index)" << std::endl;
         c.erase(c.begin() + index);
     }
 
     template<typename T>
     static void vector_remove_element_at_index(vector<T> &c, size_t index) {
+        std::cout << "vector_remove_element_at_index(vector<T> &c, size_t index)" << std::endl;
         c.erase(c.begin() + index);
     }
 

@@ -3,14 +3,15 @@
 //#include <algorithm>
 //#include <stddef.h>
 
-RatioSequence::RatioSequence(){
-
+RatioSequence::RatioSequence() {
+    std::cout << "RatioSequence::RatioSequence()" << std::endl;
 }
 
 /*
 ptA and ptB are coordinate strings in the format "1,2,3"
  */
 RatioSequence::RatioSequence(string ptA, string ptB) {
+    std::cout << "RatioSequence::RatioSequence(string ptA, string ptB)" << std::endl;
     auto strvecA = Tools::string_split(ptA, ", ", "(,)");
     auto strvecB = Tools::string_split(ptB, ", ", "(,)");
     auto dblvecA = Tools::stringvec_to_doublevec(strvecA);
@@ -23,6 +24,7 @@ RatioSequence::RatioSequence(string ptA, string ptB) {
 }
 
 RatioSequence RatioSequence::interleave(RatioSequence rs1, RatioSequence rs2) {
+    std::cout << "RatioSequence::interleave(RatioSequence rs1, RatioSequence rs2)" << std::endl;
     RatioSequence combined1 = rs1.getNonDesRSWithMinDist();
     RatioSequence combined2 = rs2.getNonDesRSWithMinDist();
 
@@ -52,6 +54,7 @@ RatioSequence RatioSequence::interleave(RatioSequence rs1, RatioSequence rs2) {
 }
 
 RatioSequence RatioSequence::getRandomRS(size_t dim) {
+    std::cout << "RatioSequence::getRandomRS(size_t dim)" << std::endl;
     std::default_random_engine dre;
     auto ud = std::uniform_real_distribution<>();
     vector<string> ptA_vec;
@@ -68,22 +71,27 @@ RatioSequence RatioSequence::getRandomRS(size_t dim) {
 }
 
 long RatioSequence::getCombineCode() {
+    std::cout << "RatioSequence::getCombineCode()" << std::endl;
     return combineCode;
 }
 
 void RatioSequence::setCombineCode(long c) {
+    std::cout << "RatioSequence::setCombineCode(long c)" << std::endl;
     combineCode = c;
 }
 
 Ratio RatioSequence::getRatio(size_t i) {
+    std::cout << "RatioSequence::getRatio(size_t i)" << std::endl;
     return (*this)[i];
 }
 
 bool RatioSequence::isAscending() {
+    std::cout << "RatioSequence::isAscending()" << std::endl;
     return std::is_sorted(this->begin(), this->end());
 }
 
 double RatioSequence::getDistance() {
+    std::cout << "RatioSequence::getDistance()" << std::endl;
     double dist_sqd = 0.0;
     for(auto &ratio : *this) {
         dist_sqd += pow(ratio.getELength() + ratio.getFLength(), 2);
@@ -92,14 +100,17 @@ double RatioSequence::getDistance() {
 }
 
 double RatioSequence::getMinNonDesRSDistance() {
+    std::cout << "RatioSequence::getMinNonDesRSDistance()" << std::endl;
     return getNonDesRSWithMinDist().getDistance();
 }
 
 RatioSequence RatioSequence::clone() {
+    std::cout << "RatioSequence::clone()" << std::endl;
     return RatioSequence(*this);
 }
 
 RatioSequence RatioSequence::getCombinedRS(long combineCode) {
+    std::cout << "RatioSequence::getCombinedRS(long combineCode)" << std::endl;
     RatioSequence combinedRS = RatioSequence(); // new ratio sequence formed by combining.
     Ratio ratioToCombineWith = _RatioSequence.front(); // the ratio that we will combine the next ratio with if it is indicated we should combine the ratios
 
@@ -124,6 +135,7 @@ RatioSequence RatioSequence::getCombinedRS(long combineCode) {
 }
 
 RatioSequence RatioSequence::getNonDesRSWithMinDist() {
+    std::cout << "RatioSequence::getNonDesRSWithMinDist()" << std::endl;
     if (this->size() < 2) {
         return *this;
     }
@@ -175,6 +187,7 @@ RatioSequence RatioSequence::getNonDesRSWithMinDist() {
 }
 
 RatioSequence RatioSequence::getAscRSWithMinDist() {
+    std::cout << "RatioSequence::getAscRSWithMinDist()" << std::endl;
     if (this->size() < 2) {
         return *this;
     }
@@ -227,6 +240,7 @@ RatioSequence RatioSequence::getAscRSWithMinDist() {
 }
 
 RatioSequence RatioSequence::reverse() {
+    std::cout << "RatioSequence::reverse()" << std::endl;
     RatioSequence revRS = RatioSequence();
     for (auto i = _RatioSequence.size() - 1; i > 0; --i) {
         revRS.push_back(_RatioSequence[i].reverse());
@@ -257,14 +271,17 @@ RatioSequence RatioSequence::reverse() {
 size_t RatioSequence::size() { return _RatioSequence.size(); }
 
 void RatioSequence::push_back(Ratio item) {
+    std::cout << "RatioSequence::push_back(Ratio item)" << std::endl;
     _RatioSequence.push_back(item);
 }
 
 void RatioSequence::erase(size_t index) {
+    std::cout << "RatioSequence::erase(size_t index)" << std::endl;
     Tools::vector_remove_element_at_index(_RatioSequence, index);
 }
 
 void RatioSequence::insert(vector<Ratio>::iterator index, Ratio item) {
+    std::cout << "RatioSequence::insert(vector<Ratio>::iterator index, Ratio item)" << std::endl;
     _RatioSequence.insert(index, item);
 }
 
@@ -277,11 +294,13 @@ vector<Ratio>::iterator RatioSequence::end() {
 }
 
 RatioSequence::RatioSequence(const RatioSequence &other) {
+    std::cout << "RatioSequence::RatioSequence(const RatioSequence &other)" << std::endl;
     _RatioSequence = other._RatioSequence;
     combineCode = other.combineCode;
 }
 
 string RatioSequence::toString() {
+    std::cout << "RatioSequence::toString()" << std::endl;
     ostringstream ss;
     for (size_t i = 0; i < _RatioSequence.size() - 1; ++i) {
         ss << _RatioSequence[i].toString() << " ";
@@ -291,6 +310,7 @@ string RatioSequence::toString() {
 }
 
 string RatioSequence::toStringCombType() {
+    std::cout << "RatioSequence::toStringCombType()" << std::endl;
     string s = "";
 
     for (int i = 0; i < this->size(); i++) {
@@ -300,6 +320,7 @@ string RatioSequence::toStringCombType() {
 }
 
 string RatioSequence::toStringVerbose(vector<string> leaf2NumMap) {
+    std::cout << "RatioSequence::toStringVerbose(vector<string> leaf2NumMap)" << std::endl;
     stringstream ss;
     for (int i = 0; i < _RatioSequence.size(); i++) {
         ss << "\nRatio " << i << ":  ";

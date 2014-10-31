@@ -75,9 +75,9 @@ public:
 
     void setNewick(string newick);
 
-    int numEdges();
+    size_t numEdges();
 
-    void addEdge(PhyloTreeEdge e) { edges.push_back(e); }
+    void addEdge(PhyloTreeEdge e) { std::cout << "addEdge(PhyloTreeEdge e)" << std::endl; edges.push_back(e); }
 
     string toString();
 

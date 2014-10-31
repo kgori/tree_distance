@@ -3,6 +3,7 @@
 #include <cmath>
 
 vector<PhyloTreeEdge> deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
+    std::cout << "deleteEmptyEdges(vector<PhyloTreeEdge>& v)" << std::endl;
     vector<PhyloTreeEdge> ret;
     for (auto &e : v) {
         if (!(e.isEmpty())) {
@@ -13,15 +14,18 @@ vector<PhyloTreeEdge> deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
 }
 
 Geodesic::Geodesic(RatioSequence rs) {
+    std::cout << "Geodesic::Geodesic(RatioSequence rs)" << std::endl;
     this->rs = rs;
 }
 
 Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges) {
+    std::cout << "Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges)" << std::endl;
     this->rs = rs;
     commonEdges = cEdges;
 }
 
 Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafContributionSquared) {
+    std::cout << "Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafContributionSquared)" << std::endl;
     this->rs = rs;
     commonEdges = cEdges;
     this->leafContributionSquared = leafContributionSquared;
@@ -29,6 +33,7 @@ Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafCo
 
 Geodesic::Geodesic(const Geodesic& other) : rs(other.rs), commonEdges(other.commonEdges),
                                             leafContributionSquared(other.leafContributionSquared) {
+    std::cout << "Geodesic::Geodesic(const Geodesic& other)" << std::endl;
 };
 
 PhyloTree Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position) {
@@ -47,7 +52,7 @@ PhyloTree Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position) {
     // i.e. the index of the ratio with time >= position, but such that the next ratio has time >= position
     // if position is in the target orthant, we don't want any e edges
     */
-
+    std::cout << "Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position)" << std::endl;
     bool lowerRatioIndexMINUS2 = true;
     bool lowerRatioIndexMINUS1 = false;
     size_t lowerRatioIndex = 0;
@@ -169,14 +174,17 @@ PhyloTree Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position) {
 }
 
 RatioSequence Geodesic::getRS() {
+    std::cout << "Geodesic::getRS()" << std::endl;
     return this->rs;
 }
 
 void Geodesic::setRS(RatioSequence rs) {
+    std::cout << "Geodesic::setRS(RatioSequence rs)" << std::endl;
     this->rs = rs;
 }
 
 double Geodesic::getDist() {
+    std::cout << "Geodesic::getDist()" << std::endl;
     double commonEdgeDistSquared = 0;
     for (size_t i = 0; i < commonEdges.size(); ++i) {
         commonEdgeDistSquared += pow(commonEdges[i].getLength(), 2);
@@ -185,20 +193,24 @@ double Geodesic::getDist() {
 }
 
 void Geodesic::addCommonEdge(PhyloTreeEdge e) {
+    std::cout << "Geodesic::addCommonEdge(PhyloTreeEdge e)" << std::endl;
     commonEdges.push_back(e);
 }
 
 Geodesic Geodesic::clone() {
+    std::cout << "Geodesic::clone()" << std::endl;
     return Geodesic(*this);
 }
 
 string Geodesic::toString() {
+    std::cout << "Geodesic::toString()" << std::endl;
     ostringstream ss;
     ss << getDist() << "; " << rs.getNonDesRSWithMinDist().toString();
     return ss.str();
 }
 
 vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, double position) {
+    std::cout << "Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, double position)" << std::endl;
     EdgeAttribute commonEdgeAttribute;
     Bipartition commonSplit;
 
@@ -244,30 +256,37 @@ vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, doubl
 }
 
 void Geodesic::setCommonEdges(vector<PhyloTreeEdge> commonEdges) {
+    std::cout << "Geodesic::setCommonEdges(vector<PhyloTreeEdge> commonEdges)" << std::endl;
     this->commonEdges = commonEdges;
 }
 
 size_t Geodesic::numCommonEdges() {
+    std::cout << "Geodesic::numCommonEdges()" << std::endl;
     return commonEdges.size();
 }
 
 size_t Geodesic::numTopologies() {
+    std::cout << "Geodesic::numTopologies()" << std::endl;
     return rs.getAscRSWithMinDist().size() + 1;
 }
 
 Geodesic Geodesic::reverse() {
+    std::cout << "Geodesic::reverse()" << std::endl;
     return Geodesic(rs.reverse(), commonEdges, leafContributionSquared);
 }
 
 double Geodesic::getLeafContributionSquared() {
+    std::cout << "getLeafContributionSquared()" << std::endl;
     return leafContributionSquared;
 }
 
 void Geodesic::setLeafContributionSquared(double leafContributionSquared) {
+    std::cout << "setLeafContributionSquared(double leafContributionSquared)" << std::endl;
     this->leafContributionSquared = leafContributionSquared;
 }
 
 Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
+    std::cout << "getGeodesic(PhyloTree &t1, PhyloTree &t2)" << std::endl;
     double leafContributionSquared = 0;
     vector<EdgeAttribute> t1LeafEdgeAttribs = t1.getLeafEdgeAttribs();
     vector<EdgeAttribute> t2LeafEdgeAttribs = t2.getLeafEdgeAttribs();
@@ -302,6 +321,7 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
 }
 
 Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
+    std::cout << "getGeodesicNoCommonEdge(PhyloTree &t1, PhyloTree &t2)" << std::endl;
     auto t1_edges = t1.getEdges();
     auto t2_edges = t2.getEdges();
     size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
@@ -410,6 +430,7 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
 }
 
 void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b) {
+    std::cout << "split on common edge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b)" << std::endl;
     auto t1_edges = t1.getEdges();
     auto t2_edges = t2.getEdges();
     size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
@@ -538,5 +559,6 @@ void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree>
 }
 
 vector<PhyloTreeEdge> Geodesic::getCommonEdges() {
+    std::cout << "Geodesic::getCommonEdges()" << std::endl;
     return commonEdges;
 }
