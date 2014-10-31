@@ -57,6 +57,7 @@ private:
     RatioSequence rs;
     vector<PhyloTreeEdge> commonEdges;
     double leafContributionSquared = 0;
+public:
     static void splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b);
 };
 
