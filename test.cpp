@@ -432,8 +432,12 @@ TEST_CASE("PhyloTree") {
         string n2("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);");
         auto a = PhyloTree(n1, false);
         auto b = PhyloTree(n2, false);
-        auto enic = a.getEdgesNotInCommonWith(b);
-        auto eic = PhyloTree::getCommonEdges(a, b);
+        vector<PhyloTreeEdge> eic, enic;
+        PhyloTree::getCommonEdges(a, b, eic);
+        a.getEdgesNotInCommonWith(b, enic);
+        b.getEdgesNotInCommonWith(a, enic);
+        CHECK(eic.size() == 3);
+        CHECK(enic.size() == 2);
     }
 
     SECTION("Newick") {

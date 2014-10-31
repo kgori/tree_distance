@@ -3,10 +3,9 @@
 
 double Distance::getRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
     double rf_value = 0;
-    vector<PhyloTreeEdge> enic = t1.getEdgesNotInCommonWith(t2);
-    for (auto &edge : t2.getEdgesNotInCommonWith(t1)) {
-        enic.push_back(edge);
-    }
+    vector<PhyloTreeEdge> enic;
+    t1.getEdgesNotInCommonWith(t2, enic);
+    t2.getEdgesNotInCommonWith(t1, enic);
     rf_value = enic.size();
     if (normalise)
         rf_value /= t1.numEdges() + t2.numEdges();
@@ -17,11 +16,11 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2,
     double wrf_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
-    vector<PhyloTreeEdge> eic = PhyloTree::getCommonEdges(t1, t2);
-    vector<PhyloTreeEdge> enic = t1.getEdgesNotInCommonWith(t2);
-    for (auto &edge : t2.getEdgesNotInCommonWith(t1)) {
-        enic.push_back(edge);
-    }
+    vector<PhyloTreeEdge> eic;
+    PhyloTree::getCommonEdges(t1, t2, eic);
+    vector<PhyloTreeEdge> enic;
+    t1.getEdgesNotInCommonWith(t2, enic);
+    t2.getEdgesNotInCommonWith(t1, enic);
     // ... and leaves
     vector<EdgeAttribute> leaves1 = t1.getLeafEdgeAttribs();
     vector<EdgeAttribute> leaves2 = t2.getLeafEdgeAttribs(); // Assuming these are the same leaves
@@ -48,11 +47,11 @@ double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normali
     double euc_value = 0;
 
     // Collect edges-in-common and edges-not-in-common...
-    vector<PhyloTreeEdge> eic = PhyloTree::getCommonEdges(t1, t2);
-    vector<PhyloTreeEdge> enic = t1.getEdgesNotInCommonWith(t2);
-    for (auto &edge : t2.getEdgesNotInCommonWith(t1)) {
-        enic.push_back(edge);
-    }
+    vector<PhyloTreeEdge> eic;
+    PhyloTree::getCommonEdges(t1, t2, eic);
+    vector<PhyloTreeEdge> enic;
+    t1.getEdgesNotInCommonWith(t2, enic);
+    t2.getEdgesNotInCommonWith(t1, enic);
     // ... and leaves
     vector<EdgeAttribute> leaves1 = t1.getLeafEdgeAttribs();
     vector<EdgeAttribute> leaves2 = t2.getLeafEdgeAttribs(); // Assuming these are the same

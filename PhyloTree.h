@@ -19,7 +19,8 @@ public:
 
     PhyloTree(string t, bool rooted);
 
-    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree &t1, PhyloTree &t2);
+//    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree &t1, PhyloTree &t2);
+    static void getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge>& dest);
 
     vector<PhyloTreeEdge> getEdges();
 
@@ -51,7 +52,7 @@ public:
 
     double getBranchLengthSum();
 
-    vector<PhyloTreeEdge> getEdgesNotInCommonWith(PhyloTree &t);
+    void getEdgesNotInCommonWith(PhyloTree &t, vector<PhyloTreeEdge>& dest);
 
     PhyloTree clone();
 
@@ -87,7 +88,6 @@ private:
     vector<PhyloTreeEdge> edges;
     vector<string> leaf2NumMap;
     vector<EdgeAttribute> leafEdgeAttribs;
-
 
     void setLeaf2NumMapFromNewick(string& s);
 

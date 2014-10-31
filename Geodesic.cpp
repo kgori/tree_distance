@@ -216,7 +216,7 @@ vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, doubl
     }
     // end error checking
 
-    for (PhyloTreeEdge e : t1.getEdges()) {
+    for (PhyloTreeEdge &e : t1.getEdges()) {
         auto t2_splits = t2.getSplits();
         bool split_in_t2 = std::find(t2_splits.begin(), t2_splits.end(), e.asSplit()) != t2_splits.end();
         if (split_in_t2) {
@@ -232,7 +232,7 @@ vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, doubl
         }
     }
     // check for splits in t2 that are compatible with all splits in t1
-    for (PhyloTreeEdge e : t2.getEdges()) {
+    for (PhyloTreeEdge &e : t2.getEdges()) {
         auto t1_splits = t1.getSplits();
         bool split_not_in_t1 = std::find(t1_splits.begin(), t1_splits.end(), e.asSplit()) == t1_splits.end();
         if (e.isCompatibleWith(t1.getSplits()) && split_not_in_t1) {
@@ -291,7 +291,9 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
     //  aTreesNoCommonEdges[i] goes with bTreesNoCommonEdges[i]
     splitOnCommonEdge(t1, t2, aTreesNoCommonEdges, bTreesNoCommonEdges);
     //set the common edges
-    geo.setCommonEdges(PhyloTree::getCommonEdges(t1, t2));
+    vector<PhyloTreeEdge> eic;
+    PhyloTree::getCommonEdges(t1, t2, eic);
+    geo.setCommonEdges(eic);
 
     // find the geodesic between each pair of subtrees found by removing the common edges
     for (size_t i = 0; i < aTreesNoCommonEdges.size(); i++) {
@@ -312,7 +314,8 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     }
 
     // double-check no common edges
-    vector<PhyloTreeEdge> commonEdges = PhyloTree::getCommonEdges(t1, t2);
+    vector<PhyloTreeEdge> commonEdges;
+    PhyloTree::getCommonEdges(t1, t2, commonEdges);
     if (commonEdges.size() != 0) {
         throw invalid_argument("Error: tried to compute geodesic between subtrees that should not have common edges, but do!  t1 = " + t1.getNewick(true) + " and t2 = " + t2.getNewick(true));
     }
@@ -421,7 +424,8 @@ void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree>
         return;
     }
     // look for common edges
-    vector<PhyloTreeEdge> commonEdges = PhyloTree::getCommonEdges(t1, t2);
+    vector<PhyloTreeEdge> commonEdges;
+    PhyloTree::getCommonEdges(t1, t2, commonEdges);
 
     // if there are no common edges
     // XXX: need to check the following methods don't require the trees to have the same number of edges
@@ -444,25 +448,15 @@ void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree>
     vector<PhyloTreeEdge> edgesB2;
 
     for (PhyloTreeEdge &e : t1_edges) {
-//        auto attrib = e.getAttribute();
-//        auto orig_edge = e.getOriginalEdge();
-//        auto orig_id = e.getOriginalID();
         PhyloTreeEdge newedge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID());
         edgesA1.push_back(newedge);
         edgesB1.push_back(newedge);
-//        edgesA1.push_back(PhyloTreeEdge(attrib, orig_edge, orig_id));
-//        edgesB1.push_back(PhyloTreeEdge(attrib, orig_edge, orig_id));
     }
 
     for (PhyloTreeEdge &e : t2_edges) {
-//        auto attrib = e.getAttribute();
-//        auto orig_edge = e.getOriginalEdge();
-//        auto orig_id = e.getOriginalID();
         PhyloTreeEdge newedge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID());
         edgesA2.push_back(newedge);
         edgesB2.push_back(newedge);
-//        edgesA2.push_back(PhyloTreeEdge(attrib, orig_edge, orig_id));
-//        edgesB2.push_back(PhyloTreeEdge(attrib, orig_edge, orig_id));
     }
 
     bool aLeavesAdded = false;  // if we have added a leaf in B representing the A tree
