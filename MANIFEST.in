@@ -1,0 +1,4 @@
+include *.cpp
+include *.h
+include cython/Distance_h.pxd cython/TreeDistance.pyx
+exclude test.cpp main.cpp test_catch_helper.h

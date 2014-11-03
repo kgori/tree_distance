@@ -11,7 +11,7 @@ class EdgeAttribute {
 public:
     EdgeAttribute();
 
-    EdgeAttribute(const vector<double>& v);
+    EdgeAttribute(double v);
 
     EdgeAttribute(string s);
 
@@ -68,7 +68,8 @@ public:
     void ensurePositive();
 
 private:
-    vector<double> vect;
+    double val = 0;
+    bool set = false;
 };
 
 #endif /* __EDGE_ATTRIBUTE_H__ */

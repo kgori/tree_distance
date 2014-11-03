@@ -17,4 +17,3 @@ set(SOURCE_FILES
 
 add_executable(GTPcppconv ${SOURCE_FILES} test.cpp)
 add_executable(timer ${SOURCE_FILES} main.cpp)
-add_executable(common ${SOURCE_FILES} get_common_edges.cpp)
