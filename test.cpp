@@ -662,7 +662,12 @@ TEST_CASE("Distance") {
         CHECK(abs(Distance::getGeodesicDistance(t5, t6, false) - Distance::getGeodesicDistance(s5, s6, false, true, true)) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t5, t6, true) - Distance::getGeodesicDistance(s5, s6, true, true, true)) < TOLERANCE);
         clock_t start = clock();
-        Distance::getGeodesicDistance(t7, t8, false);
+        for (size_t i = 0; i < 100; ++i) {
+            Distance::getGeodesicDistance(t7, t8, false);
+            Distance::getEuclideanDistance(t7, t8, false);
+            Distance::getRobinsonFouldsDistance(t7, t8, false);
+            Distance::getWeightedRobinsonFouldsDistance(t7, t8, false);
+        }
         printf("Time taken: %.3f millisec\n", 1000 * (double)(clock() - start)/CLOCKS_PER_SEC);
     }
 }

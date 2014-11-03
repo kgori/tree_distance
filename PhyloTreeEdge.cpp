@@ -150,3 +150,21 @@ string PhyloTreeEdge::toStringVerbose(vector<string> leaf2NumMap) {
 double PhyloTreeEdge::getLength() const {
     return attribute.norm();
 }
+
+bool PhyloTreeEdge::isCompatibleWith(const vector<Bipartition> &splits) {
+    for (size_t i = 0; i < splits.size(); ++i) {
+        if (this->crosses(splits[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool PhyloTreeEdge::isCompatibleWith(const vector<PhyloTreeEdge> &splits) {
+    for (size_t i = 0; i < splits.size(); ++i) {
+        if (this->crosses(splits[i])) {
+            return false;
+        }
+    }
+    return true;
+}

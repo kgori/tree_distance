@@ -176,6 +176,12 @@ vector<PhyloTreeEdge> PhyloTree::getEdges() {
     return edges;
 }
 
+void PhyloTree::getEdges(vector<PhyloTreeEdge>& edges_to_add) {
+    for (auto &edge : edges) {
+        edges_to_add.push_back(edge);
+    }
+}
+
 void PhyloTree::setEdges(vector<PhyloTreeEdge> edges) {
     this->edges = edges;
 }
@@ -204,6 +210,15 @@ EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition& edge) {
     }
     return EdgeAttribute();
 }
+
+//EdgeAttribute PhyloTree::getAttribOfSplit(PhyloTreeEdge& edge) {
+//    for (auto &e : edges) {
+//        if (e.sameBipartition(edge)) {
+//            return e.getAttribute();
+//        }
+//    }
+//    return EdgeAttribute();
+//}
 
 vector<Bipartition> PhyloTree::getSplits() {
     vector<Bipartition> splits;
@@ -537,6 +552,47 @@ vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() const {
 }
 
 void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest) {
+    vector<PhyloTreeEdge> t1_edges;
+    vector<PhyloTreeEdge> t2_edges;
+    t1.getEdges(t1_edges);
+    t2.getEdges(t2_edges);
+    EdgeAttribute l_attr, r_attr;
+    Bipartition search_split;
+    std::sort(t1_edges.begin(), t1_edges.end());
+    std::sort(t2_edges.begin(), t2_edges.end());
+
+    auto first1 = t1_edges.begin();
+    auto first2 = t2_edges.begin();
+    auto last1 = t1_edges.end();
+    auto last2 = t2_edges.end();
+    auto common_bkinstr = std::back_inserter(dest);
+
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            if (first1->isCompatibleWith(t2_edges)) {
+                dest.push_back(PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID()));
+            }
+            ++first1; // first1 not in list2
+        } else {
+            if (!(*first2 < *first1)) { // first1 == first2
+                l_attr = first1->getAttribute();
+                search_split = first1->asSplit();
+                r_attr = t2.getAttribOfSplit(search_split);
+                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
+                *common_bkinstr++ = PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
+                ++first1;
+            }
+            else { // first2 not in list1
+                if (first2->isCompatibleWith(t1_edges)) {
+                    dest.push_back(PhyloTreeEdge(first2->asSplit(), first2->getAttribute(), first2->getOriginalID()));
+                }
+            }
+            ++first2;
+        }
+    }
+}
+
+void PhyloTree::getCommonEdges2(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest) {
 
     EdgeAttribute l_attr, r_attr;
     Bipartition search_split;

@@ -82,6 +82,10 @@ public:
 
     string toStringVerbose(vector<string> leaf2NumMap);
 
+    bool isCompatibleWith(const vector<Bipartition>& splits);
+
+    bool isCompatibleWith(const vector<PhyloTreeEdge>& splits);
+
 private:
     EdgeAttribute attribute;
     Bipartition originalEdge;
