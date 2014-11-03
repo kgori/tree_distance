@@ -2,14 +2,8 @@
 #include "Geodesic.h"
 #include <cmath>
 
-vector<PhyloTreeEdge> deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
-    vector<PhyloTreeEdge> ret;
-    for (auto &e : v) {
-        if (!(e.isEmpty())) {
-            ret.push_back(e);
-        }
-    }
-    return ret;
+void deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
+    v.erase(std::remove_if(v.begin(), v.end(), [&](PhyloTreeEdge element){return element.isEmpty();}), v.end());
 }
 
 Geodesic::Geodesic(RatioSequence rs) {
@@ -289,7 +283,12 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
 
     // get the pairs of trees with no common edges put into aTreesNoCommonEdges and bTreesNoCommonEdges
     //  aTreesNoCommonEdges[i] goes with bTreesNoCommonEdges[i]
-    splitOnCommonEdge(t1, t2, aTreesNoCommonEdges, bTreesNoCommonEdges);
+    vector<PhyloTreeEdge> t1_edges, t2_edges;
+    t1.getEdges(t1_edges);
+    t2.getEdges(t2_edges);
+    auto l2nm = t1.getLeaf2NumMap();
+    splitOnCommonEdge(t1_edges, t2_edges, l2nm, aTreesNoCommonEdges, bTreesNoCommonEdges);
+//    splitOnCommonEdge(t1, t2, aTreesNoCommonEdges, bTreesNoCommonEdges);
     //set the common edges
     vector<PhyloTreeEdge> eic;
     PhyloTree::getCommonEdges(t1, t2, eic);
@@ -412,7 +411,118 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     return Geodesic(rs);
 }
 
+void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges,
+        vector<string> &reference_leaf_num_map, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b) {
+    size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
+    size_t numEdges2 = t2_edges.size(); /// number of edges in tree 2
+    if (numEdges1 == 0 || numEdges2 == 0) {
+        return;
+    }
+    string leaf_label;
+    // look for common edges
+    vector<PhyloTreeEdge> commonEdges;
+    PhyloTree::getCommonEdges(t1_edges, t2_edges, commonEdges);
+    if (commonEdges.size() == 0) {
+        destination_a.push_back(PhyloTree(t1_edges, reference_leaf_num_map));
+        destination_b.push_back(PhyloTree(t2_edges, reference_leaf_num_map));
+        return;
+    }
+    PhyloTreeEdge commonEdge = commonEdges.front();
+
+    // A will be the tree with leaves corresponding to 1's in commonEdge
+    vector<string> leaf2NumMapA;
+    vector<string> leaf2NumMapB;
+
+    vector<PhyloTreeEdge> edgesA1;
+    vector<PhyloTreeEdge> edgesA2;
+    vector<PhyloTreeEdge> edgesB1;
+    vector<PhyloTreeEdge> edgesB2;
+
+    for (PhyloTreeEdge &e : t1_edges) {
+        PhyloTreeEdge newedge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID());
+        edgesA1.push_back(newedge);
+        edgesB1.push_back(newedge);
+    }
+
+    for (PhyloTreeEdge &e : t2_edges) {
+        PhyloTreeEdge newedge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID());
+        edgesA2.push_back(newedge);
+        edgesB2.push_back(newedge);
+    }
+
+    bool aLeavesAdded = false;  // if we have added a leaf in B representing the A tree
+    size_t indexAleaves = 0;  // the index we are at in  the vectors holding the leaves in the A and B subtrees
+    size_t indexBleaves = 0;
+
+    // step through the leaves represented in commonEdge
+    // (there should be two more leaves than edges)
+    for (size_t i = 0; i < reference_leaf_num_map.size(); i++) {
+        leaf_label = reference_leaf_num_map[i];
+        if (commonEdge.contains(i)) {
+            // commonEdge contains leaf i
+            leaf2NumMapA.push_back(leaf_label);
+
+            // these leaves must be added as a group to the B trees
+            if (!aLeavesAdded) {
+                leaf2NumMapB.push_back(leaf_label + "*");    // add a one of the leaves of the A tree to represent all the A trees leaves
+                for (size_t j = 0; j < numEdges1; j++) {
+                    if (t1_edges[j].properlyContains(commonEdge)) {
+                        edgesB1[j].addOne(indexBleaves);
+                    }
+                }
+                for (size_t j = 0; j < numEdges2; j++) {
+                    if (t2_edges[j].properlyContains(commonEdge)) {
+                        edgesB2[j].addOne(indexBleaves);
+                    }
+                }
+                indexBleaves++;
+                aLeavesAdded = true;
+            }
+            // add the column corresponding to this leaf to the A edges vector (for the corresponding trees)
+            // XXX: problem: might be adding edges which contain leaves in A but also
+            for (int j = 0; j < numEdges1; j++) {
+                if (commonEdge.properlyContains(t1_edges[j]) && t1_edges[j].contains(i)) {
+                    edgesA1[j].addOne(indexAleaves);
+                }
+            }
+            for (int j = 0; j < numEdges2; j++) {
+                if (commonEdge.properlyContains(t2_edges[j]) && t2_edges[j].contains(i)) {
+                    edgesA2[j].addOne(indexAleaves);
+                }
+            }
+            indexAleaves++;
+        } else {
+            // commonEdge does not contain leaf i
+            leaf2NumMapB.push_back(leaf_label);
+            for (int j = 0; j < numEdges1; j++) {
+                if (t1_edges[j].contains(i)) {
+                    edgesB1[j].addOne(indexBleaves);
+                }
+            }
+            for (int j = 0; j < numEdges2; j++) {
+                if (t2_edges[j].contains(i)) {
+                    edgesB2[j].addOne(indexBleaves);
+                }
+            }
+            indexBleaves++;
+        }
+    }
+
+    deleteEmptyEdges(edgesA1);
+    deleteEmptyEdges(edgesA2);
+    deleteEmptyEdges(edgesB1);
+    deleteEmptyEdges(edgesB2);
+
+    splitOnCommonEdge(edgesA1, edgesA2, leaf2NumMapA, destination_a, destination_b);
+    splitOnCommonEdge(edgesB1, edgesB2, leaf2NumMapB, destination_a, destination_b);
+}
+
 void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b) {
+    // WRITE a new function that takes edges and leaf2nummaps, without building the trees,
+    // and we can skip the parts that assemble trees from edges at the end of the function,
+    // only to break them apart again in the next recursive call. MAY require a new 'getCommonEdges'
+    // function that works directly on vector<PhyloTree>s
+
     auto t1_edges = t1.getEdges();
     auto t2_edges = t2.getEdges();
     size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
@@ -516,10 +626,11 @@ void Geodesic::splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree>
             indexBleaves++;
         }
     }
-    edgesA1 = deleteEmptyEdges(edgesA1);
-    edgesA2 = deleteEmptyEdges(edgesA2);
-    edgesB1 = deleteEmptyEdges(edgesB1);
-    edgesB2 = deleteEmptyEdges(edgesB2);
+
+    deleteEmptyEdges(edgesA1);
+    deleteEmptyEdges(edgesA2);
+    deleteEmptyEdges(edgesB1);
+    deleteEmptyEdges(edgesB2);
 
     // make the 4 trees
     PhyloTree tA1(edgesA1, leaf2NumMapA);

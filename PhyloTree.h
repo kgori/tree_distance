@@ -21,7 +21,9 @@ public:
 
 //    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree &t1, PhyloTree &t2);
     static void getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge>& dest);
-    static void getCommonEdges2(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest);
+
+    static void getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges, vector<PhyloTreeEdge> &dest);
+
     vector<PhyloTreeEdge> getEdges();
 
     void getEdges(vector<PhyloTreeEdge>& edges_to_add);

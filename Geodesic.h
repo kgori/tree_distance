@@ -59,6 +59,8 @@ private:
     double leafContributionSquared = 0;
 public:
     static void splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b);
+    static void splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges,
+            vector<string> &reference_leaf_num_map, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b);
 };
 
 #endif /* __GEODESIC_H__ */
