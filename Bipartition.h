@@ -86,7 +86,7 @@ public:
 
     bool crosses(const Bipartition &e) const;
 
-    void complement(int numLeaves);
+    void complement(size_t numLeaves);
 
     virtual string toString();
 

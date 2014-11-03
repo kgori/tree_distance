@@ -132,45 +132,9 @@ PhyloTree::PhyloTree(string t, bool rooted) {
 
     for (size_t k = 0; k < edges.size(); ++k) {
         edges[k].setOriginalEdge(edges[k].asSplit());
-        edges[k].setOriginalID(k);
+        edges[k].setOriginalID((int) k);
     }
 }
-
-//vector<PhyloTreeEdge> PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2) {
-//    vector<PhyloTreeEdge> commonEdges;
-//    EdgeAttribute l_attr, r_attr;
-//    Bipartition search_split;
-//    if (t1.leaf2NumMap != t2.leaf2NumMap) {
-//        throw runtime_error("leaf2NumMaps are not equal");
-//    }
-//    auto splits = t2.getSplits();
-//    for (auto &e1 : t1.edges) {
-//        if (!e1.isZero()) {
-//            search_split = e1.asSplit();
-//            if (std::find(splits.begin(), splits.end(), search_split) != splits.end()) {
-//                l_attr = e1.getAttribute();
-//                r_attr = t2.getAttribOfSplit(search_split);
-//                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-//                commonEdges.push_back(PhyloTreeEdge(search_split, commonAttrib, e1.getOriginalID()));
-//            }
-//            else if (e1.isCompatibleWith(splits)) {
-//                auto commonAttrib = e1.getAttribute();
-//                commonEdges.push_back(PhyloTreeEdge(search_split, commonAttrib, e1.getOriginalID()));
-//            }
-//        }
-//    }
-//    splits = t1.getSplits();
-//    for (auto &e2 : t2.edges) {
-//        if (!e2.isZero()) {
-//            search_split = e2.asSplit();
-//            if (e2.isCompatibleWith(splits) && std::find(splits.begin(), splits.end(), search_split) == splits.end()) {
-//                auto commonAttrib = e2.getAttribute();
-//                commonEdges.push_back(PhyloTreeEdge(search_split, commonAttrib, e2.getOriginalID()));
-//            }
-//        }
-//    }
-//    return commonEdges;
-//}
 
 vector<PhyloTreeEdge> PhyloTree::getEdges() {
     return edges;
@@ -455,7 +419,7 @@ void PhyloTree::setNewick(string newick) {
     this->newick = newick;
 }
 
-int PhyloTree::numEdges() {
+size_t PhyloTree::numEdges() {
     return edges.size();
 }
 
@@ -557,7 +521,6 @@ void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdg
     t1.getEdges(t1_edges);
     t2.getEdges(t2_edges);
     EdgeAttribute l_attr, r_attr;
-    Bipartition search_split;
     std::sort(t1_edges.begin(), t1_edges.end());
     std::sort(t2_edges.begin(), t2_edges.end());
 
@@ -570,21 +533,20 @@ void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdg
     while (first1 != last1 && first2 != last2) {
         if (*first1 < *first2) {
             if (first1->isCompatibleWith(t2_edges)) {
-                dest.push_back(PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID()));
+                dest.emplace_back(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
             }
             ++first1; // first1 not in list2
         } else {
             if (!(*first2 < *first1)) { // first1 == first2
                 l_attr = first1->getAttribute();
-//                search_split = first1->asSplit();
-                r_attr = first2->getAttribute();//t2.getAttribOfSplit(search_split);
+                r_attr = first2->getAttribute();
                 auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-                *common_bkinstr++ = PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
+                *common_bkinstr++ = std::move(PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID()));
                 ++first1;
             }
             else { // first2 not in list1
                 if (first2->isCompatibleWith(t1_edges)) {
-                    dest.push_back(PhyloTreeEdge(first2->asSplit(), first2->getAttribute(), first2->getOriginalID()));
+                    dest.emplace_back(first2->asSplit(), first2->getAttribute(), first2->getOriginalID());
                 }
             }
             ++first2;
@@ -594,7 +556,6 @@ void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdg
 
 void PhyloTree::getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges, vector<PhyloTreeEdge> &dest) {
     EdgeAttribute l_attr, r_attr;
-    Bipartition search_split;
     std::sort(t1_edges.begin(), t1_edges.end());
     std::sort(t2_edges.begin(), t2_edges.end());
 
@@ -607,32 +568,20 @@ void PhyloTree::getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTree
     while (first1 != last1 && first2 != last2) {
         if (*first1 < *first2) {
             if (first1->isCompatibleWith(t2_edges)) {
-                dest.push_back(PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID()));
+                dest.emplace_back(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
             }
             ++first1; // first1 not in list2
         } else {
             if (!(*first2 < *first1)) { // first1 == first2
                 l_attr = first1->getAttribute();
                 r_attr = first2->getAttribute();
-                //search_split = first1->asSplit();
-
-                /* REPLACES t2.getAttribOfSplit
-                for (auto &e : t2_edges) {
-                    if (e.sameBipartition(*first1)) {
-                        r_attr = e.getAttribute();
-                    }
-                    else {
-                        r_attr = EdgeAttribute();
-                    }
-                } */
-
                 auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-                *common_bkinstr++ = PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
+                *common_bkinstr++ = std::move(PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID()));
                 ++first1;
             }
             else { // first2 not in list1
                 if (first2->isCompatibleWith(t1_edges)) {
-                    dest.push_back(PhyloTreeEdge(first2->asSplit(), first2->getAttribute(), first2->getOriginalID()));
+                    dest.emplace_back(first2->asSplit(), first2->getAttribute(), first2->getOriginalID());
                 }
             }
             ++first2;
@@ -640,37 +589,41 @@ void PhyloTree::getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTree
     }
 }
 
-//void PhyloTree::getCommonEdges2(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest) {
-//
-//    EdgeAttribute l_attr, r_attr;
-//    Bipartition search_split;
-//    if (t1.leaf2NumMap != t2.leaf2NumMap) {
-//        throw runtime_error("leaf2NumMaps are not equal");
-//    }
-//    auto splits = t2.getSplits();
-//    for (auto &e1 : t1.edges) {
-//        if (!e1.isZero()) {
-//            search_split = e1.asSplit();
-//            if (std::find(splits.begin(), splits.end(), search_split) != splits.end()) {
-//                l_attr = e1.getAttribute();
-//                r_attr = t2.getAttribOfSplit(search_split);
-//                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-//                dest.push_back(PhyloTreeEdge(search_split, commonAttrib, e1.getOriginalID()));
-//            }
-//            else if (e1.isCompatibleWith(splits)) {
-//                auto commonAttrib = e1.getAttribute();
-//                dest.push_back(PhyloTreeEdge(search_split, commonAttrib, e1.getOriginalID()));
-//            }
-//        }
-//    }
-//    splits = t1.getSplits();
-//    for (auto &e2 : t2.edges) {
-//        if (!e2.isZero()) {
-//            search_split = e2.asSplit();
-//            if (e2.isCompatibleWith(splits) && std::find(splits.begin(), splits.end(), search_split) == splits.end()) {
-//                auto commonAttrib = e2.getAttribute();
-//                dest.push_back(PhyloTreeEdge(search_split, commonAttrib, e2.getOriginalID()));
-//            }
-//        }
-//    }
-//}
+PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges) {
+    EdgeAttribute l_attr, r_attr;
+    std::sort(t1_edges.begin(), t1_edges.end());
+    std::sort(t2_edges.begin(), t2_edges.end());
+
+    auto first1 = t1_edges.begin();
+    auto first2 = t2_edges.begin();
+    auto last1 = t1_edges.end();
+    auto last2 = t2_edges.end();
+    PhyloTreeEdge common_edge;
+
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            if (first1->isCompatibleWith(t2_edges)) {
+                common_edge = PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
+                return std::move(common_edge);
+            }
+            ++first1; // first1 not in list2
+        } else {
+            if (!(*first2 < *first1)) { // first1 == first2
+                l_attr = first1->getAttribute();
+                r_attr = first2->getAttribute();
+                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
+                common_edge = PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
+                return std::move(common_edge);
+                ++first1;
+            }
+            else { // first2 not in list1
+                if (first2->isCompatibleWith(t1_edges)) {
+                    common_edge = PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
+                    return std::move(common_edge);
+                }
+            }
+            ++first2;
+        }
+    }
+    throw edge_not_found_exception("No common edges");
+}

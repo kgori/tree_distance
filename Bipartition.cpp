@@ -30,7 +30,7 @@ void Bipartition::addOne(size_t index) {
     partition[size() - index - 1] = true;
 }
 
-void Bipartition::complement(int numLeaves) {
+void Bipartition::complement(size_t numLeaves) {
     size_t s = size();
     for (size_t i = 0; i < numLeaves; ++i) {
         partition[s - i - 1].flip();

@@ -9,6 +9,13 @@
 
 using namespace std;
 
+class edge_not_found_exception : public std::runtime_error {
+public:
+    edge_not_found_exception(std::string const &msg) :
+            std::runtime_error(msg) {
+    }
+};
+
 class PhyloTree {
 public:
     PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<EdgeAttribute> &leafEdgeLengths);
@@ -19,8 +26,9 @@ public:
 
     PhyloTree(string t, bool rooted);
 
-//    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree &t1, PhyloTree &t2);
     static void getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge>& dest);
+
+    static PhyloTreeEdge getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges);
 
     static void getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges, vector<PhyloTreeEdge> &dest);
 
@@ -80,7 +88,7 @@ public:
 
     void setNewick(string newick);
 
-    int numEdges();
+    size_t numEdges();
 
     void addEdge(PhyloTreeEdge e) { edges.push_back(e); }
 
