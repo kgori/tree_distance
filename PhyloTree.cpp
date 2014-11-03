@@ -17,9 +17,10 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) 
     size_t len = leaf2NumMap.size();
     for (auto &edge : edges) {
         boost::dynamic_bitset<> new_bitset(len);
-        auto partition = *(edge.getPartition());
+        auto partition = edge.getPartition();
+        auto plen = partition.size();
         for (size_t i=0; i < len; ++i) {
-            new_bitset[len - i - 1] = partition[partition.size() - i - 1];
+            new_bitset[len - i - 1] = partition[plen - i - 1];
         }
         edge.setOriginalEdge(Bipartition(new_bitset));
         this->edges.push_back(edge);
@@ -388,9 +389,9 @@ string PhyloTree::getNewick(bool branchLengths) {
 
         // add all the elements still in minEdge (These are leaves that weren't already added as part of
         // a min split contained by minEdge.)
-        if (!minEdge.getPartition()->empty()) {
-            for (size_t i = 0; i < minEdge.getPartition()->size(); i++) {
-                if ((*(minEdge.getPartition()))[i]) {
+        if (!minEdge.getPartition().empty()) {
+            for (size_t i = 0; i < minEdge.getPartition().size(); i++) {
+                if (minEdge.getPartition()[i]) {
                     str1 += leaf2NumMap[i];
                     if (branchLengths) {
                         str1 += ":" + Tools::double_to_string(leafEdgeAttribs[i].getAttribute());
@@ -420,7 +421,7 @@ string PhyloTree::getNewick(bool branchLengths) {
     // add all remaining leaves
     if (!allLeaves.isEmpty()) {
         for (size_t i = 0; i < allLeaves.size(); i++) {
-            if ((*(allLeaves.getPartition()))[i]) {
+            if ((allLeaves.getPartition())[i]) {
                 newickString = newickString + leaf2NumMap[i];
                 if (branchLengths) {
                     newickString += ":" + Tools::double_to_string(leafEdgeAttribs[i].getAttribute());

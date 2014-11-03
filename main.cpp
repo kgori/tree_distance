@@ -14,18 +14,14 @@ int main(int argc, char const *argv[])
     auto t4 = PhyloTree(s4, false);
     auto t5 = PhyloTree(s5, true);
     auto t6 = PhyloTree(s6, true);
-
+    
     clock_t start = clock();
-//    for (size_t i = 0; i < 100; ++i) {
-//        Distance::getEuclideanDistance(t5, t6, false);
-//        Distance::getGeodesicDistance(t5, t6, false);
-//        Distance::getRobinsonFouldsDistance(t5, t6, false);
-//        Distance::getWeightedRobinsonFouldsDistance(t5, t6, false);
-//    }
-    vector<PhyloTree> va,vb;
-    Geodesic::splitOnCommonEdge(t1, t2, va, vb);
+    for (size_t i = 0; i < 100; ++i) {
+        Distance::getEuclideanDistance(t5, t6, false);
+        Distance::getGeodesicDistance(t5, t6, false);
+        Distance::getRobinsonFouldsDistance(t5, t6, false);
+        Distance::getWeightedRobinsonFouldsDistance(t5, t6, false);
+    }
     printf("Time taken: %.3f millisec\n", 1000 * (double)(clock() - start)/CLOCKS_PER_SEC);
-    cout << "va size = " << va.size() << endl;
-    cout << "vb size = " << vb.size() << endl;
     return 0;
 }

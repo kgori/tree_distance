@@ -27,7 +27,7 @@ TEST_CASE("Bipartition") {
         auto bitset = c.getPartition();
 
         // test bitset constructor
-        auto d = Bipartition(*bitset);
+        auto d = Bipartition(bitset);
         REQUIRE(d.toString() == c.toString());
     }
 
@@ -185,7 +185,7 @@ TEST_CASE("PhyloTreeEdge") {
         REQUIRE(a.getOriginalID() == -1);
 
         auto bip = Bipartition("01001101");
-        auto b = PhyloTreeEdge(*(bip.getPartition()));
+        auto b = PhyloTreeEdge(bip.getPartition());
         REQUIRE(b.toString() == "[] 01001101");
         REQUIRE(b.getOriginalID() == -1);
 
@@ -208,7 +208,7 @@ TEST_CASE("PhyloTreeEdge") {
         REQUIRE(f.getOriginalID() == 12);
 
         auto edge = Bipartition("11011011");
-        auto g = PhyloTreeEdge(*(edge.getPartition()), attrib, *(bip.getPartition()), 13);
+        auto g = PhyloTreeEdge(edge.getPartition(), attrib, bip.getPartition(), 13);
         REQUIRE(g.toString() == attrib.toString() + " " + edge.toString());
         REQUIRE(g.getOriginalID() == 13);
 
@@ -218,11 +218,11 @@ TEST_CASE("PhyloTreeEdge") {
     }
     SECTION("Empty") {
         SECTION("Empty") {
-            auto a = PhyloTreeEdge(*(Bipartition("0000000").getPartition()));
-            auto b = PhyloTreeEdge(*(Bipartition("1100000").getPartition()));
-            auto c = PhyloTreeEdge(*(Bipartition("0011000").getPartition()));
-            auto d = PhyloTreeEdge(*(Bipartition("0011100").getPartition()));
-            auto e = PhyloTreeEdge(*(Bipartition("0001100").getPartition()));
+            auto a = PhyloTreeEdge(Bipartition("0000000").getPartition());
+            auto b = PhyloTreeEdge(Bipartition("1100000").getPartition());
+            auto c = PhyloTreeEdge(Bipartition("0011000").getPartition());
+            auto d = PhyloTreeEdge(Bipartition("0011100").getPartition());
+            auto e = PhyloTreeEdge(Bipartition("0001100").getPartition());
             REQUIRE(a.isEmpty());
             REQUIRE_FALSE(b.isEmpty());
             REQUIRE_FALSE(c.isEmpty());

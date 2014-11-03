@@ -15,6 +15,8 @@ public:
 
     Bipartition(boost::dynamic_bitset<> &edge);
 
+    Bipartition(const boost::dynamic_bitset<> &edge);
+
     Bipartition(string s);
 
     inline Bipartition& operator=(Bipartition rhs) {
@@ -31,7 +33,7 @@ public:
         swap(first.partition, second.partition);
     }
 
-    unique_ptr<boost::dynamic_bitset<>> getPartition() const;
+    boost::dynamic_bitset<> getPartition() const;
 
     inline bool operator==(const Bipartition &other) const {
         return (*this).equals(other);
@@ -42,7 +44,7 @@ public:
     }
 
     inline bool operator<(const Bipartition &other) const {
-        return *(this->partition) < *(other.partition);
+        return (this->partition) < (other.partition);
     }
 
     inline bool operator>(const Bipartition &other) const {
@@ -58,16 +60,15 @@ public:
     }
 
     inline Bipartition &operator&=(const Bipartition &other) {
-        *partition &= *(other.partition);
+        partition &= (other.partition);
         return *this;
     }
 
     inline Bipartition operator~() const {
-        boost::dynamic_bitset<> uncontroversial = ~*(this->getPartition());
-        return Bipartition(uncontroversial);
+        return Bipartition(~(this->getPartition()));
     }
 
-    void setPartition(boost::dynamic_bitset<> &edge);
+    void setPartition(boost::dynamic_bitset<> edge);
 
     bool isEmpty();
 
@@ -77,7 +78,7 @@ public:
 
     bool disjointFrom(const Bipartition &e) const;
 
-    bool contains(const Bipartition &e) const;
+    bool contains(const Bipartition e) const;
 
     bool contains(size_t i);
 
@@ -94,7 +95,7 @@ public:
     bool isCompatibleWith(const vector<Bipartition>& splits);
 
     Bipartition &andNot(const Bipartition &other) {
-        *partition &= ~*(other.partition);
+        partition &= ~(other.partition);
         return *this;
     }
 
@@ -103,7 +104,7 @@ public:
     static string toStringVerbose(boost::dynamic_bitset<> edge, vector<string> leaf2NumMap);
 
 protected:
-    unique_ptr<boost::dynamic_bitset<>> partition = nullptr;
+    boost::dynamic_bitset<> partition;
 };
 
 #endif /* __BIPARTITION_H__ */

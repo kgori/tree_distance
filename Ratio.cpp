@@ -194,9 +194,9 @@ string Ratio::toStringVerbose(vector<string> leaf2NumMap) {
     // list the edges dropped
     for (int i = 0; i < eEdges.size(); i++) {
         if (i == 0) {   // nice formatting
-            ss << Bipartition::toStringVerbose(*(eEdges[i].getPartition()), leaf2NumMap) << endl;
+            ss << Bipartition::toStringVerbose(eEdges[i].getPartition(), leaf2NumMap) << endl;
         } else {
-            ss << "\t\t" << Bipartition::toStringVerbose(*(eEdges[i].getPartition()), leaf2NumMap) << endl;
+            ss << "\t\t" << Bipartition::toStringVerbose(eEdges[i].getPartition(), leaf2NumMap) << endl;
         }
     }
 
@@ -207,9 +207,9 @@ string Ratio::toStringVerbose(vector<string> leaf2NumMap) {
     // list the edges added
     for (int i = 0; i < fEdges.size(); i++) {
         if (i == 0) {   // nice formatting
-            ss << Bipartition::toStringVerbose(*(fEdges[i].getPartition()), leaf2NumMap) << endl;
+            ss << Bipartition::toStringVerbose(fEdges[i].getPartition(), leaf2NumMap) << endl;
         } else {
-            ss << "\t\t" << Bipartition::toStringVerbose(*(fEdges[i].getPartition()), leaf2NumMap) << endl;
+            ss << "\t\t" << Bipartition::toStringVerbose(fEdges[i].getPartition(), leaf2NumMap) << endl;
         }
     }
 
