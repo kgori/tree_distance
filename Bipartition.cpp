@@ -6,42 +6,45 @@
 using namespace std;
 
 Bipartition::Bipartition() {
-    partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>());
+    partition = boost::dynamic_bitset<>(0);
 }
 
 // copy-constructor
 Bipartition::Bipartition(const Bipartition &e) {
-    partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(*(e.partition)));
+    partition = boost::dynamic_bitset<>(e.partition);
 }
 
 Bipartition::Bipartition(boost::dynamic_bitset<> &edge) {
-    partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(edge));
+    partition = boost::dynamic_bitset<>(edge);
+}
+
+Bipartition::Bipartition(const boost::dynamic_bitset<> &edge) {
+    partition = boost::dynamic_bitset<>(edge);
 }
 
 Bipartition::Bipartition(string s) {
-    partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(s));
+    partition = boost::dynamic_bitset<>(s);
 }
 
 void Bipartition::addOne(size_t index) {
-    (*partition)[size() - index - 1] = true;
+    partition[size() - index - 1] = true;
 }
 
 void Bipartition::complement(int numLeaves) {
     size_t s = size();
     for (size_t i = 0; i < numLeaves; ++i) {
-        (*partition)[s - i - 1].flip();
+        partition[s - i - 1].flip();
     }
 }
 
-bool Bipartition::contains(const Bipartition &e) const {
-    auto foreign_edge = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(*e.partition));
-    (*foreign_edge) &= (*partition);
-    return (*foreign_edge) == (*(e.partition));
+bool Bipartition::contains(const Bipartition e) const {
+    auto foreign_edge = e.partition;
+    foreign_edge &= partition;
+    return foreign_edge == e.partition;
 }
 
 bool Bipartition::contains(size_t i) {
-    if (!partition) throw exception();
-    return (*partition)[size() - i -1];
+    return partition[size() - i - 1];
 }
 
 bool Bipartition::crosses(const Bipartition &e) const {
@@ -49,19 +52,18 @@ bool Bipartition::crosses(const Bipartition &e) const {
 }
 
 bool Bipartition::disjointFrom(const Bipartition &e) const {
-    return !(*partition).intersects(*(e.partition));
+    return !partition.intersects(e.partition);
 }
 
 bool Bipartition::equals(const Bipartition &e) const {
-    return (*partition) == (*(e.partition));
+    return partition == (e.partition);
 }
 
-unique_ptr<boost::dynamic_bitset<>> Bipartition::getPartition() const {
-    if (!partition) throw exception();
-    return unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(*partition));
+boost::dynamic_bitset<> Bipartition::getPartition() const {
+    return partition;
 }
 
-bool Bipartition::isCompatibleWith(vector<Bipartition> splits) {
+bool Bipartition::isCompatibleWith(const vector<Bipartition>& splits) {
     for (size_t i = 0; i < splits.size(); ++i) {
         if (this->crosses(splits[i])) {
             return false;
@@ -71,11 +73,11 @@ bool Bipartition::isCompatibleWith(vector<Bipartition> splits) {
 }
 
 bool Bipartition::isEmpty() {
-    return partition->none();
+    return partition.none();
 }
 
 size_t Bipartition::size() {
-    return partition->size();
+    return partition.size();
 }
 
 bool Bipartition::properlyContains(const Bipartition &e) {
@@ -83,16 +85,16 @@ bool Bipartition::properlyContains(const Bipartition &e) {
 }
 
 void Bipartition::removeOne(size_t index) {
-    (*partition)[size() - index - 1] = false;
+    partition[size() - index - 1] = false;
 }
 
-void Bipartition::setPartition(boost::dynamic_bitset<> &edge) {
-    partition = unique_ptr<boost::dynamic_bitset<>>(new boost::dynamic_bitset<>(edge));
+void Bipartition::setPartition(boost::dynamic_bitset<> edge) {
+    partition = edge;
 }
 
 string Bipartition::toString() {
     string s;
-    to_string(*partition, s);
+    to_string(partition, s);
     return s;
 }
 

@@ -5,9 +5,9 @@ BipartiteGraph::BipartiteGraph(vector<deque<bool>> IncidenceMatrix, vector<doubl
     this->nB = Bweight.size();
     this->n = max(nA, nB);
     this->edge = IncidenceMatrix;
-    for (auto dbl : Aweight)
+    for (auto &dbl : Aweight)
         Avertex.push_back(Vertex(dbl));
-    for (auto dbl : Bweight)
+    for (auto &dbl : Bweight)
         Bvertex.push_back(Vertex(dbl));
 }
 

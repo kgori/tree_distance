@@ -3,7 +3,14 @@
 //#include <sstream>
 #define PRECISION 5
 
-std::vector<std::string> Tools::string_split(std::string to_split, std::string delimiters, std::string to_trim) {
+std::vector<std::string> Tools::string_split(std::string& to_split, const std::string& delimiters, const std::string& to_trim) {
+    std::vector<std::string> results;
+    boost::trim_if(to_split, boost::is_any_of(to_trim));
+    boost::split(results, to_split, boost::is_any_of(delimiters), boost::token_compress_on);
+    return results;
+}
+
+std::vector<std::string> Tools::string_split(std::string& to_split, const char* delimiters, const char* to_trim) {
     std::vector<std::string> results;
     boost::trim_if(to_split, boost::is_any_of(to_trim));
     boost::split(results, to_split, boost::is_any_of(delimiters), boost::token_compress_on);
@@ -39,10 +46,10 @@ std::string Tools::double_to_string(double d) {
     return s;
 }
 
-size_t Tools::nextIndex(string t, size_t i, string s) {
-    size_t pos = t.find_first_of(s, i + 1);
-    return pos == std::string::npos ? t.size() : pos;
-}
+//size_t Tools::nextIndex(string const &t, size_t i, string s) {
+//    size_t pos = t.find_first_of(s, i + 1);
+//    return pos == std::string::npos ? t.size() : pos;
+//}
 
 string Tools::substring(string s, size_t begin, size_t end) {
     if (begin > end) throw std::invalid_argument("'begin' can't be larger than 'end'");
@@ -52,4 +59,13 @@ string Tools::substring(string s, size_t begin, size_t end) {
     catch (std::out_of_range &range_error) {
         return "";
     }
+}
+
+void Tools::despace(string &s) {
+    s.erase(std::remove_if(s.begin(), s.end(), [](char x){return std::isspace(x);}), s.end());
+}
+
+size_t Tools::nextIndex(const string &t, size_t i, const char *s) {
+    size_t pos = t.find_first_of(s, i + 1);
+    return pos == std::string::npos ? t.size() : pos;
 }

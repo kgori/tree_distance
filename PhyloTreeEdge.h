@@ -20,7 +20,7 @@ public:
 
     PhyloTreeEdge(string s);
 
-    PhyloTreeEdge(boost::dynamic_bitset<> &edge);
+    PhyloTreeEdge(boost::dynamic_bitset<> edge);
 
     PhyloTreeEdge(EdgeAttribute attrib);
 
@@ -33,16 +33,6 @@ public:
     PhyloTreeEdge(boost::dynamic_bitset<> edge, EdgeAttribute attrib, boost::dynamic_bitset<> originalEdge, int originalID);
 
     PhyloTreeEdge(const PhyloTreeEdge &other); // copy-constructor
-
-    PhyloTreeEdge &operator=(const PhyloTreeEdge &other) {
-        if (this != &other) {
-            super(*(other.partition));
-            attribute = unique_ptr<EdgeAttribute>(new EdgeAttribute(*(other.attribute)));
-            this->originalEdge = unique_ptr<Bipartition>(new Bipartition(*(other.originalEdge)));
-            this->originalID = other.originalID;
-        }
-        return *this;
-    }
 
 //    inline bool operator< (const EdgeAttribute& other) const {
 //        return Tools::vector_equal(this->vect, other.vect);
@@ -59,6 +49,8 @@ public:
 //    inline bool operator!=(const PhyloTreeEdge& other) const { return !(*this == other); }
 
     double getLength();
+
+    double getLength() const;
 
     bool isZero();
 
@@ -82,7 +74,7 @@ public:
 
     void setOriginalID(int originalID);
 
-    EdgeAttribute getAttribute();
+    EdgeAttribute& getAttribute();
 
     void setAttribute(const EdgeAttribute &attrib);
 
@@ -90,9 +82,13 @@ public:
 
     string toStringVerbose(vector<string> leaf2NumMap);
 
+    bool isCompatibleWith(const vector<Bipartition>& splits);
+
+    bool isCompatibleWith(const vector<PhyloTreeEdge>& splits);
+
 private:
-    unique_ptr<EdgeAttribute> attribute = nullptr;
-    unique_ptr<Bipartition> originalEdge = nullptr;
+    EdgeAttribute attribute;
+    Bipartition originalEdge;
     int originalID;
 };
 

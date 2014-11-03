@@ -49,15 +49,16 @@ public:
 
     void setLeafContributionSquared(double leafContributionSquared);
 
-    static Geodesic getGeodesic(PhyloTree t1, PhyloTree t2);
+    static Geodesic getGeodesic(PhyloTree &t1, PhyloTree &t2);
 
-    static Geodesic getGeodesicNoCommonEdges(PhyloTree t1, PhyloTree t2);
+    static Geodesic getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2);
 
 private:
     RatioSequence rs;
     vector<PhyloTreeEdge> commonEdges;
     double leafContributionSquared = 0;
-    static void splitOnCommonEdge(PhyloTree t1, PhyloTree t2, vector<PhyloTree>& destination_a, vector<PhyloTree>& destination_b);
+public:
+    static void splitOnCommonEdge(PhyloTree &t1, PhyloTree &t2, vector<PhyloTree> &destination_a, vector<PhyloTree> &destination_b);
 };
 
 #endif /* __GEODESIC_H__ */
