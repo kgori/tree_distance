@@ -8,7 +8,7 @@
 EdgeAttribute::EdgeAttribute() {
 }
 
-EdgeAttribute::EdgeAttribute(vector<double> v) {
+EdgeAttribute::EdgeAttribute(const vector<double>& v) {
     vect = v;
 }
 
@@ -62,13 +62,13 @@ bool EdgeAttribute::equals(const EdgeAttribute &other) const {
 
 double EdgeAttribute::norm() const {
     double norm = 0.0;
-    for (auto e : vect) {
+    for (auto &e : vect) {
         norm += e * e;
     }
     return std::sqrt(norm);
 }
 
-EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
+EdgeAttribute EdgeAttribute::difference(EdgeAttribute &a1, EdgeAttribute &a2) {
     if (a1.size() != a2.size()) throw std::invalid_argument("difference: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
@@ -77,7 +77,7 @@ EdgeAttribute EdgeAttribute::difference(EdgeAttribute a1, EdgeAttribute a2) {
     return EdgeAttribute(diff);
 }
 
-EdgeAttribute EdgeAttribute::add(EdgeAttribute a1, EdgeAttribute a2) {
+EdgeAttribute EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2) {
     if (a1.size() != a2.size()) throw std::invalid_argument("add: Edge attributes are not the same size");
     std::vector<double> diff;
     for (size_t i = 0; i < a1.size(); ++i) {
@@ -107,11 +107,13 @@ EdgeAttribute EdgeAttribute::zeroAttribute(size_t size) {
     return EdgeAttribute(zeros);
 }
 
-EdgeAttribute EdgeAttribute::weightedPairAverage(EdgeAttribute start, EdgeAttribute target, double position) {
-    if (start.size() != target.size()) throw std::invalid_argument("weighted pair average: Edge attributes are not the same size");
-    std::vector<double> point(start.size(), 0.0);
-    for (size_t i = 0; i < start.size(); ++i) {
-        point[i] = (1 - position) * start.vect[i] + position * target.vect[i];
+EdgeAttribute EdgeAttribute::weightedPairAverage(const EdgeAttribute& start, const EdgeAttribute& target, double position) {
+    size_t start_size = start.size();
+    if (start_size != target.size()) throw std::invalid_argument("weighted pair average: Edge attributes are not the same size");
+    auto attr = EdgeAttribute();
+    attr.vect.resize(start_size, 0.0);
+    for (size_t i = 0; i < start_size; ++i) {
+        attr.vect[i] = (1 - position) * start.vect[i] + position * target.vect[i];
     }
-    return EdgeAttribute(point);
+    return attr;
 }

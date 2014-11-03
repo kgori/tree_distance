@@ -11,6 +11,8 @@
 
 using namespace std;
 
+const string EMPTY("");
+
 class Tools {
 public:
     template<typename T>
@@ -61,19 +63,25 @@ public:
         c.erase(c.begin() + index);
     }
 
-    static vector<string> string_split(string to_split, string delimiters = ", \t\n", string to_trim = "[]");
+    static vector<string> string_split(string& to_split, const string& delimiters, const string& to_trim);
 
-    static string string_join(vector<string> to_join, string delimiter);
+    static vector<string> string_split(std::string& to_split, const char* delimiters = " ,/n/t", const char* to_trim = "[]");
 
-    static string string_join(deque<string> to_join, string delimiter);
+    static string string_join(vector<string> to_join, string delimiter = EMPTY);
+
+    static string string_join(deque<string> to_join, string delimiter = EMPTY);
 
     static vector<double> stringvec_to_doublevec(vector<string> stringvec);
 
     static string double_to_string(double d);
 
-    static size_t nextIndex(string t, size_t i, string s);
+//    static size_t nextIndex(const string& t, size_t i, string s);
+
+    static size_t nextIndex(const string& t, size_t i, const char* s);
 
     static string substring(string s, size_t begin, size_t end);
+
+    static void despace(string& s);
 };
 
 #endif /* __TOOLS_H__ */
