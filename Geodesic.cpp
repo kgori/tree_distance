@@ -5,7 +5,6 @@
 
 void deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
     v.erase(std::remove_if(v.begin(), v.end(), [](PhyloTreeEdge& element){return element.isEmpty();}), v.end());
-//    v.erase(std::remove_if(v.begin(), v.end(), boost::bind(&PhyloTreeEdge::isEmpty())), v.end());
 }
 
 Geodesic::Geodesic(RatioSequence rs) {
@@ -308,12 +307,17 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     auto t2_edges = t2.getEdges();
     size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
     size_t numEdges2 = t2_edges.size(); // number of edges in tree 2
+
+    if (numEdges1 == 0 && numEdges2 == 0)
+        return Geodesic(RatioSequence());
+
+    // double-check that both trees have splits.  Otherwise didn't remove a common edge.
+    if (numEdges1 == 0 || numEdges2 == 0) {
+        throw ("Error: tried to compute geodesic between subtrees that should not have common/compatible edges, but do!  t1 = " + t1.getNewick(true) + " and t2 = " + t2.getNewick(true));
+    }
+
     std::sort(t1_edges.begin(), t1_edges.end());
     std::sort(t2_edges.begin(), t2_edges.end());
-
-    if (numEdges1 == 0 && numEdges2 == 0) {
-        return Geodesic(RatioSequence());
-    }
 
     // double-check no common edges
 //    vector<PhyloTreeEdge> commonEdges;
@@ -321,11 +325,6 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
 //    if (commonEdges.size() != 0) {
 //        throw invalid_argument("Error: tried to compute geodesic between subtrees that should not have common edges, but do!  t1 = " + t1.getNewick(true) + " and t2 = " + t2.getNewick(true));
 //    }
-
-    // double-check that both trees have splits.  Otherwise didn't remove a common edge.
-    if (numEdges1 == 0 || numEdges2 == 0) {
-        throw ("Error: tried to compute geodesic between subtrees that should not have common/compatible edges, but do!  t1 = " + t1.getNewick(true) + " and t2 = " + t2.getNewick(true));
-    }
 
     auto rs = RatioSequence();
     // if we can't split the ratio because it has too few edges in either the numerator or denominator
@@ -337,14 +336,13 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     vector<size_t> aVertices, bVertices;
     deque<Ratio> queue;
     Ratio ratio;
-    size_t index;
 
     // initialize BipartiteGraph
     auto incidenceMatrix = BipartiteGraph::getIncidenceMatrix(t1_edges, t2_edges);
     BipartiteGraph bg(incidenceMatrix, t1.getIntEdgeAttribNorms(), t2.getIntEdgeAttribNorms());
     queue.push_back(Ratio(t1_edges, t2_edges));
-    aVertices.reserve(queue[0].getEEdges().size());
-    bVertices.reserve(queue[0].getFEdges().size());
+    aVertices.reserve(numEdges1);
+    bVertices.reserve(numEdges2);
 
     while (queue.size() > 0) {
         ratio = queue.front();
@@ -357,13 +355,11 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
         auto ratio_f_edges = ratio.getFEdges();
         for (int i = 0; i < ratio.getEEdges().size(); i++) {
             auto index_iter = std::lower_bound(t1_edges.begin(), t1_edges.end(), ratio_e_edges[i]);
-//            index = std::distance(t1_edges.begin(), index_iter);
             aVertices.push_back(std::distance(t1_edges.begin(), index_iter));
         }
 
         for (int i = 0; i < ratio.getFEdges().size(); i++) {
             auto index_iter = std::lower_bound(t2_edges.begin(), t2_edges.end(), ratio_f_edges[i]);
-//            index = std::distance(t2_edges.begin(), index_iter);
             bVertices.push_back(std::distance(t2_edges.begin(), index_iter));
         }
 
@@ -518,10 +514,10 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
 
     deleteEmptyEdges(edgesA1);
     deleteEmptyEdges(edgesA2);
+    splitOnCommonEdge(edgesA1, edgesA2, leaf2NumMapA, destination_a, destination_b);
+
     deleteEmptyEdges(edgesB1);
     deleteEmptyEdges(edgesB2);
-
-    splitOnCommonEdge(edgesA1, edgesA2, leaf2NumMapA, destination_a, destination_b);
     splitOnCommonEdge(edgesB1, edgesB2, leaf2NumMapB, destination_a, destination_b);
 }
 
