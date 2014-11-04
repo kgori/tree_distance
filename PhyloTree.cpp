@@ -602,13 +602,11 @@ PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vec
     auto first2 = t2_edges.begin();
     auto last1 = t1_edges.end();
     auto last2 = t2_edges.end();
-    PhyloTreeEdge common_edge;
 
     while (first1 != last1 && first2 != last2) {
         if (*first1 < *first2) {
             if (first1->isCompatibleWith(t2_edges)) {
-                common_edge = PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
-                return std::move(common_edge);
+                return PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
             }
             ++first1; // first1 not in list2
         } else {
@@ -616,13 +614,11 @@ PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vec
                 l_attr = first1->getAttribute();
                 r_attr = first2->getAttribute();
                 auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-                common_edge = PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
-                return std::move(common_edge);
+                return PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
             }
             else { // first2 not in list1
                 if (first2->isCompatibleWith(t1_edges)) {
-                    common_edge = PhyloTreeEdge(first1->asSplit(), first1->getAttribute(), first1->getOriginalID());
-                    return std::move(common_edge);
+                    return PhyloTreeEdge(first2->asSplit(), first2->getAttribute(), first2->getOriginalID());
                 }
             }
             ++first2;
