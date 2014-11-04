@@ -10,12 +10,10 @@ Bipartition::Bipartition() {
 }
 
 // copy-constructor
-Bipartition::Bipartition(const Bipartition &e) {
-    partition = boost::dynamic_bitset<>(e.partition);
+Bipartition::Bipartition(const Bipartition &e) : partition(e.partition) {
 }
 
-Bipartition::Bipartition(boost::dynamic_bitset<> &edge) {
-    partition = boost::dynamic_bitset<>(edge);
+Bipartition::Bipartition(boost::dynamic_bitset<> &edge) : partition(edge) {
 }
 
 Bipartition::Bipartition(const boost::dynamic_bitset<> &edge) {
@@ -37,14 +35,18 @@ void Bipartition::complement(size_t numLeaves) {
     }
 }
 
-bool Bipartition::contains(const Bipartition e) const {
-    auto foreign_edge = e.partition;
-    foreign_edge &= partition;
-    return foreign_edge == e.partition;
+bool Bipartition::contains(const Bipartition& e) const {
+    long foreign = e.partition.to_ulong();
+    long home = partition.to_ulong();
+    return (foreign & home) == foreign;
 }
 
 bool Bipartition::contains(size_t i) {
     return partition[size() - i - 1];
+}
+
+bool Bipartition::properlyContains(const Bipartition &e) {
+    return this->contains(e) && !e.contains(*this);
 }
 
 bool Bipartition::crosses(const Bipartition &e) const {
@@ -78,10 +80,6 @@ bool Bipartition::isEmpty() {
 
 size_t Bipartition::size() {
     return partition.size();
-}
-
-bool Bipartition::properlyContains(const Bipartition &e) {
-    return this->contains(e) && !e.contains(*this);
 }
 
 void Bipartition::removeOne(size_t index) {

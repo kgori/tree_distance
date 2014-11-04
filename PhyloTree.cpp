@@ -12,9 +12,10 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, 
     this->leafEdgeAttribs = leafEdgeLengths;
 }
 
-PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) {
-    this->leaf2NumMap = leaf2NumMap;
+PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) : leaf2NumMap(leaf2NumMap) {
+//    this->leaf2NumMap = leaf2NumMap;
     size_t len = leaf2NumMap.size();
+    this->edges.reserve(edges.size());
     for (auto &edge : edges) {
         boost::dynamic_bitset<> new_bitset(len);
         auto partition = edge.getPartition();
@@ -145,6 +146,7 @@ const vector<PhyloTreeEdge>& PhyloTree::getEdgesByRef() {
 }
 
 void PhyloTree::getEdges(vector<PhyloTreeEdge>& edges_to_add) {
+    edges_to_add.reserve(edges.size());
     for (auto &edge : edges) {
         edges_to_add.push_back(edge);
     }
@@ -190,7 +192,7 @@ EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition& edge) {
 
 vector<Bipartition> PhyloTree::getSplits() {
     vector<Bipartition> splits;
-
+    splits.reserve(edges.size());
     for (auto &edge : edges) {
         splits.push_back(edge.asSplit());
     }
@@ -292,10 +294,7 @@ vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() {
 }
 
 void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs) {
-    leafEdgeAttribs.clear();
-    for (auto &e : otherEdgeAttribs) {
-        leafEdgeAttribs.push_back(e);
-    }
+    leafEdgeAttribs = otherEdgeAttribs;
 }
 
 //vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
@@ -304,6 +303,7 @@ void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs) {
 
 vector<double> PhyloTree::getIntEdgeAttribNorms() {
     vector<double> norms;
+    norms.reserve(edges.size());
     for (auto &e : edges) {
         norms.push_back(e.getAttribute().norm());
     }
@@ -618,7 +618,6 @@ PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vec
                 auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
                 common_edge = PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
                 return std::move(common_edge);
-                ++first1;
             }
             else { // first2 not in list1
                 if (first2->isCompatibleWith(t1_edges)) {

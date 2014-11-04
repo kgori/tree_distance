@@ -19,20 +19,6 @@ public:
 
     Bipartition(string s);
 
-    inline Bipartition& operator=(Bipartition rhs) {
-        swap(*this, rhs);
-        return *this;
-    }
-
-    friend void swap(Bipartition& first, Bipartition& second) {
-        // enable ADL (not necessary in our case, but good practice)
-        using std::swap;
-
-        // by swapping the members of two classes,
-        // the two classes are effectively swapped
-        swap(first.partition, second.partition);
-    }
-
     boost::dynamic_bitset<> getPartition() const;
 
     inline bool operator==(const Bipartition &other) const {
@@ -78,7 +64,7 @@ public:
 
     bool disjointFrom(const Bipartition &e) const;
 
-    bool contains(const Bipartition e) const;
+    bool contains(const Bipartition& e) const;
 
     bool contains(size_t i);
 

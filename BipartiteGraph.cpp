@@ -1,13 +1,12 @@
 #include "BipartiteGraph.h"
 
-BipartiteGraph::BipartiteGraph(vector<deque<bool>> IncidenceMatrix, vector<double> Aweight, vector<double> Bweight) {
-    this->nA = Aweight.size();
-    this->nB = Bweight.size();
+BipartiteGraph::BipartiteGraph(vector<deque<bool>>& IncidenceMatrix, vector<double> Aweight, vector<double> Bweight) : edge(IncidenceMatrix), nA(Aweight.size()), nB(Bweight.size()) {
     this->n = max(nA, nB);
-    this->edge = IncidenceMatrix;
-    for (auto &dbl : Aweight)
+    Avertex.reserve(nA);
+    Bvertex.reserve(nB);
+    for (auto dbl : Aweight)
         Avertex.push_back(Vertex(dbl));
-    for (auto &dbl : Bweight)
+    for (auto dbl : Bweight)
         Bvertex.push_back(Vertex(dbl));
 }
 

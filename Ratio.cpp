@@ -63,6 +63,7 @@ void Ratio::addEEdge(PhyloTreeEdge edge) {
 }
 
 void Ratio::addAllEEdges(vector<PhyloTreeEdge> edges) {
+    eEdges.reserve(eEdges.size() + edges.size());
     for (auto &e : edges) {
         eEdges.push_back(e);
     }
@@ -100,6 +101,7 @@ void Ratio::addFEdge(PhyloTreeEdge edge) {
 }
 
 void Ratio::addAllFEdges(vector<PhyloTreeEdge> edges) {
+    fEdges.reserve(fEdges.size() + edges.size());
     for (auto &f : edges) {
         fEdges.push_back(f);
     }
@@ -127,6 +129,8 @@ double Ratio::getTime() {
 
 Ratio Ratio::reverse() {
     vector<PhyloTreeEdge> evec, fvec;
+    evec.reserve(eEdges.size());
+    fvec.reserve(fEdges.size());
     for (auto &e : eEdges) {
         evec.push_back(PhyloTreeEdge(e));
     }

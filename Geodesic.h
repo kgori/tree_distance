@@ -33,7 +33,7 @@ public:
 
     string toString();
 
-    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2, double position);
+//    static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2, double position);
 
 //    vector<PhyloTreeEdge> getCommonEdges();
 

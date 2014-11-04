@@ -17,7 +17,9 @@ RatioSequence::RatioSequence(string ptA, string ptB) {
     auto dblvecB = Tools::stringvec_to_doublevec(strvecB);
     if (!(dblvecA.size() == dblvecB.size()))
         throw std::invalid_argument("Coordinates have different numbers of dimensions: (" + ptA + "),(" + ptB + ")");
-    for (size_t i=0; i < dblvecA.size(); ++i) {
+    size_t len = dblvecA.size();
+    _RatioSequence.reserve(len);
+    for (size_t i=0; i < len; ++i) {
         this->push_back(Ratio(dblvecA[i], dblvecB[i]));
     }
 }
@@ -27,6 +29,7 @@ RatioSequence RatioSequence::interleave(RatioSequence& rs1, RatioSequence& rs2) 
     RatioSequence combined2 = rs2.getNonDesRSWithMinDist();
 
     RatioSequence interleavedRS = RatioSequence();
+    interleavedRS._RatioSequence.reserve(combined1.size() + combined2.size());
     size_t index1 = 0;  // index for stepping through combined1
     size_t index2 = 0;  // index for stepping through combined2
     while (index1 < combined1.size() && index2 < combined2.size()) {

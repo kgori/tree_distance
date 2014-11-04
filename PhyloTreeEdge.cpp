@@ -64,10 +64,10 @@ PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge, EdgeAttribute attrib,
     this->originalID = originalID;
 }
 
-PhyloTreeEdge::PhyloTreeEdge(const PhyloTreeEdge &other) : super(other.partition) {
-    attribute = EdgeAttribute(other.attribute);
-    this->originalEdge = Bipartition(other.originalEdge);
-    this->originalID = other.originalID;
+PhyloTreeEdge::PhyloTreeEdge(const PhyloTreeEdge &other) : super(other.partition),
+                                                           attribute(other.attribute),
+                                                           originalEdge(other.originalEdge),
+                                                           originalID(other.originalID) {
 }
 
 double PhyloTreeEdge::getLength() {

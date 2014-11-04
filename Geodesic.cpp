@@ -194,50 +194,50 @@ string Geodesic::toString() {
     return ss.str();
 }
 
-vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, double position) {
-    EdgeAttribute commonEdgeAttribute;
-    Bipartition commonSplit;
-
-    vector<PhyloTreeEdge> commonEdges;
-
-    // if the two trees do not have the same leaf2NumMap
-    if (t1.getLeaf2NumMap() != t2.getLeaf2NumMap()) {
-        throw invalid_argument("Trees have mismatched leaves");
-    }
-
-    if (position < 0 || position > 1) {
-        ostringstream err_msg;
-        err_msg << "Error:  position " << position << " must be between 0 and 1";
-        throw invalid_argument(err_msg.str());
-    }
-    // end error checking
-
-    for (PhyloTreeEdge &e : t1.getEdges()) {
-        auto t2_splits = t2.getSplits();
-        bool split_in_t2 = std::find(t2_splits.begin(), t2_splits.end(), e.asSplit()) != t2_splits.end();
-        if (split_in_t2) {
-            // then we have found the same split in each tree
-            commonSplit = Bipartition(e.asSplit());
-            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(e.getAttribute(), t2.getAttribOfSplit(commonSplit), position);
-            commonEdges.push_back(PhyloTreeEdge(Bipartition(commonSplit), commonEdgeAttribute.clone(), -1));
-        }
-            // otherwise check if the split is compatible with all splits in t2
-        else if (e.isCompatibleWith(t2.getSplits())) {
-            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(e.getAttribute(), EdgeAttribute::zeroAttribute(), position);
-            commonEdges.push_back(PhyloTreeEdge(e.asSplit(), commonEdgeAttribute.clone(), -1));
-        }
-    }
-    // check for splits in t2 that are compatible with all splits in t1
-    for (PhyloTreeEdge &e : t2.getEdges()) {
-        auto t1_splits = t1.getSplits();
-        bool split_not_in_t1 = std::find(t1_splits.begin(), t1_splits.end(), e.asSplit()) == t1_splits.end();
-        if (e.isCompatibleWith(t1.getSplits()) && split_not_in_t1) {
-            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(EdgeAttribute::zeroAttribute(), e.getAttribute(), position);
-            commonEdges.push_back(PhyloTreeEdge(e.asSplit(), commonEdgeAttribute.clone(), -1));
-        }
-    }
-    return commonEdges;
-}
+//vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, double position) {
+//    EdgeAttribute commonEdgeAttribute;
+//    Bipartition commonSplit;
+//
+//    vector<PhyloTreeEdge> commonEdges;
+//
+//    // if the two trees do not have the same leaf2NumMap
+//    if (t1.getLeaf2NumMap() != t2.getLeaf2NumMap()) {
+//        throw invalid_argument("Trees have mismatched leaves");
+//    }
+//
+//    if (position < 0 || position > 1) {
+//        ostringstream err_msg;
+//        err_msg << "Error:  position " << position << " must be between 0 and 1";
+//        throw invalid_argument(err_msg.str());
+//    }
+//    // end error checking
+//
+//    for (PhyloTreeEdge &e : t1.getEdges()) {
+//        auto t2_splits = t2.getSplits();
+//        bool split_in_t2 = std::find(t2_splits.begin(), t2_splits.end(), e.asSplit()) != t2_splits.end();
+//        if (split_in_t2) {
+//            // then we have found the same split in each tree
+//            commonSplit = Bipartition(e.asSplit());
+//            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(e.getAttribute(), t2.getAttribOfSplit(commonSplit), position);
+//            commonEdges.push_back(PhyloTreeEdge(Bipartition(commonSplit), commonEdgeAttribute.clone(), -1));
+//        }
+//            // otherwise check if the split is compatible with all splits in t2
+//        else if (e.isCompatibleWith(t2.getSplits())) {
+//            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(e.getAttribute(), EdgeAttribute::zeroAttribute(), position);
+//            commonEdges.push_back(PhyloTreeEdge(e.asSplit(), commonEdgeAttribute.clone(), -1));
+//        }
+//    }
+//    // check for splits in t2 that are compatible with all splits in t1
+//    for (PhyloTreeEdge &e : t2.getEdges()) {
+//        auto t1_splits = t1.getSplits();
+//        bool split_not_in_t1 = std::find(t1_splits.begin(), t1_splits.end(), e.asSplit()) == t1_splits.end();
+//        if (e.isCompatibleWith(t1.getSplits()) && split_not_in_t1) {
+//            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(EdgeAttribute::zeroAttribute(), e.getAttribute(), position);
+//            commonEdges.push_back(PhyloTreeEdge(e.asSplit(), commonEdgeAttribute.clone(), -1));
+//        }
+//    }
+//    return commonEdges;
+//}
 
 void Geodesic::setCommonEdges(vector<PhyloTreeEdge> commonEdges) {
     this->commonEdges = commonEdges;
@@ -285,9 +285,6 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
 
     // get the pairs of trees with no common edges put into aTreesNoCommonEdges and bTreesNoCommonEdges
     //  aTreesNoCommonEdges[i] goes with bTreesNoCommonEdges[i]
-//    vector<PhyloTreeEdge> t1_edges, t2_edges;
-//    t1.getEdges(t1_edges);
-//    t2.getEdges(t2_edges);
     auto t1_edges = t1.getEdges();
     auto t2_edges = t2.getEdges();
     auto l2nm = t1.getLeaf2NumMap();
@@ -311,6 +308,8 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     auto t2_edges = t2.getEdges();
     size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
     size_t numEdges2 = t2_edges.size(); // number of edges in tree 2
+    std::sort(t1_edges.begin(), t1_edges.end());
+    std::sort(t2_edges.begin(), t2_edges.end());
 
     if (numEdges1 == 0 && numEdges2 == 0) {
         return Geodesic(RatioSequence());
@@ -344,33 +343,28 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     auto incidenceMatrix = BipartiteGraph::getIncidenceMatrix(t1_edges, t2_edges);
     BipartiteGraph bg(incidenceMatrix, t1.getIntEdgeAttribNorms(), t2.getIntEdgeAttribNorms());
     queue.push_back(Ratio(t1_edges, t2_edges));
+    aVertices.reserve(queue[0].getEEdges().size());
+    bVertices.reserve(queue[0].getFEdges().size());
 
     while (queue.size() > 0) {
-        ratio = Ratio();
-        ratio.setAllEEdges(queue[0].getEEdges());
-        ratio.setAllFEdges(queue[0].getFEdges());
-//        ratio.setELength(queue[0].getELength());
-//        ratio.setFLength(queue[0].getFLength());
+        ratio = queue.front();
         queue.pop_front();
         aVertices.clear();
         bVertices.clear();
-        aVertices.reserve(ratio.getEEdges().size());
-        bVertices.reserve(ratio.getFEdges().size());
 
         // convert the ratio to what we pass to vertex cover
-
         auto ratio_e_edges = ratio.getEEdges();
         auto ratio_f_edges = ratio.getFEdges();
         for (int i = 0; i < ratio.getEEdges().size(); i++) {
-            auto index_iter = std::find(t1_edges.begin(), t1_edges.end(), ratio_e_edges[i]);
-            index = std::distance(t1_edges.begin(), index_iter);
-            aVertices.push_back(index);
+            auto index_iter = std::lower_bound(t1_edges.begin(), t1_edges.end(), ratio_e_edges[i]);
+//            index = std::distance(t1_edges.begin(), index_iter);
+            aVertices.push_back(std::distance(t1_edges.begin(), index_iter));
         }
 
         for (int i = 0; i < ratio.getFEdges().size(); i++) {
-            auto index_iter = std::find(t2_edges.begin(), t2_edges.end(), ratio_f_edges[i]);
-            index = std::distance(t2_edges.begin(), index_iter);
-            bVertices.push_back(index);
+            auto index_iter = std::lower_bound(t2_edges.begin(), t2_edges.end(), ratio_f_edges[i]);
+//            index = std::distance(t2_edges.begin(), index_iter);
+            bVertices.push_back(std::distance(t2_edges.begin(), index_iter));
         }
 
         // get the cover
