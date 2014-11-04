@@ -88,9 +88,9 @@ PhyloTreeEdge PhyloTreeEdge::clone() {
     return PhyloTreeEdge(*this);
 }
 
-bool PhyloTreeEdge::equals(const PhyloTreeEdge &other) {
-    return this->attribute.equals(other.attribute) && this->partition == other.partition;
-}
+//bool PhyloTreeEdge::equals(const PhyloTreeEdge &other) {
+//    return this->attribute.equals(other.attribute) && this->partition == other.partition;
+//}
 
 bool PhyloTreeEdge::sameBipartition(const PhyloTreeEdge &other) {
     return partition == other.partition;
@@ -128,18 +128,18 @@ EdgeAttribute& PhyloTreeEdge::getAttribute() {
     return attribute;
 }
 
-void PhyloTreeEdge::printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap) {
-    string output = "";
-
-    cout << "Edge ID\t\tLength\t\tLeaves Below" << endl;
-    for (int i = 0; i < edges.size(); i++) {
-        if (!edges[i].getOriginalEdge().getPartition().empty()) {
-            cout << edges[i].getOriginalID() << "\t\t" << edges[i].attribute.toString() << "\t\t" << Bipartition::toStringVerbose(edges[i].getOriginalEdge().getPartition(), leaf2NumMap) << endl;
-        } else {
-            cout << edges[i].toStringVerbose(leaf2NumMap);
-        }
-    }
-}
+//void PhyloTreeEdge::printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap) {
+//    string output = "";
+//
+//    cout << "Edge ID\t\tLength\t\tLeaves Below" << endl;
+//    for (int i = 0; i < edges.size(); i++) {
+//        if (!edges[i].getOriginalEdge().getPartition().empty()) {
+//            cout << edges[i].getOriginalID() << "\t\t" << edges[i].attribute.toString() << "\t\t" << Bipartition::toStringVerbose(edges[i].getOriginalEdge().getPartition(), leaf2NumMap) << endl;
+//        } else {
+//            cout << edges[i].toStringVerbose(leaf2NumMap);
+//        }
+//    }
+//}
 
 string PhyloTreeEdge::toStringVerbose(vector<string> leaf2NumMap) {
     ostringstream ss;

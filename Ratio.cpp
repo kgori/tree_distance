@@ -69,6 +69,16 @@ void Ratio::addAllEEdges(vector<PhyloTreeEdge> edges) {
     eLength = geoAvg(eEdges);
 }
 
+void Ratio::setAllEEdges(vector<PhyloTreeEdge> edges) {
+    eEdges = edges;
+    eLength = geoAvg(eEdges);
+}
+
+void Ratio::setAllFEdges(vector<PhyloTreeEdge> edges) {
+    fEdges = edges;
+    fLength = geoAvg(fEdges);
+}
+
 double Ratio::getELength() {
     if (eEdges.size() == 0)
         return eLength;

@@ -27,10 +27,10 @@ double EdgeAttribute::getAttribute() {
     return val;
 }
 
-void EdgeAttribute::setEdgeAttribute(const EdgeAttribute &attrib) {
-    val = attrib.val;
-    set = true;
-}
+//void EdgeAttribute::setEdgeAttribute(const EdgeAttribute &attrib) {
+//    val = attrib.val;
+//    set = true;
+//}
 
 EdgeAttribute::EdgeAttribute(const EdgeAttribute &other) : val(other.val), set(other.set) {
 }
@@ -63,11 +63,10 @@ EdgeAttribute EdgeAttribute::difference(EdgeAttribute &a1, EdgeAttribute &a2) {
     return EdgeAttribute(a1.val - a2.val);
 }
 
-EdgeAttribute EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2) {
-    if (a1.set != a2.set) throw std::invalid_argument("add: Edge attributes are not the same size");
-    std::vector<double> diff;
-    return EdgeAttribute(a1.val + a2.val);
-}
+//EdgeAttribute EdgeAttribute::add(EdgeAttribute &a1, EdgeAttribute &a2) {
+//    if (a1.set != a2.set) throw std::invalid_argument("add: Edge attributes are not the same size");
+//    return EdgeAttribute(a1.val + a2.val);
+//}
 
 void EdgeAttribute::scaleBy(double a) {
         val *= a;
@@ -77,11 +76,11 @@ size_t EdgeAttribute::size() const {
     return set ? 1 : 0;
 }
 
-void EdgeAttribute::ensurePositive() {
-    val = val > 0 ? val : -val;
-}
+//void EdgeAttribute::ensurePositive() {
+//    val = val > 0 ? val : -val;
+//}
 
-EdgeAttribute EdgeAttribute::zeroAttribute(size_t size) {
+EdgeAttribute EdgeAttribute::zeroAttribute() {
     return EdgeAttribute(0);
 }
 

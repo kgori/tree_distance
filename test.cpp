@@ -416,13 +416,13 @@ TEST_CASE("PhyloTree") {
         auto d = PhyloTree(n4, true);
 
         REQUIRE(abs(a.getDistanceFromOrigin() - sqrt(11)) < TOLERANCE);
-        REQUIRE(abs(a.getDistanceFromOriginNoLeaves() - sqrt(4)) < TOLERANCE);
+//        REQUIRE(abs(a.getDistanceFromOriginNoLeaves() - sqrt(4)) < TOLERANCE);
         REQUIRE(abs(b.getDistanceFromOrigin() - sqrt(44)) < TOLERANCE);
-        REQUIRE(abs(b.getDistanceFromOriginNoLeaves() - sqrt(16)) < TOLERANCE);
+//        REQUIRE(abs(b.getDistanceFromOriginNoLeaves() - sqrt(16)) < TOLERANCE);
         REQUIRE(abs(c.getDistanceFromOrigin() - sqrt(6.4)) < TOLERANCE);
-        REQUIRE(abs(c.getDistanceFromOriginNoLeaves() - sqrt(5)) < TOLERANCE);
+//        REQUIRE(abs(c.getDistanceFromOriginNoLeaves() - sqrt(5)) < TOLERANCE);
         REQUIRE(abs(d.getDistanceFromOrigin() - sqrt(25.6)) < TOLERANCE);
-        REQUIRE(abs(d.getDistanceFromOriginNoLeaves() - sqrt(20)) < TOLERANCE);
+//        REQUIRE(abs(d.getDistanceFromOriginNoLeaves() - sqrt(20)) < TOLERANCE);
 
         REQUIRE(abs(a.getBranchLengthSum() - 11) < TOLERANCE);
         REQUIRE(abs(b.getBranchLengthSum() - 22) < TOLERANCE);

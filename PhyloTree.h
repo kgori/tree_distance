@@ -34,6 +34,8 @@ public:
 
     vector<PhyloTreeEdge> getEdges();
 
+    const vector<PhyloTreeEdge>& getEdgesByRef();
+
     void getEdges(vector<PhyloTreeEdge>& edges_to_add);
 
     void setEdges(vector<PhyloTreeEdge> edges);
@@ -58,9 +60,9 @@ public:
 
     double getDistanceFromOrigin();
 
-    double getDistanceFromOrigin() const;
+//    double getDistanceFromOrigin() const;
 
-    double getDistanceFromOriginNoLeaves();
+//    double getDistanceFromOriginNoLeaves();
 
     double getBranchLengthSum();
 
@@ -72,15 +74,15 @@ public:
 
     bool removeSplit(Bipartition const &e);
 
-    void removeSplits(const vector<Bipartition>& splits);
+//    void removeSplits(const vector<Bipartition>& splits);
 
     vector<EdgeAttribute> getLeafEdgeAttribs();
 
-    vector<EdgeAttribute> getLeafEdgeAttribs() const;
+//    vector<EdgeAttribute> getLeafEdgeAttribs() const;
 
     void setLeafEdgeAttribs(vector<EdgeAttribute>& leafEdgeAttribs);
 
-    vector<EdgeAttribute> getCopyLeafEdgeAttribs();
+//    vector<EdgeAttribute> getCopyLeafEdgeAttribs();
 
     vector<double> getIntEdgeAttribNorms();
 
@@ -90,7 +92,7 @@ public:
 
     size_t numEdges();
 
-    void addEdge(PhyloTreeEdge e) { edges.push_back(e); }
+//    void addEdge(PhyloTreeEdge e) { edges.push_back(e); }
 
     string toString();
 

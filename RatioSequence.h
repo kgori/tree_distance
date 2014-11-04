@@ -16,41 +16,41 @@ public:
 
     RatioSequence(const RatioSequence& other);
 
-    static RatioSequence interleave(RatioSequence rs1, RatioSequence rs2);
+    static RatioSequence interleave(RatioSequence& rs1, RatioSequence& rs2);
 
-    static RatioSequence getRandomRS(size_t dim);
+//    static RatioSequence getRandomRS(size_t dim);
 
     Ratio& operator[](size_t index) { return _RatioSequence[index]; }
 
     const Ratio& operator[](size_t index) const { return _RatioSequence[index]; }
 
-    long getCombineCode();
+//    long getCombineCode();
 
     void setCombineCode(long c);
 
     Ratio getRatio(size_t i);
 
-    bool isAscending();
+//    bool isAscending();
 
     double getDistance();
 
-    double getMinNonDesRSDistance();
+//    double getMinNonDesRSDistance();
 
     RatioSequence clone();
 
-    RatioSequence getCombinedRS(long combineCode);
+//    RatioSequence getCombinedRS(long combineCode);
 
     RatioSequence getNonDesRSWithMinDist();
 
-    RatioSequence getAscRSWithMinDist();
+//    RatioSequence getAscRSWithMinDist();
 
-    RatioSequence reverse();
+//    RatioSequence reverse();
 
     void push_back(Ratio item);
 
     void erase(size_t index);
 
-    void insert(vector<Ratio>::iterator index, Ratio item);
+//    void insert(vector<Ratio>::iterator index, Ratio item);
 
     vector<Ratio>::iterator begin();
 
@@ -64,9 +64,9 @@ public:
 //
 //    string toStringValue();
 //
-    string toStringVerbose(vector<string> leaf2NumMap);
+//    string toStringVerbose(vector<string> leaf2NumMap);
 
-    string toStringCombType();
+//    string toStringCombType();
 
 //
 //    string toStringCombTypeAndValue();

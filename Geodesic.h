@@ -19,15 +19,15 @@ public:
 
     Geodesic(const Geodesic& other);
 
-    PhyloTree getTreeAt(PhyloTree t1, PhyloTree t2, double position);
+//    PhyloTree getTreeAt(PhyloTree t1, PhyloTree t2, double position);
 
-    RatioSequence getRS();
+    RatioSequence& getRS();
 
     void setRS(RatioSequence rs);
 
     double getDist();
 
-    void addCommonEdge(PhyloTreeEdge e);
+//    void addCommonEdge(PhyloTreeEdge e);
 
     Geodesic clone();
 
@@ -35,17 +35,17 @@ public:
 
     static vector<PhyloTreeEdge> getCommonEdges(PhyloTree t1, PhyloTree t2, double position);
 
-    vector<PhyloTreeEdge> getCommonEdges();
+//    vector<PhyloTreeEdge> getCommonEdges();
 
     void setCommonEdges(vector<PhyloTreeEdge> commonEdges);
 
-    size_t numCommonEdges();
+//    size_t numCommonEdges();
 
-    size_t numTopologies();
+//    size_t numTopologies();
 
-    Geodesic reverse();
+//    Geodesic reverse();
 
-    double getLeafContributionSquared();
+//    double getLeafContributionSquared();
 
     void setLeafContributionSquared(double leafContributionSquared);
 

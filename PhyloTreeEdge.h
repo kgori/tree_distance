@@ -58,7 +58,7 @@ public:
 
     PhyloTreeEdge clone();
 
-    bool equals(const PhyloTreeEdge &other);
+//    bool equals(const PhyloTreeEdge &other);
 
     bool sameBipartition(const PhyloTreeEdge &other);
 
@@ -78,7 +78,7 @@ public:
 
     void setAttribute(const EdgeAttribute &attrib);
 
-    static void printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap);
+//    static void printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap);
 
     string toStringVerbose(vector<string> leaf2NumMap);
 

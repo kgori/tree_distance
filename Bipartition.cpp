@@ -92,6 +92,10 @@ void Bipartition::setPartition(boost::dynamic_bitset<> edge) {
     partition = edge;
 }
 
+void Bipartition::clear() {
+    partition.reset();
+}
+
 string Bipartition::toString() {
     string s;
     to_string(partition, s);

@@ -19,11 +19,11 @@ public:
     // ~EdgeAttribute();
     static EdgeAttribute difference(EdgeAttribute &a1, EdgeAttribute &a2);
 
-    static EdgeAttribute add(EdgeAttribute &a1, EdgeAttribute &a2);
+//    static EdgeAttribute add(EdgeAttribute &a1, EdgeAttribute &a2);
 
     static EdgeAttribute weightedPairAverage(const EdgeAttribute& start, const EdgeAttribute& target, double position);
 
-    static EdgeAttribute zeroAttribute(size_t size);
+    static EdgeAttribute zeroAttribute();
 
     inline bool operator<(const EdgeAttribute &other) const {
         return this->norm() < other.norm();
@@ -51,7 +51,7 @@ public:
 
     double getAttribute();
 
-    void setEdgeAttribute(const EdgeAttribute &attrib);
+//    void setEdgeAttribute(const EdgeAttribute &attrib);
 
     EdgeAttribute clone();
 
@@ -65,7 +65,7 @@ public:
 
     size_t size() const;
 
-    void ensurePositive();
+//    void ensurePositive();
 
 private:
     double val = 0;

@@ -40,6 +40,10 @@ public:
 
     void addAllEEdges(vector<PhyloTreeEdge> edges);
 
+    void setAllEEdges(vector<PhyloTreeEdge> edges);
+
+    void setAllFEdges(vector<PhyloTreeEdge> edges);
+
     double getELength();
 
     void setELength(double eLen);

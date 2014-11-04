@@ -1,10 +1,11 @@
 #include "BipartiteGraph.h"
 #include "Geodesic.h"
-#include "PhyloTree.h"
+
 #include <cmath>
 
 void deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
-    v.erase(std::remove_if(v.begin(), v.end(), [&](PhyloTreeEdge element){return element.isEmpty();}), v.end());
+    v.erase(std::remove_if(v.begin(), v.end(), [](PhyloTreeEdge& element){return element.isEmpty();}), v.end());
+//    v.erase(std::remove_if(v.begin(), v.end(), boost::bind(&PhyloTreeEdge::isEmpty())), v.end());
 }
 
 Geodesic::Geodesic(RatioSequence rs) {
@@ -26,144 +27,144 @@ Geodesic::Geodesic(const Geodesic& other) : rs(other.rs), commonEdges(other.comm
                                             leafContributionSquared(other.leafContributionSquared) {
 };
 
-PhyloTree Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position) {
-    /*
-    In the java code the higher and lower ratio indices were used as loop counters,
-    and as booleans (if index == -2: do / don't do something). This doesn't work so well
-    in C++, where loop counters are usually size_t signed integers, so necessarily > 0).
-    As a work around, to avoid having to rewrite a lot of the java logic, I've added some
-    boolean flags to take over the boolean work of the ratio indices.
+//PhyloTree Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position) {
+//    /*
+//    In the java code the higher and lower ratio indices were used as loop counters,
+//    and as booleans (if index == -2: do / don't do something). This doesn't work so well
+//    in C++, where loop counters are usually size_t signed integers, so necessarily > 0).
+//    As a work around, to avoid having to rewrite a lot of the java logic, I've added some
+//    boolean flags to take over the boolean work of the ratio indices.
+//
+//    // LOWER RATIO INDEX: the index of the ratio containing all f edges in the tree we want
+//    // i.e. the index of the ratio with time < position, but such that the next ratio has time >= position
+//    // if position is in the starting orthant, we don't want any f edges.
+//
+//    // HIGHER RATIO INDEX: the index of the ratio containing all e edges in the tree we want
+//    // i.e. the index of the ratio with time >= position, but such that the next ratio has time >= position
+//    // if position is in the target orthant, we don't want any e edges
+//    */
+//
+//    bool lowerRatioIndexMINUS2 = true;
+//    bool lowerRatioIndexMINUS1 = false;
+//    size_t lowerRatioIndex = 0;
+//    bool higherRatioIndexMINUS2 = true;
+//    size_t higherRatioIndex = 0;
+//    vector<PhyloTreeEdge> eEdges;
+//    vector<PhyloTreeEdge> fEdges;
+//
+//    // set the commonEdges
+//    vector<PhyloTreeEdge> commonEdges = getCommonEdges(t1, t2, position);
+//
+//    for (int i = 0; i < commonEdges.size(); i++) {
+//        t1.removeSplit(commonEdges[i]);
+//        t2.removeSplit(commonEdges[i]);
+//    }
+//
+//    //	System.out.println("t1NoCommonEdges is " + t1NoCommonEdges);
+//    //	System.out.println("t2NoCommonEdges is " + t2NoCommonEdges);
+//
+//    Geodesic geo = getGeodesic(t1, t2);
+//
+//    auto l2nm = t1.getLeaf2NumMap();
+//    PhyloTree tree(commonEdges, l2nm);
+//
+//    // set the leaf lengths
+//    vector<EdgeAttribute> newLeafEdgeAttribs;
+//    size_t len = t1.getLeafEdgeAttribs().size();
+//    newLeafEdgeAttribs.resize(len);
+//    for (int i = 0; i < len; ++i) {
+//        newLeafEdgeAttribs[i] = EdgeAttribute::weightedPairAverage(t1.getLeafEdgeAttribs()[i], t2.getLeafEdgeAttribs()[i], position);
+//    }
+//    tree.setLeafEdgeAttribs(newLeafEdgeAttribs);
+//
+//    if (geo.getRS().size() == 0) {
+//        // then we are done, because the two trees are in the same orthant
+//        return tree;
+//    }
+//    // figure out what orthant the new tree is in
+//    // first check if the new tree is in the starting orthant
+//    if (geo.getRS().getRatio(0).getTime() > position) {
+//        // new tree is in the interior of the starting orthant
+//        lowerRatioIndexMINUS1 = true;
+//        lowerRatioIndexMINUS2 = false;
+//
+//        higherRatioIndexMINUS2 = false;
+//        higherRatioIndex = 0;
+//
+//    }
+//    // if the new tree is in the last orthant
+//    else if (geo.getRS().getRatio(geo.getRS().size() - 1).getTime() < position) {
+//        if (geo.getRS().size() == 0) {
+//            lowerRatioIndexMINUS1 = true;
+//            lowerRatioIndexMINUS2 = false;
+//        }
+//        else {
+//            lowerRatioIndex = geo.getRS().size() - 1;
+//            lowerRatioIndexMINUS1 = false;
+//            lowerRatioIndexMINUS2 = false;
+//        }
+//        higherRatioIndex = geo.getRS().size();
+//        higherRatioIndexMINUS2 = false;
+//    }
+//    // the new tree is in an intermediate orthant
+//    else {
+//        for (size_t i = 0; i < geo.getRS().size(); i++) {
+//            // note:  want < instead of <= so we are in an orthant and not still on the boundary,
+//            // if we have a string of equalities
+//            double ratioTime = geo.getRS().getRatio(i).getTime();
+//
+//            if (ratioTime >= position) {
+//                if (i == 0) {
+//                    lowerRatioIndexMINUS1 = true;
+//                    lowerRatioIndexMINUS2 = false;
+//                }
+//                else {
+//                    lowerRatioIndex = i - 1;
+//                    lowerRatioIndexMINUS1 = false;
+//                    lowerRatioIndexMINUS2 = false;
+//                }
+//            }
+//            if (!lowerRatioIndexMINUS2 && (ratioTime > position)) {
+//                higherRatioIndex = i;
+//                higherRatioIndexMINUS2 = false;
+//            }
+//        }
+//    }
+//    // if we didn't set the higherRatioIndex, then we are on the boundary with the target orthant.
+//    // we want all no e edges, so set higherRatioIndex to
+//    if (higherRatioIndexMINUS2) {
+//        higherRatioIndex = geo.getRS().size();
+//    }
+//
+//    // add the edges for all f edges in ratios indexed <= lowerRatioIndex
+//    if (!lowerRatioIndexMINUS2 && !lowerRatioIndexMINUS1) {
+//        for (size_t i = 0; i <= lowerRatioIndex; i++) {
+//            auto curr_ratio = geo.getRS().getRatio(i);
+//            fEdges = curr_ratio.getFEdges();
+//
+//            for (PhyloTreeEdge &f : fEdges) {
+//                EdgeAttribute newAttrib = f.getAttribute();
+//                newAttrib.scaleBy((position * curr_ratio.getFLength() - (1 - position) * curr_ratio.getELength()) / curr_ratio.getFLength());
+//                tree.addEdge(PhyloTreeEdge(f.asSplit(), newAttrib, f.getOriginalID()));
+//            }
+//        }
+//    }
+//
+//    // to the new tree, add the e edges in the ratios indexed >= higherRatioIndex
+//    for (size_t i = higherRatioIndex; i < geo.getRS().size(); i++) {
+//        auto curr_ratio = geo.getRS().getRatio(i);
+//        eEdges = curr_ratio.getEEdges();
+//
+//        for (PhyloTreeEdge &e : eEdges) {
+//            EdgeAttribute newAttrib = e.getAttribute();
+//            newAttrib.scaleBy(((1 - position) * curr_ratio.getELength() - position * curr_ratio.getFLength()) / curr_ratio.getELength());
+//            tree.addEdge(PhyloTreeEdge(e.asSplit(), newAttrib, e.getOriginalID()));
+//        }
+//    }
+//    return tree;
+//}
 
-    // LOWER RATIO INDEX: the index of the ratio containing all f edges in the tree we want
-    // i.e. the index of the ratio with time < position, but such that the next ratio has time >= position
-    // if position is in the starting orthant, we don't want any f edges.
-
-    // HIGHER RATIO INDEX: the index of the ratio containing all e edges in the tree we want
-    // i.e. the index of the ratio with time >= position, but such that the next ratio has time >= position
-    // if position is in the target orthant, we don't want any e edges
-    */
-
-    bool lowerRatioIndexMINUS2 = true;
-    bool lowerRatioIndexMINUS1 = false;
-    size_t lowerRatioIndex = 0;
-    bool higherRatioIndexMINUS2 = true;
-    size_t higherRatioIndex = 0;
-    vector<PhyloTreeEdge> eEdges;
-    vector<PhyloTreeEdge> fEdges;
-
-    // set the commonEdges
-    vector<PhyloTreeEdge> commonEdges = getCommonEdges(t1, t2, position);
-
-    for (int i = 0; i < commonEdges.size(); i++) {
-        t1.removeSplit(commonEdges[i]);
-        t2.removeSplit(commonEdges[i]);
-    }
-
-    //	System.out.println("t1NoCommonEdges is " + t1NoCommonEdges);
-    //	System.out.println("t2NoCommonEdges is " + t2NoCommonEdges);
-
-    Geodesic geo = getGeodesic(t1, t2);
-
-    auto l2nm = t1.getLeaf2NumMap();
-    PhyloTree tree(commonEdges, l2nm);
-
-    // set the leaf lengths
-    vector<EdgeAttribute> newLeafEdgeAttribs;
-    size_t len = t1.getLeafEdgeAttribs().size();
-    newLeafEdgeAttribs.resize(len);
-    for (int i = 0; i < len; ++i) {
-        newLeafEdgeAttribs[i] = EdgeAttribute::weightedPairAverage(t1.getLeafEdgeAttribs()[i], t2.getLeafEdgeAttribs()[i], position);
-    }
-    tree.setLeafEdgeAttribs(newLeafEdgeAttribs);
-
-    if (geo.getRS().size() == 0) {
-        // then we are done, because the two trees are in the same orthant
-        return tree;
-    }
-    // figure out what orthant the new tree is in
-    // first check if the new tree is in the starting orthant
-    if (geo.getRS().getRatio(0).getTime() > position) {
-        // new tree is in the interior of the starting orthant
-        lowerRatioIndexMINUS1 = true;
-        lowerRatioIndexMINUS2 = false;
-
-        higherRatioIndexMINUS2 = false;
-        higherRatioIndex = 0;
-
-    }
-    // if the new tree is in the last orthant
-    else if (geo.getRS().getRatio(geo.getRS().size() - 1).getTime() < position) {
-        if (geo.getRS().size() == 0) {
-            lowerRatioIndexMINUS1 = true;
-            lowerRatioIndexMINUS2 = false;
-        }
-        else {
-            lowerRatioIndex = geo.getRS().size() - 1;
-            lowerRatioIndexMINUS1 = false;
-            lowerRatioIndexMINUS2 = false;
-        }
-        higherRatioIndex = geo.getRS().size();
-        higherRatioIndexMINUS2 = false;
-    }
-    // the new tree is in an intermediate orthant
-    else {
-        for (size_t i = 0; i < geo.getRS().size(); i++) {
-            // note:  want < instead of <= so we are in an orthant and not still on the boundary,
-            // if we have a string of equalities
-            double ratioTime = geo.getRS().getRatio(i).getTime();
-
-            if (ratioTime >= position) {
-                if (i == 0) {
-                    lowerRatioIndexMINUS1 = true;
-                    lowerRatioIndexMINUS2 = false;
-                }
-                else {
-                    lowerRatioIndex = i - 1;
-                    lowerRatioIndexMINUS1 = false;
-                    lowerRatioIndexMINUS2 = false;
-                }
-            }
-            if (!lowerRatioIndexMINUS2 && (ratioTime > position)) {
-                higherRatioIndex = i;
-                higherRatioIndexMINUS2 = false;
-            }
-        }
-    }
-    // if we didn't set the higherRatioIndex, then we are on the boundary with the target orthant.
-    // we want all no e edges, so set higherRatioIndex to
-    if (higherRatioIndexMINUS2) {
-        higherRatioIndex = geo.getRS().size();
-    }
-
-    // add the edges for all f edges in ratios indexed <= lowerRatioIndex
-    if (!lowerRatioIndexMINUS2 && !lowerRatioIndexMINUS1) {
-        for (size_t i = 0; i <= lowerRatioIndex; i++) {
-            auto curr_ratio = geo.getRS().getRatio(i);
-            fEdges = curr_ratio.getFEdges();
-
-            for (PhyloTreeEdge &f : fEdges) {
-                EdgeAttribute newAttrib = f.getAttribute();
-                newAttrib.scaleBy((position * curr_ratio.getFLength() - (1 - position) * curr_ratio.getELength()) / curr_ratio.getFLength());
-                tree.addEdge(PhyloTreeEdge(f.asSplit(), newAttrib, f.getOriginalID()));
-            }
-        }
-    }
-
-    // to the new tree, add the e edges in the ratios indexed >= higherRatioIndex
-    for (size_t i = higherRatioIndex; i < geo.getRS().size(); i++) {
-        auto curr_ratio = geo.getRS().getRatio(i);
-        eEdges = curr_ratio.getEEdges();
-
-        for (PhyloTreeEdge &e : eEdges) {
-            EdgeAttribute newAttrib = e.getAttribute();
-            newAttrib.scaleBy(((1 - position) * curr_ratio.getELength() - position * curr_ratio.getFLength()) / curr_ratio.getELength());
-            tree.addEdge(PhyloTreeEdge(e.asSplit(), newAttrib, e.getOriginalID()));
-        }
-    }
-    return tree;
-}
-
-RatioSequence Geodesic::getRS() {
+RatioSequence& Geodesic::getRS() {
     return this->rs;
 }
 
@@ -179,9 +180,9 @@ double Geodesic::getDist() {
     return sqrt(pow(rs.getNonDesRSWithMinDist().getDistance(), 2) + commonEdgeDistSquared + leafContributionSquared);
 }
 
-void Geodesic::addCommonEdge(PhyloTreeEdge e) {
-    commonEdges.push_back(e);
-}
+//void Geodesic::addCommonEdge(PhyloTreeEdge e) {
+//    commonEdges.push_back(e);
+//}
 
 Geodesic Geodesic::clone() {
     return Geodesic(*this);
@@ -222,7 +223,7 @@ vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, doubl
         }
             // otherwise check if the split is compatible with all splits in t2
         else if (e.isCompatibleWith(t2.getSplits())) {
-            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(e.getAttribute(), EdgeAttribute::zeroAttribute(e.size()), position);
+            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(e.getAttribute(), EdgeAttribute::zeroAttribute(), position);
             commonEdges.push_back(PhyloTreeEdge(e.asSplit(), commonEdgeAttribute.clone(), -1));
         }
     }
@@ -231,7 +232,7 @@ vector<PhyloTreeEdge> Geodesic::getCommonEdges(PhyloTree t1, PhyloTree t2, doubl
         auto t1_splits = t1.getSplits();
         bool split_not_in_t1 = std::find(t1_splits.begin(), t1_splits.end(), e.asSplit()) == t1_splits.end();
         if (e.isCompatibleWith(t1.getSplits()) && split_not_in_t1) {
-            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(EdgeAttribute::zeroAttribute(e.size()), e.getAttribute(), position);
+            commonEdgeAttribute = EdgeAttribute::weightedPairAverage(EdgeAttribute::zeroAttribute(), e.getAttribute(), position);
             commonEdges.push_back(PhyloTreeEdge(e.asSplit(), commonEdgeAttribute.clone(), -1));
         }
     }
@@ -242,21 +243,21 @@ void Geodesic::setCommonEdges(vector<PhyloTreeEdge> commonEdges) {
     this->commonEdges = commonEdges;
 }
 
-size_t Geodesic::numCommonEdges() {
-    return commonEdges.size();
-}
+//size_t Geodesic::numCommonEdges() {
+//    return commonEdges.size();
+//}
 
-size_t Geodesic::numTopologies() {
-    return rs.getAscRSWithMinDist().size() + 1;
-}
+//size_t Geodesic::numTopologies() {
+//    return rs.getAscRSWithMinDist().size() + 1;
+//}
 
-Geodesic Geodesic::reverse() {
-    return Geodesic(rs.reverse(), commonEdges, leafContributionSquared);
-}
+//Geodesic Geodesic::reverse() {
+//    return Geodesic(rs.reverse(), commonEdges, leafContributionSquared);
+//}
 
-double Geodesic::getLeafContributionSquared() {
-    return leafContributionSquared;
-}
+//double Geodesic::getLeafContributionSquared() {
+//    return leafContributionSquared;
+//}
 
 void Geodesic::setLeafContributionSquared(double leafContributionSquared) {
     this->leafContributionSquared = leafContributionSquared;
@@ -284,15 +285,17 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
 
     // get the pairs of trees with no common edges put into aTreesNoCommonEdges and bTreesNoCommonEdges
     //  aTreesNoCommonEdges[i] goes with bTreesNoCommonEdges[i]
-    vector<PhyloTreeEdge> t1_edges, t2_edges;
-    t1.getEdges(t1_edges);
-    t2.getEdges(t2_edges);
+//    vector<PhyloTreeEdge> t1_edges, t2_edges;
+//    t1.getEdges(t1_edges);
+//    t2.getEdges(t2_edges);
+    auto t1_edges = t1.getEdges();
+    auto t2_edges = t2.getEdges();
     auto l2nm = t1.getLeaf2NumMap();
     splitOnCommonEdge(t1_edges, t2_edges, l2nm, aTreesNoCommonEdges, bTreesNoCommonEdges);
 //    splitOnCommonEdge(t1, t2, aTreesNoCommonEdges, bTreesNoCommonEdges);
     //set the common edges
     vector<PhyloTreeEdge> eic;
-    PhyloTree::getCommonEdges(t1, t2, eic);
+    PhyloTree::getCommonEdges(t1_edges, t2_edges, eic);
     geo.setCommonEdges(eic);
 
     // find the geodesic between each pair of subtrees found by removing the common edges
@@ -314,11 +317,11 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     }
 
     // double-check no common edges
-    vector<PhyloTreeEdge> commonEdges;
-    PhyloTree::getCommonEdges(t1, t2, commonEdges);
-    if (commonEdges.size() != 0) {
-        throw invalid_argument("Error: tried to compute geodesic between subtrees that should not have common edges, but do!  t1 = " + t1.getNewick(true) + " and t2 = " + t2.getNewick(true));
-    }
+//    vector<PhyloTreeEdge> commonEdges;
+//    PhyloTree::getCommonEdges(t1_edges, t2_edges, commonEdges);
+//    if (commonEdges.size() != 0) {
+//        throw invalid_argument("Error: tried to compute geodesic between subtrees that should not have common edges, but do!  t1 = " + t1.getNewick(true) + " and t2 = " + t2.getNewick(true));
+//    }
 
     // double-check that both trees have splits.  Otherwise didn't remove a common edge.
     if (numEdges1 == 0 || numEdges2 == 0) {
@@ -338,34 +341,36 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     size_t index;
 
     // initialize BipartiteGraph
-    auto incidenceMatrix = BipartiteGraph::getIncidenceMatrix(t1.getEdges(), t2.getEdges());
+    auto incidenceMatrix = BipartiteGraph::getIncidenceMatrix(t1_edges, t2_edges);
     BipartiteGraph bg(incidenceMatrix, t1.getIntEdgeAttribNorms(), t2.getIntEdgeAttribNorms());
     queue.push_back(Ratio(t1_edges, t2_edges));
 
     while (queue.size() > 0) {
         ratio = Ratio();
-        ratio.addAllEEdges(queue[0].getEEdges());
-        ratio.addAllFEdges(queue[0].getFEdges());
-        ratio.setELength(queue[0].getELength());
-        ratio.setFLength(queue[0].getFLength());
+        ratio.setAllEEdges(queue[0].getEEdges());
+        ratio.setAllFEdges(queue[0].getFEdges());
+//        ratio.setELength(queue[0].getELength());
+//        ratio.setFLength(queue[0].getFLength());
         queue.pop_front();
         aVertices.clear();
         bVertices.clear();
-        aVertices.resize(ratio.getEEdges().size());
-        bVertices.resize(ratio.getFEdges().size());
+        aVertices.reserve(ratio.getEEdges().size());
+        bVertices.reserve(ratio.getFEdges().size());
 
         // convert the ratio to what we pass to vertex cover
 
+        auto ratio_e_edges = ratio.getEEdges();
+        auto ratio_f_edges = ratio.getFEdges();
         for (int i = 0; i < ratio.getEEdges().size(); i++) {
-            auto index_iter = std::find(t1_edges.begin(), t1_edges.end(), ratio.getEEdges()[i]);
+            auto index_iter = std::find(t1_edges.begin(), t1_edges.end(), ratio_e_edges[i]);
             index = std::distance(t1_edges.begin(), index_iter);
-            aVertices[i] = index;
+            aVertices.push_back(index);
         }
 
         for (int i = 0; i < ratio.getFEdges().size(); i++) {
-            auto index_iter = std::find(t2_edges.begin(), t2_edges.end(), ratio.getFEdges()[i]);
+            auto index_iter = std::find(t2_edges.begin(), t2_edges.end(), ratio_f_edges[i]);
             index = std::distance(t2_edges.begin(), index_iter);
-            bVertices[i] = index;
+            bVertices.push_back(index);
         }
 
         // get the cover
@@ -426,6 +431,8 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
         commonEdge = PhyloTree::getFirstCommonEdge(t1_edges, t2_edges);
     }
     catch (edge_not_found_exception& err) {
+        destination_a.reserve(destination_a.size() + numEdges1);
+        destination_b.reserve(destination_b.size() + numEdges2);
         destination_a.emplace_back(t1_edges, reference_leaf_num_map);
         destination_b.emplace_back(t2_edges, reference_leaf_num_map);
         return;
@@ -440,16 +447,21 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
     vector<PhyloTreeEdge> edgesB1;
     vector<PhyloTreeEdge> edgesB2;
 
-    for (PhyloTreeEdge &e : t1_edges) {
-        PhyloTreeEdge newedge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID());
-        edgesA1.push_back(newedge);
-        edgesB1.push_back(newedge);
+    edgesA1.reserve(numEdges1);
+    edgesA2.reserve(numEdges2);
+    edgesB1.reserve(numEdges1);
+    edgesB2.reserve(numEdges2);
+
+    for (PhyloTreeEdge e : t1_edges) {
+        e.clear();
+        edgesA1.push_back(e);
+        edgesB1.push_back(e);
     }
 
-    for (PhyloTreeEdge &e : t2_edges) {
-        PhyloTreeEdge newedge(e.getAttribute(), e.getOriginalEdge(), e.getOriginalID());
-        edgesA2.push_back(newedge);
-        edgesB2.push_back(newedge);
+    for (PhyloTreeEdge e : t2_edges) {
+        e.clear();
+        edgesA2.push_back(e);
+        edgesB2.push_back(e);
     }
 
     bool aLeavesAdded = false;  // if we have added a leaf in B representing the A tree
@@ -482,12 +494,12 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
             }
             // add the column corresponding to this leaf to the A edges vector (for the corresponding trees)
             // XXX: problem: might be adding edges which contain leaves in A but also
-            for (int j = 0; j < numEdges1; j++) {
+            for (size_t j = 0; j < numEdges1; j++) {
                 if (commonEdge.properlyContains(t1_edges[j]) && t1_edges[j].contains(i)) {
                     edgesA1[j].addOne(indexAleaves);
                 }
             }
-            for (int j = 0; j < numEdges2; j++) {
+            for (size_t j = 0; j < numEdges2; j++) {
                 if (commonEdge.properlyContains(t2_edges[j]) && t2_edges[j].contains(i)) {
                     edgesA2[j].addOne(indexAleaves);
                 }
@@ -519,6 +531,6 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
     splitOnCommonEdge(edgesB1, edgesB2, leaf2NumMapB, destination_a, destination_b);
 }
 
-vector<PhyloTreeEdge> Geodesic::getCommonEdges() {
-    return commonEdges;
-}
+//vector<PhyloTreeEdge> Geodesic::getCommonEdges() {
+//    return commonEdges;
+//}

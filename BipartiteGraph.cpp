@@ -11,7 +11,7 @@ BipartiteGraph::BipartiteGraph(vector<deque<bool>> IncidenceMatrix, vector<doubl
         Bvertex.push_back(Vertex(dbl));
 }
 
-vector<deque<bool>> BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge> edges1, vector<PhyloTreeEdge> edges2) {
+vector<deque<bool>> BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge>& edges1, vector<PhyloTreeEdge>& edges2) {
     std::vector<std::deque<bool>> incidenceMatrix(edges1.size(), std::deque<bool>(edges2.size(), false));
     for (size_t i = 0; i < edges1.size(); i++) {
         for (size_t j = 0; j < edges2.size(); j++) {

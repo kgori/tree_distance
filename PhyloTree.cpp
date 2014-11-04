@@ -140,6 +140,10 @@ vector<PhyloTreeEdge> PhyloTree::getEdges() {
     return edges;
 }
 
+const vector<PhyloTreeEdge>& PhyloTree::getEdgesByRef() {
+    return edges;
+}
+
 void PhyloTree::getEdges(vector<PhyloTreeEdge>& edges_to_add) {
     for (auto &edge : edges) {
         edges_to_add.push_back(edge);
@@ -222,13 +226,13 @@ double PhyloTree::getDistanceFromOrigin() {
     return std::sqrt(dist);
 }
 
-double PhyloTree::getDistanceFromOriginNoLeaves() {
-    double dist = 0;
-    for (auto &edge : edges) {
-        dist += std::pow(edge.getLength(), 2);
-    }
-    return std::sqrt(dist);
-}
+//double PhyloTree::getDistanceFromOriginNoLeaves() {
+//    double dist = 0;
+//    for (auto &edge : edges) {
+//        dist += std::pow(edge.getLength(), 2);
+//    }
+//    return std::sqrt(dist);
+//}
 
 double PhyloTree::getBranchLengthSum() {
     double sum = 0;
@@ -294,9 +298,9 @@ void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs) {
     }
 }
 
-vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
-    return std::vector<EdgeAttribute, allocator<EdgeAttribute>>();
-}
+//vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
+//    return std::vector<EdgeAttribute, allocator<EdgeAttribute>>();
+//}
 
 vector<double> PhyloTree::getIntEdgeAttribNorms() {
     vector<double> norms;
@@ -464,11 +468,11 @@ bool PhyloTree::removeSplit(const Bipartition &e) {
     return removed;
 }
 
-void PhyloTree::removeSplits(const vector<Bipartition>& splits) {
-    for (auto &split : splits) {
-        removeSplit(split);
-    }
-}
+//void PhyloTree::removeSplits(const vector<Bipartition>& splits) {
+//    for (auto &split : splits) {
+//        removeSplit(split);
+//    }
+//}
 
 string PhyloTree::toString() {
     size_t nlabels = leaf2NumMap.size();
@@ -498,22 +502,22 @@ string PhyloTree::toString() {
     return ss.str();
 }
 
-double PhyloTree::getDistanceFromOrigin() const {
-    double dist = 0;
-    for (auto &edge : edges) {
-        dist += std::pow(edge.getLength(), 2);
-    }
+//double PhyloTree::getDistanceFromOrigin() const {
+//    double dist = 0;
+//    for (auto &edge : edges) {
+//        dist += std::pow(edge.getLength(), 2);
+//    }
+//
+//    for (auto &attrib : leafEdgeAttribs) {
+//        dist += std::pow(attrib.norm(), 2);
+//    }
+//
+//    return std::sqrt(dist);
+//}
 
-    for (auto &attrib : leafEdgeAttribs) {
-        dist += std::pow(attrib.norm(), 2);
-    }
-
-    return std::sqrt(dist);
-}
-
-vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() const {
-    return leafEdgeAttribs;
-}
+//vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() const {
+//    return leafEdgeAttribs;
+//}
 
 void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest) {
     vector<PhyloTreeEdge> t1_edges;

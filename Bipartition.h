@@ -90,6 +90,8 @@ public:
 
     virtual string toString();
 
+    void clear();
+
     bool equals(const Bipartition &e) const;
 
     bool isCompatibleWith(const vector<Bipartition>& splits);

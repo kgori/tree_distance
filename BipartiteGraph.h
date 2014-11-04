@@ -11,7 +11,7 @@ class BipartiteGraph {
 public :
     BipartiteGraph(std::vector<std::deque<bool>> IncidenceMatrix, std::vector<double> Aweight, std::vector<double> Bweight);
     vector<vector<size_t>> vertex_cover(vector<size_t> Aindex, vector<size_t> Bindex);
-    static std::vector<std::deque<bool>> getIncidenceMatrix(std::vector<PhyloTreeEdge> edges1, std::vector<PhyloTreeEdge> edges2);
+    static std::vector<std::deque<bool>> getIncidenceMatrix(std::vector<PhyloTreeEdge>& edges1, std::vector<PhyloTreeEdge>& edges2);
 
 public :
     std::vector<std::deque<bool>> edge;
