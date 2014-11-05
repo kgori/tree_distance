@@ -343,7 +343,7 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     // initialize BipartiteGraph
     auto incidenceMatrix = BipartiteGraph::getIncidenceMatrix(t1_edges, t2_edges);
     BipartiteGraph bg(incidenceMatrix, t1.getIntEdgeAttribNorms(), t2.getIntEdgeAttribNorms());
-    queue.push_back(Ratio(t1_edges, t2_edges));
+    queue.emplace_back(t1_edges, t2_edges);
     aVertices.reserve(numEdges1);
     bVertices.reserve(numEdges2);
 
@@ -356,7 +356,7 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
         // convert the ratio to what we pass to vertex cover
         auto ratio_e_edges = ratio.getEEdges();
         auto ratio_f_edges = ratio.getFEdges();
-        for (int i = 0; i < ratio.getEEdges().size(); i++) {
+        for (int i = 0; i < ratio_e_edges.size(); i++) {
             auto index_iter = std::lower_bound(t1_edges.begin(), t1_edges.end(), ratio_e_edges[i]);
             aVertices.push_back(std::distance(t1_edges.begin(), index_iter));
         }

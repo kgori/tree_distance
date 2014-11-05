@@ -12,11 +12,11 @@ class Ratio {
 public:
     Ratio();
 
-    Ratio(vector<PhyloTreeEdge> eEdges, vector<PhyloTreeEdge> fEdges);
+    Ratio(vector<PhyloTreeEdge>& eEdges, vector<PhyloTreeEdge>& fEdges);
 
     Ratio(double e, double f);
 
-    static Ratio combine(Ratio r1, Ratio r2);
+    static Ratio combine(Ratio& r1, Ratio& r2);
 
     Ratio(const Ratio &other); // copy-constructor
 
@@ -40,25 +40,25 @@ public:
 
     static double geoAvg(vector<PhyloTreeEdge> edges);
 
-    vector<PhyloTreeEdge> getEEdges();
+    const vector<PhyloTreeEdge>& getEEdges();
 
-    void addEEdge(PhyloTreeEdge edge);
+    void addEEdge(PhyloTreeEdge& edge);
 
-    void addAllEEdges(vector<PhyloTreeEdge> edges);
+    void addAllEEdges(vector<PhyloTreeEdge>& edges);
 
-    void setAllEEdges(vector<PhyloTreeEdge> edges);
+    void setAllEEdges(vector<PhyloTreeEdge>& edges);
 
-    void setAllFEdges(vector<PhyloTreeEdge> edges);
+    void setAllFEdges(vector<PhyloTreeEdge>& edges);
 
     double getELength();
 
     void setELength(double eLen);
 
-    vector<PhyloTreeEdge> getFEdges();
+    const vector<PhyloTreeEdge>& getFEdges();
 
-    void addFEdge(PhyloTreeEdge edge);
+    void addFEdge(PhyloTreeEdge& edge);
 
-    void addAllFEdges(vector<PhyloTreeEdge> edges);
+    void addAllFEdges(vector<PhyloTreeEdge>& edges);
 
     double getFLength();
 

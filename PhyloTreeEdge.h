@@ -88,7 +88,7 @@ public:
     bool isCompatibleWith(const vector<PhyloTreeEdge>& splits);
 
 private:
-    double attribute = 0;
+    double length = 0;
     shared_ptr<Bipartition> originalEdge;
     int originalID = -1;
 };

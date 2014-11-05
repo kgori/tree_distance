@@ -8,7 +8,7 @@ using namespace std;
 Ratio::Ratio() : eLength(0), fLength(0) {
 }
 
-Ratio::Ratio(vector<PhyloTreeEdge> e, vector<PhyloTreeEdge> f) :
+Ratio::Ratio(vector<PhyloTreeEdge>& e, vector<PhyloTreeEdge>& f) :
         eEdges(e), fEdges(f), eLength(geoAvg(e)), fLength(geoAvg(f)) {
 }
 
@@ -19,13 +19,13 @@ Ratio::Ratio(const Ratio &other) : eLength(other.eLength), fLength(other.fLength
                                    eEdges(other.eEdges), fEdges(other.fEdges) {
 }
 
-Ratio Ratio::combine(Ratio r1, Ratio r2) {
+Ratio Ratio::combine(Ratio& r1, Ratio& r2) {
     Ratio r{};
     if ((r1.eEdges.size() == 0) && (r2.eEdges.size() == 0)) {
         r.setELength(geoAvg(r1.eLength, r2.eLength));
     }
     else {
-        r.addAllEEdges(r1.eEdges);
+        r.setAllEEdges(r1.eEdges);
         r.addAllEEdges(r2.eEdges);
     }
 
@@ -33,7 +33,7 @@ Ratio Ratio::combine(Ratio r1, Ratio r2) {
         r.setFLength(geoAvg(r1.fLength, r2.fLength));
     }
     else {
-        r.addAllFEdges(r1.fEdges);
+        r.setAllFEdges(r1.fEdges);
         r.addAllFEdges(r2.fEdges);
     }
     return r;
@@ -53,16 +53,16 @@ double Ratio::geoAvg(vector<PhyloTreeEdge> edges) {
     return sqrt(gAvg);
 }
 
-vector<PhyloTreeEdge> Ratio::getEEdges() {
+const vector<PhyloTreeEdge>& Ratio::getEEdges() {
     return eEdges;
 }
 
-void Ratio::addEEdge(PhyloTreeEdge edge) {
+void Ratio::addEEdge(PhyloTreeEdge& edge) {
     eEdges.push_back(edge);
     eLength = geoAvg(eLength, edge.getLength());
 }
 
-void Ratio::addAllEEdges(vector<PhyloTreeEdge> edges) {
+void Ratio::addAllEEdges(vector<PhyloTreeEdge>& edges) {
     eEdges.reserve(eEdges.size() + edges.size());
     for (auto &e : edges) {
         eEdges.push_back(e);
@@ -70,12 +70,12 @@ void Ratio::addAllEEdges(vector<PhyloTreeEdge> edges) {
     eLength = geoAvg(eEdges);
 }
 
-void Ratio::setAllEEdges(vector<PhyloTreeEdge> edges) {
+void Ratio::setAllEEdges(vector<PhyloTreeEdge>& edges) {
     eEdges = edges;
     eLength = geoAvg(eEdges);
 }
 
-void Ratio::setAllFEdges(vector<PhyloTreeEdge> edges) {
+void Ratio::setAllFEdges(vector<PhyloTreeEdge>& edges) {
     fEdges = edges;
     fLength = geoAvg(fEdges);
 }
@@ -91,16 +91,16 @@ void Ratio::setELength(double eLen) {
         eLength = eLen;
 }
 
-vector<PhyloTreeEdge> Ratio::getFEdges() {
+const vector<PhyloTreeEdge>& Ratio::getFEdges() {
     return fEdges;
 }
 
-void Ratio::addFEdge(PhyloTreeEdge edge) {
+void Ratio::addFEdge(PhyloTreeEdge& edge) {
     fEdges.push_back(edge);
     fLength = geoAvg(fLength, edge.getLength());
 }
 
-void Ratio::addAllFEdges(vector<PhyloTreeEdge> edges) {
+void Ratio::addAllFEdges(vector<PhyloTreeEdge>& edges) {
     fEdges.reserve(fEdges.size() + edges.size());
     for (auto &f : edges) {
         fEdges.push_back(f);

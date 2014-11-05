@@ -36,9 +36,9 @@ void Bipartition::complement(size_t numLeaves) {
 }
 
 bool Bipartition::contains(const Bipartition& e) const {
-    long foreign = e.partition.to_ulong();
-    long home = partition.to_ulong();
-    return (foreign & home) == foreign;
+    auto foreign = e.partition;
+    foreign &= partition;
+    return foreign == e.partition;
 }
 
 bool Bipartition::contains(size_t i) {

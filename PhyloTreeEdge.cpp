@@ -14,76 +14,54 @@ public:
 };
 
 PhyloTreeEdge::PhyloTreeEdge() : super() {
-//    attribute = EdgeAttribute();
-//    originalEdge = Bipartition();
     originalID = -1;
 }
 
 PhyloTreeEdge::PhyloTreeEdge(string s) : super(s) {
-//    attribute = EdgeAttribute();
-//    originalEdge = Bipartition();
-//    originalID = -1;
 }
 
 PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge) : super(edge) {
-//    attribute = EdgeAttribute();
-//    originalEdge = Bipartition();
-//    originalID = -1;
 }
 
-PhyloTreeEdge::PhyloTreeEdge(double attrib) : super(), attribute(attrib) {
-//    attribute = attrib;
-//    originalEdge = Bipartition();
-//    originalID = -1;
+PhyloTreeEdge::PhyloTreeEdge(double attrib) : super(), length(attrib) {
 }
 
-PhyloTreeEdge::PhyloTreeEdge(double attrib, int originalID) : super(), attribute(attrib), originalID(originalID) {
-    attribute = attrib;
-//    originalEdge = Bipartition();
-//    this->originalID = originalID;
+PhyloTreeEdge::PhyloTreeEdge(double attrib, int originalID) : super(), length(attrib), originalID(originalID) {
+    length = attrib;
 }
 
-PhyloTreeEdge::PhyloTreeEdge(double attrib, shared_ptr<Bipartition> originalEdge, int originalID) : super(), originalEdge(originalEdge), originalID(originalID), attribute(attrib) {
-//    attribute = attrib;
-//    this->originalEdge = originalEdge;
-//    this->originalID = originalID;
-    auto empty_partition = boost::dynamic_bitset<>(originalEdge->size());
-    this->setPartition(empty_partition);
+PhyloTreeEdge::PhyloTreeEdge(double attrib, shared_ptr<Bipartition> originalEdge, int originalID) : originalEdge(originalEdge), originalID(originalID), length(attrib) {
+    this->partition = boost::dynamic_bitset<>(originalEdge->size());
 }
 
-PhyloTreeEdge::PhyloTreeEdge(Bipartition edge, double attrib, int originalID) : super(edge), originalEdge(make_shared<Bipartition>(edge)), attribute(attrib) {
-//    attribute = attrib;
-
+PhyloTreeEdge::PhyloTreeEdge(Bipartition edge, double attrib, int originalID) : super(edge), originalEdge(make_shared<Bipartition>(edge)), length(attrib) {
     this->originalID = originalID;
 }
 
 PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge, double attrib,
         boost::dynamic_bitset<> originalEdge, int originalID)
-        : super(edge), originalEdge(make_shared<Bipartition>(originalEdge)), attribute(attrib) {
-//    attribute = attrib;
-//    this->originalEdge = make_shared<Bipartition>(originalEdge);
-    this->originalID = originalID;
+        : super(edge), originalEdge(make_shared<Bipartition>(originalEdge)), length(attrib), originalID(originalID) {
 }
 
 PhyloTreeEdge::PhyloTreeEdge(const PhyloTreeEdge &other) : super(other.partition),
-                                                           attribute(other.attribute),
+                                                           length(other.length),
                                                            originalEdge(other.originalEdge),
                                                            originalID(other.originalID) {
 }
 
 double PhyloTreeEdge::getLength() {
-    return attribute;
+    return length;
 }
 
 bool PhyloTreeEdge::isZero() {
-    return fabs(attribute) < TOLERANCE;
+    return fabs(length) < TOLERANCE;
 }
 
 string PhyloTreeEdge::toString() {
     string s;
     boost::to_string(partition, s);
     ostringstream ss;
-    ss << "[" << attribute << "] " << s;
+    ss << "[" << length << "] " << s;
     return ss.str();
 }
 
@@ -92,7 +70,7 @@ PhyloTreeEdge PhyloTreeEdge::clone() {
 }
 
 //bool PhyloTreeEdge::equals(const PhyloTreeEdge &other) {
-//    return this->attribute.equals(other.attribute) && this->partition == other.partition;
+//    return this->length.equals(other.length) && this->partition == other.partition;
 //}
 
 bool PhyloTreeEdge::sameBipartition(const PhyloTreeEdge &other) {
@@ -124,15 +102,15 @@ void PhyloTreeEdge::setOriginalID(int originalID) {
 }
 
 void PhyloTreeEdge::setAttribute(double attrib) {
-    attribute = attrib;
+    length = attrib;
 }
 
 double PhyloTreeEdge::getAttribute() {
-    return attribute;
+    return length;
 }
 
 void PhyloTreeEdge::scaleBy(double factor) {
-    attribute *= factor;
+    length *= factor;
 }
 
 //void PhyloTreeEdge::printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap) {
@@ -141,7 +119,7 @@ void PhyloTreeEdge::scaleBy(double factor) {
 //    cout << "Edge ID\t\tLength\t\tLeaves Below" << endl;
 //    for (int i = 0; i < edges.size(); i++) {
 //        if (!edges[i].getOriginalEdge().getPartition().empty()) {
-//            cout << edges[i].getOriginalID() << "\t\t" << edges[i].attribute.toString() << "\t\t" << Bipartition::toStringVerbose(edges[i].getOriginalEdge().getPartition(), leaf2NumMap) << endl;
+//            cout << edges[i].getOriginalID() << "\t\t" << edges[i].length.toString() << "\t\t" << Bipartition::toStringVerbose(edges[i].getOriginalEdge().getPartition(), leaf2NumMap) << endl;
 //        } else {
 //            cout << edges[i].toStringVerbose(leaf2NumMap);
 //        }
@@ -150,12 +128,12 @@ void PhyloTreeEdge::scaleBy(double factor) {
 
 string PhyloTreeEdge::toStringVerbose(vector<string> leaf2NumMap) {
     ostringstream ss;
-    ss << originalID << "\t\t" << "[" << attribute << "]" << "\t\t" << Bipartition::toStringVerbose(this->partition, leaf2NumMap);
+    ss << originalID << "\t\t" << "[" << length << "]" << "\t\t" << Bipartition::toStringVerbose(this->partition, leaf2NumMap);
     return ss.str();
 }
 
 double PhyloTreeEdge::getLength() const {
-    return attribute;
+    return length;
 }
 
 bool PhyloTreeEdge::isCompatibleWith(const vector<Bipartition> &splits) {
