@@ -17,11 +17,11 @@ public:
 
     Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafContributionSquared);
 
-    Geodesic(const Geodesic& other);
+    Geodesic(const Geodesic &other);
 
 //    PhyloTree getTreeAt(PhyloTree t1, PhyloTree t2, double position);
 
-    RatioSequence& getRS();
+    RatioSequence &getRS();
 
     void setRS(RatioSequence rs);
 

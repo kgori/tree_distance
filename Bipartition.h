@@ -64,7 +64,7 @@ public:
 
     bool disjointFrom(const Bipartition &e) const;
 
-    bool contains(const Bipartition& e) const;
+    bool contains(const Bipartition &e) const;
 
     bool contains(size_t i);
 
@@ -80,7 +80,7 @@ public:
 
     bool equals(const Bipartition &e) const;
 
-    bool isCompatibleWith(const vector<Bipartition>& splits);
+    bool isCompatibleWith(const vector<Bipartition> &splits);
 
     Bipartition &andNot(const Bipartition &other) {
         partition &= ~(other.partition);

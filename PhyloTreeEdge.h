@@ -7,7 +7,6 @@
 #include <tuple>
 #include <vector>
 #include "Bipartition.h"
-#include "EdgeAttribute.h"
 
 using namespace std;
 
@@ -22,15 +21,15 @@ public:
 
     PhyloTreeEdge(boost::dynamic_bitset<> edge);
 
-    PhyloTreeEdge(EdgeAttribute attrib);
+    PhyloTreeEdge(double attrib);
 
-    PhyloTreeEdge(EdgeAttribute attrib, int originalID);
+    PhyloTreeEdge(double attrib, int originalID);
 
-    PhyloTreeEdge(EdgeAttribute attrib, Bipartition originalEdge, int originalID);
+    PhyloTreeEdge(double attrib, shared_ptr<Bipartition> originalEdge, int originalID);
 
-    PhyloTreeEdge(Bipartition edge, EdgeAttribute attrib, int originalID);
+    PhyloTreeEdge(Bipartition edge, double attrib, int originalID);
 
-    PhyloTreeEdge(boost::dynamic_bitset<> edge, EdgeAttribute attrib, boost::dynamic_bitset<> originalEdge, int originalID);
+    PhyloTreeEdge(boost::dynamic_bitset<> edge, double attrib, boost::dynamic_bitset<> originalEdge, int originalID);
 
     PhyloTreeEdge(const PhyloTreeEdge &other); // copy-constructor
 
@@ -66,17 +65,19 @@ public:
 
     Bipartition asSplit();
 
-    Bipartition getOriginalEdge();
+    const shared_ptr<Bipartition> getOriginalEdge();
 
-    void setOriginalEdge(const Bipartition &originalEdge);
+    void setOriginalEdge(const shared_ptr<Bipartition> originalEdge);
 
     int getOriginalID();
 
     void setOriginalID(int originalID);
 
-    EdgeAttribute& getAttribute();
+    double getAttribute();
 
-    void setAttribute(const EdgeAttribute &attrib);
+    void scaleBy(double factor);
+
+    void setAttribute(double attrib);
 
 //    static void printEdgesVerbose(vector<PhyloTreeEdge> edges, vector<string> leaf2NumMap);
 
@@ -87,9 +88,9 @@ public:
     bool isCompatibleWith(const vector<PhyloTreeEdge>& splits);
 
 private:
-    EdgeAttribute attribute;
-    Bipartition originalEdge;
-    int originalID;
+    double attribute = 0;
+    shared_ptr<Bipartition> originalEdge;
+    int originalID = -1;
 };
 
 #endif /* __PHYLOTREE_EDGE_H__ */

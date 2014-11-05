@@ -20,15 +20,21 @@ public:
 
     Ratio(const Ratio &other); // copy-constructor
 
-    inline bool operator< (const Ratio& other) const {
+    inline bool operator<(const Ratio &other) const {
         return this->getRatio() < other.getRatio();
     }
 
-    inline bool operator>(const Ratio& other) const { return other < *this; }
+    inline bool operator>(const Ratio &other) const {
+        return other < *this;
+    }
 
-    inline bool operator<=(const Ratio& other) const { return !(*this > other); }
+    inline bool operator<=(const Ratio &other) const {
+        return !(*this > other);
+    }
 
-    inline bool operator>=(const Ratio& other) const { return !(*this < other); }
+    inline bool operator>=(const Ratio &other) const {
+        return !(*this < other);
+    }
 
     static double geoAvg(double d1, double d2);
 
@@ -64,7 +70,7 @@ public:
 
     Ratio reverse();
 
-    bool containsOriginalEEdge(const Bipartition& edge);
+    bool containsOriginalEEdge(const Bipartition &edge);
 
     string toString();
 

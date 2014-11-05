@@ -63,9 +63,9 @@ public:
         c.erase(c.begin() + index);
     }
 
-    static vector<string> string_split(string& to_split, const string& delimiters, const string& to_trim);
+    static vector<string> string_split(string &to_split, const string &delimiters, const string &to_trim);
 
-    static vector<string> string_split(std::string& to_split, const char* delimiters = " ,/n/t", const char* to_trim = "[]");
+    static vector<string> string_split(std::string &to_split, const char *delimiters = " ,/n/t", const char *to_trim = "[]");
 
     static string string_join(vector<string> to_join, string delimiter = EMPTY);
 
@@ -77,11 +77,11 @@ public:
 
 //    static size_t nextIndex(const string& t, size_t i, string s);
 
-    static size_t nextIndex(const string& t, size_t i, const char* s);
+    static size_t nextIndex(const string &t, size_t i, const char *s);
 
     static string substring(string s, size_t begin, size_t end);
 
-    static void despace(string& s);
+    static void despace(string &s);
 };
 
 #endif /* __TOOLS_H__ */

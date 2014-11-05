@@ -22,8 +22,8 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2,
     t1.getEdgesNotInCommonWith(t2, enic);
     t2.getEdgesNotInCommonWith(t1, enic);
     // ... and leaves
-    vector<EdgeAttribute> leaves1 = t1.getLeafEdgeAttribs();
-    vector<EdgeAttribute> leaves2 = t2.getLeafEdgeAttribs(); // Assuming these are the same leaves
+    vector<double> leaves1 = t1.getLeafEdgeLengths();
+    vector<double> leaves2 = t2.getLeafEdgeLengths(); // Assuming these are the same leaves
 
     // Collect length differences for internal edges...
     for (PhyloTreeEdge &pte : eic) {
@@ -35,8 +35,8 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2,
     }
 
     // ... and leaves
-    for (int i=0; i < leaves1.size() ; i++) {
-        wrf_value += abs(leaves1[i].norm() - leaves2[i].norm());
+    for (int i = 0; i < leaves1.size(); i++) {
+        wrf_value += abs(leaves1[i] - leaves2[i]);
     }
 
     if (normalise) return wrf_value / (t1.getBranchLengthSum() + t2.getBranchLengthSum());
@@ -53,8 +53,8 @@ double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normali
     t1.getEdgesNotInCommonWith(t2, enic);
     t2.getEdgesNotInCommonWith(t1, enic);
     // ... and leaves
-    vector<EdgeAttribute> leaves1 = t1.getLeafEdgeAttribs();
-    vector<EdgeAttribute> leaves2 = t2.getLeafEdgeAttribs(); // Assuming these are the same
+    vector<double> leaves1 = t1.getLeafEdgeLengths();
+    vector<double> leaves2 = t2.getLeafEdgeLengths(); // Assuming these are the same
 
     // Collect length differences for internal edges...
     for (PhyloTreeEdge &pte : eic) {
@@ -66,8 +66,8 @@ double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normali
     }
 
     // ... and leaves
-    for (int i=0; i < leaves1.size() ; i++) {
-        euc_value += pow(leaves1[i].norm() - leaves2[i].norm(), 2);
+    for (int i = 0; i < leaves1.size(); i++) {
+        euc_value += pow(leaves1[i] - leaves2[i], 2);
     }
 
     if (normalise) return sqrt(euc_value) / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());

@@ -1,7 +1,6 @@
 #include "Distance.h"
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     string s1("((((a:1,b:1):1,c:1):1,d:1):1,(i:1,(j:1,k:1):1):1,(l:1,(h:1,(g:1,(e:1,f:1):1):1):1):1);");
     string s2("((((a:2,b:2):2,c:2):2,d:2):2,(h:2,(g:2,(e:2,f:2):2):2):2,(i:2,(j:2,(k:2,l:2):2):2):2);");
     string s3("(g:1,(a:1,(b:1,c:1):1):1,(f:1,(e:1,d:1):1):1);");
@@ -14,7 +13,7 @@ int main(int argc, char const *argv[])
     auto t4 = PhyloTree(s4, false);
     auto t5 = PhyloTree(s5, true);
     auto t6 = PhyloTree(s6, true);
-    
+
     clock_t start = clock();
     for (size_t i = 0; i < 100; ++i) {
         Distance::getEuclideanDistance(t5, t6, false);
@@ -22,6 +21,6 @@ int main(int argc, char const *argv[])
         Distance::getRobinsonFouldsDistance(t5, t6, false);
         Distance::getWeightedRobinsonFouldsDistance(t5, t6, false);
     }
-    printf("Time taken: %.3f millisec\n", 1000 * (double)(clock() - start)/CLOCKS_PER_SEC);
+    printf("Time taken: %.3f millisec\n", 1000 * (double) (clock() - start) / CLOCKS_PER_SEC);
     return 0;
 }

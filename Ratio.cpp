@@ -1,7 +1,7 @@
 #include "Ratio.h"
 #include <cmath>
 #include <iomanip>
-//#include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -16,7 +16,7 @@ Ratio::Ratio(double e, double f) : eLength(e), fLength(f) {
 }
 
 Ratio::Ratio(const Ratio &other) : eLength(other.eLength), fLength(other.fLength),
-        eEdges(other.eEdges), fEdges(other.fEdges) {
+                                   eEdges(other.eEdges), fEdges(other.fEdges) {
 }
 
 Ratio Ratio::combine(Ratio r1, Ratio r2) {
@@ -143,13 +143,13 @@ Ratio Ratio::reverse() {
 bool Ratio::containsOriginalEEdge(const Bipartition &edge) {
 
     for (PhyloTreeEdge &ratio_edge : eEdges) {
-        if (ratio_edge.getOriginalEdge().equals(edge)) {
+        if (ratio_edge.getOriginalEdge()->equals(edge)) {
             return true;
         }
     }
 
     for (PhyloTreeEdge &ratio_edge : fEdges) {
-        if (ratio_edge.getOriginalEdge().equals(edge)) {
+        if (ratio_edge.getOriginalEdge()->equals(edge)) {
             return true;
         }
     }

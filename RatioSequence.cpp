@@ -1,4 +1,5 @@
 #include "RatioSequence.h"
+#include "Tools.h"
 #include <random>
 //#include <algorithm>
 //#include <stddef.h>

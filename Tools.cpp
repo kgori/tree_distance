@@ -3,14 +3,14 @@
 //#include <sstream>
 #define PRECISION 5
 
-std::vector<std::string> Tools::string_split(std::string& to_split, const std::string& delimiters, const std::string& to_trim) {
+std::vector<std::string> Tools::string_split(std::string &to_split, const std::string &delimiters, const std::string &to_trim) {
     std::vector<std::string> results;
     boost::trim_if(to_split, boost::is_any_of(to_trim));
     boost::split(results, to_split, boost::is_any_of(delimiters), boost::token_compress_on);
     return results;
 }
 
-std::vector<std::string> Tools::string_split(std::string& to_split, const char* delimiters, const char* to_trim) {
+std::vector<std::string> Tools::string_split(std::string &to_split, const char *delimiters, const char *to_trim) {
     std::vector<std::string> results;
     boost::trim_if(to_split, boost::is_any_of(to_trim));
     boost::split(results, to_split, boost::is_any_of(delimiters), boost::token_compress_on);
@@ -62,7 +62,9 @@ string Tools::substring(string s, size_t begin, size_t end) {
 }
 
 void Tools::despace(string &s) {
-    s.erase(std::remove_if(s.begin(), s.end(), [](char x){return std::isspace(x);}), s.end());
+    s.erase(std::remove_if(s.begin(), s.end(), [](char x) {
+        return std::isspace(x);
+    }), s.end());
 }
 
 size_t Tools::nextIndex(const string &t, size_t i, const char *s) {

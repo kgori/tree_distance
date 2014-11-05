@@ -2,9 +2,12 @@
 #include "Geodesic.h"
 
 #include <cmath>
+#include <sstream>
 
-void deleteEmptyEdges(vector<PhyloTreeEdge>& v) {
-    v.erase(std::remove_if(v.begin(), v.end(), [](PhyloTreeEdge& element){return element.isEmpty();}), v.end());
+void deleteEmptyEdges(vector<PhyloTreeEdge> &v) {
+    v.erase(std::remove_if(v.begin(), v.end(), [](PhyloTreeEdge &element) {
+        return element.isEmpty();
+    }), v.end());
 }
 
 Geodesic::Geodesic(RatioSequence rs) {
@@ -22,7 +25,7 @@ Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafCo
     this->leafContributionSquared = leafContributionSquared;
 }
 
-Geodesic::Geodesic(const Geodesic& other) : rs(other.rs), commonEdges(other.commonEdges),
+Geodesic::Geodesic(const Geodesic &other) : rs(other.rs), commonEdges(other.commonEdges),
                                             leafContributionSquared(other.leafContributionSquared) {
 };
 
@@ -74,7 +77,7 @@ Geodesic::Geodesic(const Geodesic& other) : rs(other.rs), commonEdges(other.comm
 //    for (int i = 0; i < len; ++i) {
 //        newLeafEdgeAttribs[i] = EdgeAttribute::weightedPairAverage(t1.getLeafEdgeAttribs()[i], t2.getLeafEdgeAttribs()[i], position);
 //    }
-//    tree.setLeafEdgeAttribs(newLeafEdgeAttribs);
+//    tree.setLeafEdgeLengths(newLeafEdgeAttribs);
 //
 //    if (geo.getRS().size() == 0) {
 //        // then we are done, because the two trees are in the same orthant
@@ -163,7 +166,7 @@ Geodesic::Geodesic(const Geodesic& other) : rs(other.rs), commonEdges(other.comm
 //    return tree;
 //}
 
-RatioSequence& Geodesic::getRS() {
+RatioSequence &Geodesic::getRS() {
     return this->rs;
 }
 
@@ -264,8 +267,8 @@ void Geodesic::setLeafContributionSquared(double leafContributionSquared) {
 
 Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
     double leafContributionSquared = 0;
-    vector<EdgeAttribute> t1LeafEdgeAttribs = t1.getLeafEdgeAttribs();
-    vector<EdgeAttribute> t2LeafEdgeAttribs = t2.getLeafEdgeAttribs();
+    vector<double> t1_leaf_lengths = t1.getLeafEdgeLengths();
+    vector<double> t2_leaf_lengths = t2.getLeafEdgeLengths();
     Geodesic geo = Geodesic(RatioSequence());
 
     // get the leaf contributions
@@ -275,7 +278,7 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
         if (ref_leaf_num_map[i] != chk_leaf_num_map[i]) {
             throw invalid_argument("Error getting geodesic: trees do not have the same sets of leaves");
         }
-        leafContributionSquared += pow(EdgeAttribute::difference(t1LeafEdgeAttribs[i], t2LeafEdgeAttribs[i]).norm(), 2);
+        leafContributionSquared += pow(t1_leaf_lengths[i] - t2_leaf_lengths[i], 2);
     }
     geo.setLeafContributionSquared(leafContributionSquared);
 
@@ -420,7 +423,7 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
     try {
         commonEdge = PhyloTree::getFirstCommonEdge(t1_edges, t2_edges);
     }
-    catch (edge_not_found_exception& err) {
+    catch (edge_not_found_exception &err) {
         destination_a.reserve(destination_a.size() + numEdges1);
         destination_b.reserve(destination_b.size() + numEdges2);
         destination_a.emplace_back(t1_edges, reference_leaf_num_map);
