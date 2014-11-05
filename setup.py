@@ -8,7 +8,7 @@ import pkg_resources
 
 # data_dir = pkg_resources.resource_filename("autowrap", "data_files")
 
-ext = Extension("TreeDistance",
+ext = Extension("tree_distance",
                 language='c++',
                 sources = ['BipartiteGraph.cpp',
                            'Bipartition.cpp',
@@ -25,8 +25,8 @@ ext = Extension("TreeDistance",
                )
 
 setup(cmdclass={'build_ext':build_ext},
-      name="TreeDistance",
-      version="0.0.4",
+      name="tree_distance",
+      version="0.0.5",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
