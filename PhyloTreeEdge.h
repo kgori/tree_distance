@@ -26,7 +26,7 @@ public:
 
     PhyloTreeEdge(EdgeAttribute attrib, int originalID);
 
-    PhyloTreeEdge(EdgeAttribute attrib, Bipartition originalEdge, int originalID);
+    PhyloTreeEdge(EdgeAttribute attrib, shared_ptr<Bipartition> originalEdge, int originalID);
 
     PhyloTreeEdge(Bipartition edge, EdgeAttribute attrib, int originalID);
 
@@ -66,9 +66,9 @@ public:
 
     Bipartition asSplit();
 
-    Bipartition getOriginalEdge();
+    const shared_ptr<Bipartition> getOriginalEdge();
 
-    void setOriginalEdge(const Bipartition &originalEdge);
+    void setOriginalEdge(const shared_ptr<Bipartition> originalEdge);
 
     int getOriginalID();
 
@@ -87,8 +87,9 @@ public:
     bool isCompatibleWith(const vector<PhyloTreeEdge>& splits);
 
 private:
+    double length;
     EdgeAttribute attribute;
-    Bipartition originalEdge;
+    shared_ptr<Bipartition> originalEdge;
     int originalID;
 };
 

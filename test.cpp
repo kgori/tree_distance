@@ -187,8 +187,8 @@ TEST_CASE("PhyloTreeEdge") {
         REQUIRE(a.toString() == "[] ");
         REQUIRE(a.getOriginalID() == -1);
 
-        auto bip = Bipartition("01001101");
-        auto b = PhyloTreeEdge(bip.getPartition());
+        auto bip = make_shared<Bipartition>("01001101");
+        auto b = PhyloTreeEdge(bip->getPartition());
         REQUIRE(b.toString() == "[] 01001101");
         REQUIRE(b.getOriginalID() == -1);
 
@@ -206,12 +206,12 @@ TEST_CASE("PhyloTreeEdge") {
         REQUIRE(e.getOriginalID() == 11);
         REQUIRE(e.isEmpty());
 
-        auto f = PhyloTreeEdge(bip, attrib, 12);
-        REQUIRE(f.toString() == attrib.toString() + " " + bip.toString());
+        auto f = PhyloTreeEdge(*bip, attrib, 12);
+        REQUIRE(f.toString() == attrib.toString() + " " + bip->toString());
         REQUIRE(f.getOriginalID() == 12);
 
         auto edge = Bipartition("11011011");
-        auto g = PhyloTreeEdge(edge.getPartition(), attrib, bip.getPartition(), 13);
+        auto g = PhyloTreeEdge(edge.getPartition(), attrib, bip->getPartition(), 13);
         REQUIRE(g.toString() == attrib.toString() + " " + edge.toString());
         REQUIRE(g.getOriginalID() == 13);
 
@@ -672,5 +672,8 @@ TEST_CASE("Distance") {
             Distance::getWeightedRobinsonFouldsDistance(t7, t8, false);
         }
         printf("Time taken: %.3f millisec\n", 1000 * (double)(clock() - start)/CLOCKS_PER_SEC);
+        CHECK(abs(Distance::getGeodesicDistance(t7, t8, false) - 2.2413235148883968) < TOLERANCE);
+        CHECK(abs(Distance::getGeodesicDistance(t7, t8, true) - 0.1522374775995074) < TOLERANCE);
+
     }
 }

@@ -23,7 +23,7 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) 
         for (size_t i=0; i < len; ++i) {
             new_bitset[len - i - 1] = partition[plen - i - 1];
         }
-        edge.setOriginalEdge(Bipartition(new_bitset));
+        edge.setOriginalEdge(make_shared<Bipartition>(new_bitset));
         this->edges.push_back(edge);
     }
 }
@@ -132,7 +132,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
     }
 
     for (size_t k = 0; k < edges.size(); ++k) {
-        edges[k].setOriginalEdge(edges[k].asSplit());
+        edges[k].setOriginalEdge(make_shared<Bipartition>(edges[k].asSplit()));
         edges[k].setOriginalID((int) k);
     }
 }

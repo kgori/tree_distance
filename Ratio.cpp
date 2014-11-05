@@ -143,13 +143,13 @@ Ratio Ratio::reverse() {
 bool Ratio::containsOriginalEEdge(const Bipartition &edge) {
 
     for (PhyloTreeEdge &ratio_edge : eEdges) {
-        if (ratio_edge.getOriginalEdge().equals(edge)) {
+        if (ratio_edge.getOriginalEdge()->equals(edge)) {
             return true;
         }
     }
 
     for (PhyloTreeEdge &ratio_edge : fEdges) {
-        if (ratio_edge.getOriginalEdge().equals(edge)) {
+        if (ratio_edge.getOriginalEdge()->equals(edge)) {
             return true;
         }
     }
