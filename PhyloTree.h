@@ -2,7 +2,6 @@
 #define __PHYLOTREE_H__
 
 #include "Bipartition.h"
-#include "EdgeAttribute.h"
 #include "PhyloTreeEdge.h"
 #include <string>
 #include <vector>
@@ -18,7 +17,7 @@ public:
 
 class PhyloTree {
 public:
-    PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<EdgeAttribute> &leafEdgeLengths);
+    PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<double> &leafEdgeLengths);
 
     PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap);
 
@@ -26,7 +25,7 @@ public:
 
     PhyloTree(string t, bool rooted);
 
-    static void getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge>& dest);
+    static void getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest);
 
     static PhyloTreeEdge getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges);
 
@@ -34,9 +33,9 @@ public:
 
     vector<PhyloTreeEdge> getEdges();
 
-    const vector<PhyloTreeEdge>& getEdgesByRef();
+    const vector<PhyloTreeEdge> &getEdgesByRef();
 
-    void getEdges(vector<PhyloTreeEdge>& edges_to_add);
+    void getEdges(vector<PhyloTreeEdge> &edges_to_add);
 
     void setEdges(vector<PhyloTreeEdge> edges);
 
@@ -48,7 +47,7 @@ public:
 
     void setLeaf2NumMap(vector<string> leaf2NumMap);
 
-    EdgeAttribute getAttribOfSplit(Bipartition& edge);
+    double getAttribOfSplit(Bipartition &edge);
 
     vector<Bipartition> getSplits();
 
@@ -66,7 +65,7 @@ public:
 
     double getBranchLengthSum();
 
-    void getEdgesNotInCommonWith(PhyloTree &t, vector<PhyloTreeEdge>& dest);
+    void getEdgesNotInCommonWith(PhyloTree &t, vector<PhyloTreeEdge> &dest);
 
     PhyloTree clone();
 
@@ -76,11 +75,11 @@ public:
 
 //    void removeSplits(const vector<Bipartition>& splits);
 
-    vector<EdgeAttribute> getLeafEdgeAttribs();
+    vector<double> getLeafEdgeLengths();
 
 //    vector<EdgeAttribute> getLeafEdgeAttribs() const;
 
-    void setLeafEdgeAttribs(vector<EdgeAttribute>& leafEdgeAttribs);
+    void setLeafEdgeLengths(vector<double> &leafEdgeLengths);
 
 //    vector<EdgeAttribute> getCopyLeafEdgeAttribs();
 
@@ -101,9 +100,9 @@ public:
 private:
     vector<PhyloTreeEdge> edges;
     vector<string> leaf2NumMap;
-    vector<EdgeAttribute> leafEdgeAttribs;
+    vector<double> leafEdgeLengths;
 
-    void setLeaf2NumMapFromNewick(string& s);
+    void setLeaf2NumMapFromNewick(string &s);
 
     void normalize(double constant);
 };

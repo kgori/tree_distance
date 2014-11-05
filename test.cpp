@@ -1,11 +1,8 @@
 #include "BipartiteGraph.h"
-//#include "Bipartition.h"
-//#include "EdgeAttribute.h"
-//#include "PhyloTreeEdge.h"
-#include "PhyloTree.h"
-#include "Ratio.h"
-#include "test_catch_helper.h"
 #include "Distance.h"
+#include "test_catch_helper.h"
+#include "Tools.h"
+
 
 #define TOLERANCE 0.0000001
 
@@ -127,92 +124,38 @@ TEST_CASE("Bipartition") {
     }
 }
 
-TEST_CASE("EdgeAttribute") {
-    SECTION("Construction") {
-        auto a = EdgeAttribute();
-        vector<double> v{1, 2, 3, 4};
-        auto b = EdgeAttribute(0);
-        auto c = EdgeAttribute(1);
-        auto d = EdgeAttribute(0.5);
-//        auto b = EdgeAttribute(v);
-//        auto c = EdgeAttribute("5, 6, 7, 8");
-//        auto d = EdgeAttribute(c);
-        REQUIRE(a.toString() == "[]");
-        REQUIRE(b.toString() == "[0]");
-        REQUIRE(c.toString() == "[1]");
-        REQUIRE(d.toString() == "[0.5]");
-        REQUIRE(a.size() == 0);
-        REQUIRE(b.size() == 1);
-        REQUIRE(c.size() == 1);
-//        REQUIRE(d.size() == c.size());
-//        REQUIRE(c.equals(d));
-    }
-
-    SECTION("Arithmetic") {
-//        auto a = EdgeAttribute("1,3,5,7");
-//        auto b = EdgeAttribute("2,5,8,9");
-//        REQUIRE(EdgeAttribute::difference(a, b).toString() == "[-1 -2 -3 -2]");
-//        REQUIRE(EdgeAttribute::add(a, b).toString() == "[3 8 13 16]");
-//        REQUIRE(EdgeAttribute::weightedPairAverage(a, b, 0.1).toString() == "[1.1 3.2 5.3 7.2]");
-    }
-
-    SECTION("Numerics") {
-//        auto z = EdgeAttribute::zeroAttribute(10);
-//        REQUIRE(z.toString() == "[0 0 0 0 0 0 0 0 0 0]");
-
-//        auto a = EdgeAttribute("3, 4");
-//        REQUIRE(a.toString() == "[3 4]");
-//        REQUIRE(a.norm() == 5);
-//        a.scaleBy(2);
-//        REQUIRE(a.toString() == "[6 8]");
-//        REQUIRE(a.norm() == 10);
-//
-//        auto b = EdgeAttribute("-6");
-//        REQUIRE(b.toString() == "[-6]");
-//        b.ensurePositive();
-//        REQUIRE(b.toString() == "[6]");
-    }
-
-    {
-//        auto a = EdgeAttribute("1,2,3");
-//        auto b = EdgeAttribute("6,7,8,9,0");
-//        REQUIRE_THROWS_AS(EdgeAttribute::add(a, b), std::invalid_argument);
-
-    }
-}
-
 TEST_CASE("PhyloTreeEdge") {
     SECTION("Construction") {
         auto a = PhyloTreeEdge();
-        REQUIRE(a.toString() == "[] ");
+        REQUIRE(a.toString() == "[0] ");
         REQUIRE(a.getOriginalID() == -1);
 
         auto bip = make_shared<Bipartition>("01001101");
         auto b = PhyloTreeEdge(bip->getPartition());
-        REQUIRE(b.toString() == "[] 01001101");
+        REQUIRE(b.toString() == "[0] 01001101");
         REQUIRE(b.getOriginalID() == -1);
 
-        auto attrib = EdgeAttribute(0.5);
+        auto attrib = 0.5;
         auto c = PhyloTreeEdge(attrib);
-        CHECK(c.toString() == attrib.toString() + " ");
+        CHECK(c.toString() == "[0.5] ");
         REQUIRE(c.getOriginalID() == -1);
 
         auto d = PhyloTreeEdge(attrib, 10);
-        REQUIRE(d.toString() == attrib.toString() + " ");
+        REQUIRE(d.toString() == "[0.5] ");
         REQUIRE(d.getOriginalID() == 10);
 
         auto e = PhyloTreeEdge(attrib, bip, 11);
-        REQUIRE(e.toString() == attrib.toString() + " " + "00000000");
+        REQUIRE(e.toString() == "[0.5] 00000000");
         REQUIRE(e.getOriginalID() == 11);
         REQUIRE(e.isEmpty());
 
         auto f = PhyloTreeEdge(*bip, attrib, 12);
-        REQUIRE(f.toString() == attrib.toString() + " " + bip->toString());
+        REQUIRE(f.toString() == "[0.5] " + bip->toString());
         REQUIRE(f.getOriginalID() == 12);
 
         auto edge = Bipartition("11011011");
         auto g = PhyloTreeEdge(edge.getPartition(), attrib, bip->getPartition(), 13);
-        REQUIRE(g.toString() == attrib.toString() + " " + edge.toString());
+        REQUIRE(g.toString() == "[0.5] " + edge.toString());
         REQUIRE(g.getOriginalID() == 13);
 
         auto h = PhyloTreeEdge(g);
@@ -294,7 +237,9 @@ TEST_CASE("Tools") {
 
 TEST_CASE("PhyloTree") {
     SECTION("Construction") {
-        auto edges = vector<PhyloTreeEdge>({},{});
+        auto edges = vector<PhyloTreeEdge>({},
+        {
+        });
         string n1("(a:1,(b:2,c:3):4);");
         string n2("(a:1, (b:2, c:3):4);");
         string n3("(a:1, b:2, c:3);");
@@ -324,7 +269,7 @@ TEST_CASE("PhyloTree") {
 
         auto a = PhyloTree(n1, false);
         auto b = PhyloTree(n2, false);
-        vector<string> expected{"a","b","c","d","e","f","g"};
+        vector<string> expected{"a", "b", "c", "d", "e", "f", "g"};
         REQUIRE(a.getLeaf2NumMap() == expected);
         REQUIRE(b.getLeaf2NumMap() == expected);
 
@@ -363,9 +308,9 @@ TEST_CASE("PhyloTree") {
         REQUIRE(d_edges.size() == 5);
         for (size_t i = 0; i < 5; ++i) {
             CHECK(c_edges[i] == c.getEdge(i));
-            CHECK(c_edges[i].getLength() == i+1);
+            CHECK(c_edges[i].getLength() == i + 1);
             CHECK(d_edges[i] == d.getEdge(i));
-            CHECK(d_edges[i].getLength() == i+2);
+            CHECK(d_edges[i].getLength() == i + 2);
         }
     }
 
@@ -377,20 +322,20 @@ TEST_CASE("PhyloTree") {
         string n2("(g:2,(a:2,(b:2,c:2):2):2,(d:2,(e:2,f:2):2):2);");
         auto a = PhyloTree(n1, false);
         auto b = PhyloTree(n2, false);
-        auto a_attribs = a.getLeafEdgeAttribs();
-        auto b_attribs = b.getLeafEdgeAttribs();
+        auto a_attribs = a.getLeafEdgeLengths();
+        auto b_attribs = b.getLeafEdgeLengths();
         CHECK(a_attribs.size() == a.numLeaves());
         CHECK(a_attribs.size() == 7);
         CHECK(b_attribs.size() == b.numLeaves());
-        CHECK(b_attribs.size() == 7);
+//        CHECK(l);
 
         // rooted
         string n3("((g:0.7,(a:0.1,(b:0.2,c:0.3):1):1):1,(f:0.6,(e:0.5,d:0.4):1):1);");
         string n4("((g:1.4,(a:0.2,(b:0.4,c:0.6):2):2):2,(d:0.8,(e:1.0,f:1.2):2):2);");
         auto c = PhyloTree(n3, true);
         auto d = PhyloTree(n4, true);
-        auto c_attribs = c.getLeafEdgeAttribs();
-        auto d_attribs = d.getLeafEdgeAttribs();
+        auto c_attribs = c.getLeafEdgeLengths();
+        auto d_attribs = d.getLeafEdgeLengths();
         CHECK(c_attribs.size() == c.numLeaves());
         CHECK(d_attribs.size() == d.numLeaves());
         CHECK(c_attribs.size() == 7);
@@ -398,10 +343,10 @@ TEST_CASE("PhyloTree") {
 
         for (size_t i = 0; i < 7; i++) {
             test = ((double) i + 1) / 10;
-            CHECK(a_attribs[i].getAttribute() == 1);
-            CHECK(b_attribs[i].getAttribute() == 2);
-            CHECK(c_attribs[i].getAttribute() == test);
-            CHECK(d_attribs[i].getAttribute() == 2 * test);
+            CHECK(a_attribs[i] == 1);
+            CHECK(b_attribs[i] == 2);
+            CHECK(c_attribs[i] == test);
+            CHECK(d_attribs[i] == 2 * test);
         }
     }
 
@@ -562,8 +507,8 @@ TEST_CASE("Geodesic") {
 
 TEST_CASE("Bipartite Graph") {
     SECTION("Vertex Cover") {
-        vector<int> aVertices{0,1,2,3};
-        vector<int> bVertices{0,1,2,3};
+        vector<int> aVertices{0, 1, 2, 3};
+        vector<int> bVertices{0, 1, 2, 3};
 //        auto g = BipartiteGraph();
     }
 }
@@ -671,7 +616,7 @@ TEST_CASE("Distance") {
             Distance::getRobinsonFouldsDistance(t7, t8, false);
             Distance::getWeightedRobinsonFouldsDistance(t7, t8, false);
         }
-        printf("Time taken: %.3f millisec\n", 1000 * (double)(clock() - start)/CLOCKS_PER_SEC);
+        printf("Time taken: %.3f millisec\n", 1000 * (double) (clock() - start) / CLOCKS_PER_SEC);
         CHECK(abs(Distance::getGeodesicDistance(t7, t8, false) - 2.2413235148883968) < TOLERANCE);
         CHECK(abs(Distance::getGeodesicDistance(t7, t8, true) - 0.1522374775995074) < TOLERANCE);
 

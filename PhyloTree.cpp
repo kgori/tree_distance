@@ -1,15 +1,16 @@
 #include "PhyloTree.h"
-//#include "Tools.h"
+#include "Tools.h"
 #include <cmath>
+#include <deque>
 
 #define LENGTH_DEFAULT 0.0
 
 using namespace std;
 
-PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<EdgeAttribute> &leafEdgeLengths) {
+PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<double> &leafEdgeLengths) {
     this->edges = edges;
     this->leaf2NumMap = leaf2NumMap;
-    this->leafEdgeAttribs = leafEdgeLengths;
+    this->leafEdgeLengths = leafEdgeLengths;
 }
 
 PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) : leaf2NumMap(leaf2NumMap) {
@@ -28,11 +29,7 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) 
     }
 }
 
-PhyloTree::PhyloTree(const PhyloTree &t) {
-    edges = vector<PhyloTreeEdge>(t.edges);
-    leaf2NumMap = vector<string>(t.leaf2NumMap);
-    leafEdgeAttribs = vector<EdgeAttribute>(t.leafEdgeAttribs);
-    newick = string(t.newick);
+PhyloTree::PhyloTree(const PhyloTree &t) : edges(t.edges), leaf2NumMap(t.leaf2NumMap), leafEdgeLengths(t.leafEdgeLengths), newick(t.newick) {
 }
 
 PhyloTree::PhyloTree(string t, bool rooted) {
@@ -62,7 +59,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
 
     try {
         size_t end_of_label, end_of_length, alt_end_of_label;
-        leafEdgeAttribs = vector<EdgeAttribute>(leaf2NumMap.size());
+        leafEdgeLengths = vector<double>(leaf2NumMap.size());
         while (i < t.size()) {
             switch (t.at(i)) {
                 case '(': {
@@ -79,7 +76,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                     else {
                         length = LENGTH_DEFAULT;
                     }
-                    q.front().setAttribute(EdgeAttribute(length));
+                    q.front().setAttribute(stod(length));
                     edges.push_back(q.front());
                     q.pop_front();
                     i = end_of_length;
@@ -108,7 +105,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                     label = Tools::substring(t, i, end_of_label);
                     leafNum = lower_bound(leaf2NumMap.begin(), leaf2NumMap.end(), label) - leaf2NumMap.begin();
                     if (leafNum == leaf2NumMap.size()) throw out_of_range("Could not find label (" + label + ") in leaf2NumMap");
-                    leafEdgeAttribs[leafNum] = EdgeAttribute(length);
+                    leafEdgeLengths[leafNum] = stod(length);
 
                     for (auto &e: q) {
                         e.addOne((size_t) leafNum);
@@ -172,13 +169,13 @@ void PhyloTree::setLeaf2NumMap(vector<string> leaf2NumMap) {
     this->leaf2NumMap = leaf2NumMap;
 }
 
-EdgeAttribute PhyloTree::getAttribOfSplit(Bipartition& edge) {
+double PhyloTree::getAttribOfSplit(Bipartition& edge) {
     for (auto &e : edges) {
         if (e.sameBipartition(edge)) {
-            return e.getAttribute();
+            return e.getLength();
         }
     }
-    return EdgeAttribute();
+    return 0;
 }
 
 //EdgeAttribute PhyloTree::getAttribOfSplit(PhyloTreeEdge& edge) {
@@ -221,8 +218,8 @@ double PhyloTree::getDistanceFromOrigin() {
         dist += std::pow(edge.getLength(), 2);
     }
 
-    for (auto &attrib : leafEdgeAttribs) {
-        dist += std::pow(attrib.norm(), 2);
+    for (auto attrib : leafEdgeLengths) {
+        dist += std::pow(attrib, 2);
     }
 
     return std::sqrt(dist);
@@ -242,8 +239,8 @@ double PhyloTree::getBranchLengthSum() {
         sum += edge.getLength();
     }
 
-    for (auto &attrib : leafEdgeAttribs) {
-        sum += attrib.norm();
+    for (auto attrib : leafEdgeLengths) {
+        sum += attrib;
     }
 
     return sum;
@@ -282,19 +279,19 @@ PhyloTree PhyloTree::clone() {
 }
 
 bool PhyloTree::equals(PhyloTree t) {
-    return (leaf2NumMap == t.leaf2NumMap) && Tools::vector_equal(leafEdgeAttribs, t.leafEdgeAttribs) && Tools::vector_equal(edges, t.edges);
+    return (leaf2NumMap == t.leaf2NumMap) && Tools::vector_equal(leafEdgeLengths, t.leafEdgeLengths) && Tools::vector_equal(edges, t.edges);
 }
 
 //bool PhyloTree::approxEquals(PhyloTree t, double epsilon) {
 //    return false;
 //}
 
-vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() {
-    return leafEdgeAttribs;
+vector<double> PhyloTree::getLeafEdgeLengths() {
+    return leafEdgeLengths;
 }
 
-void PhyloTree::setLeafEdgeAttribs(vector<EdgeAttribute>& otherEdgeAttribs) {
-    leafEdgeAttribs = otherEdgeAttribs;
+void PhyloTree::setLeafEdgeLengths(vector<double>& otherEdgeAttribs) {
+    leafEdgeLengths = otherEdgeAttribs;
 }
 
 //vector<EdgeAttribute> PhyloTree::getCopyLeafEdgeAttribs() {
@@ -305,7 +302,7 @@ vector<double> PhyloTree::getIntEdgeAttribNorms() {
     vector<double> norms;
     norms.reserve(edges.size());
     for (auto &e : edges) {
-        norms.push_back(e.getAttribute().norm());
+        norms.push_back(e.getLength());
     }
     return norms;
 }
@@ -321,13 +318,13 @@ string PhyloTree::getNewick(bool branchLengths) {
             strPieces.push_back(leaf2NumMap[i]);
             if (branchLengths) {
                 strPieces.push_back(":");
-                strPieces.push_back(Tools::double_to_string(leafEdgeAttribs[i].getAttribute()));
+                strPieces.push_back(Tools::double_to_string(leafEdgeLengths[i]));
             }
             strPieces.push_back(",");
         }
         strPieces.push_back(leaf2NumMap.back());
         strPieces.push_back(":");
-        strPieces.push_back(Tools::double_to_string(leafEdgeAttribs.back().getAttribute()));
+        strPieces.push_back(Tools::double_to_string(leafEdgeLengths.back()));
         strPieces.push_back(");");
         return Tools::string_join(strPieces, "");
     }
@@ -377,7 +374,7 @@ string PhyloTree::getNewick(bool branchLengths) {
                 if (minEdge.getPartition()[i]) {
                     str1 += leaf2NumMap[i];
                     if (branchLengths) {
-                        str1 += ":" + Tools::double_to_string(leafEdgeAttribs[i].getAttribute());
+                        str1 += ":" + Tools::double_to_string(leafEdgeLengths[i]);
                     }
                     str1 += ",";
                 }
@@ -386,7 +383,7 @@ string PhyloTree::getNewick(bool branchLengths) {
         // remove the last , and add the bracket and minEdge length
         str1 = Tools::substring(str1, 0, str1.length() - 1) + ")";
         if (branchLengths) {
-            str1 += ":" + Tools::double_to_string(minEdge.getAttribute().getAttribute());
+            str1 += ":" + Tools::double_to_string(minEdge.getLength());
         }
         // store str1
         strPieces.push_front(str1);
@@ -407,7 +404,7 @@ string PhyloTree::getNewick(bool branchLengths) {
             if ((allLeaves.getPartition())[i]) {
                 newickString = newickString + leaf2NumMap[i];
                 if (branchLengths) {
-                    newickString += ":" + Tools::double_to_string(leafEdgeAttribs[i].getAttribute());
+                    newickString += ":" + Tools::double_to_string(leafEdgeLengths[i]);
                 }
                 newickString += ",";
             }
@@ -447,11 +444,11 @@ void PhyloTree::setLeaf2NumMapFromNewick(string& s) {
 
 void PhyloTree::normalize(double constant) {
     // divide by the length of the split length vector to normalize
-    for (int i = 0; i < leafEdgeAttribs.size(); i++) {
-        leafEdgeAttribs[i].scaleBy(1.0 / constant);
+    for (int i = 0; i < leafEdgeLengths.size(); i++) {
+        leafEdgeLengths[i] += (1.0 / constant);
     }
     for (int i = 0; i < edges.size(); i++) {
-        edges[i].getAttribute().scaleBy(1.0 / constant);
+        edges[i].scaleBy(1.0 / constant);
     }
 }
 
@@ -477,7 +474,7 @@ bool PhyloTree::removeSplit(const Bipartition &e) {
 string PhyloTree::toString() {
     size_t nlabels = leaf2NumMap.size();
     size_t nedges = edges.size();
-    size_t nleaves = leafEdgeAttribs.size();
+    size_t nleaves = leafEdgeLengths.size();
     if (nlabels == nedges == nleaves == 0) return "";
     stringstream ss;
     ss << "Leaves: ";
@@ -495,9 +492,9 @@ string PhyloTree::toString() {
     if (nleaves > 0) {
         ss << "; leaf edges: [";
         for (size_t i = 0; i < nleaves - 1; ++i) {
-            ss << leafEdgeAttribs[i].toString() << " ";
+            ss << leafEdgeLengths[i] << " ";
         }
-        ss << leafEdgeAttribs.back().toString() << "]";
+        ss << leafEdgeLengths.back() << "]";
     }
     return ss.str();
 }
@@ -508,7 +505,7 @@ string PhyloTree::toString() {
 //        dist += std::pow(edge.getLength(), 2);
 //    }
 //
-//    for (auto &attrib : leafEdgeAttribs) {
+//    for (auto &attrib : leafEdgeLengths) {
 //        dist += std::pow(attrib.norm(), 2);
 //    }
 //
@@ -516,7 +513,7 @@ string PhyloTree::toString() {
 //}
 
 //vector<EdgeAttribute> PhyloTree::getLeafEdgeAttribs() const {
-//    return leafEdgeAttribs;
+//    return leafEdgeLengths;
 //}
 
 void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdge> &dest) {
@@ -524,7 +521,6 @@ void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdg
     vector<PhyloTreeEdge> t2_edges;
     t1.getEdges(t1_edges);
     t2.getEdges(t2_edges);
-    EdgeAttribute l_attr, r_attr;
     std::sort(t1_edges.begin(), t1_edges.end());
     std::sort(t2_edges.begin(), t2_edges.end());
 
@@ -542,10 +538,7 @@ void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdg
             ++first1; // first1 not in list2
         } else {
             if (!(*first2 < *first1)) { // first1 == first2
-                l_attr = first1->getAttribute();
-                r_attr = first2->getAttribute();
-                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-                *common_bkinstr++ = std::move(PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID()));
+                *common_bkinstr++ = std::move(PhyloTreeEdge(first1->asSplit(), first1->getLength() - first2->getLength(), first1->getOriginalID()));
                 ++first1;
             }
             else { // first2 not in list1
@@ -559,7 +552,6 @@ void PhyloTree::getCommonEdges(PhyloTree &t1, PhyloTree &t2, vector<PhyloTreeEdg
 }
 
 void PhyloTree::getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges, vector<PhyloTreeEdge> &dest) {
-    EdgeAttribute l_attr, r_attr;
     std::sort(t1_edges.begin(), t1_edges.end());
     std::sort(t2_edges.begin(), t2_edges.end());
 
@@ -577,10 +569,7 @@ void PhyloTree::getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTree
             ++first1; // first1 not in list2
         } else {
             if (!(*first2 < *first1)) { // first1 == first2
-                l_attr = first1->getAttribute();
-                r_attr = first2->getAttribute();
-                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-                *common_bkinstr++ = std::move(PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID()));
+                *common_bkinstr++ = std::move(PhyloTreeEdge(first1->asSplit(), first1->getLength() - first2->getLength(), first1->getOriginalID()));
                 ++first1;
             }
             else { // first2 not in list1
@@ -594,7 +583,6 @@ void PhyloTree::getCommonEdges(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTree
 }
 
 PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTreeEdge> &t2_edges) {
-    EdgeAttribute l_attr, r_attr;
     std::sort(t1_edges.begin(), t1_edges.end());
     std::sort(t2_edges.begin(), t2_edges.end());
 
@@ -611,10 +599,7 @@ PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vec
             ++first1; // first1 not in list2
         } else {
             if (!(*first2 < *first1)) { // first1 == first2
-                l_attr = first1->getAttribute();
-                r_attr = first2->getAttribute();
-                auto commonAttrib = EdgeAttribute::difference(l_attr, r_attr);
-                return PhyloTreeEdge(first1->asSplit(), commonAttrib, first1->getOriginalID());
+                return PhyloTreeEdge(first1->asSplit(), first1->getLength() - first2->getLength(), first1->getOriginalID());
             }
             else { // first2 not in list1
                 if (first2->isCompatibleWith(t1_edges)) {

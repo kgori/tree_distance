@@ -1,7 +1,7 @@
 #include "Ratio.h"
 #include <cmath>
 #include <iomanip>
-//#include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -16,7 +16,7 @@ Ratio::Ratio(double e, double f) : eLength(e), fLength(f) {
 }
 
 Ratio::Ratio(const Ratio &other) : eLength(other.eLength), fLength(other.fLength),
-        eEdges(other.eEdges), fEdges(other.fEdges) {
+                                   eEdges(other.eEdges), fEdges(other.fEdges) {
 }
 
 Ratio Ratio::combine(Ratio r1, Ratio r2) {
