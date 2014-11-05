@@ -332,7 +332,7 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     auto rs = RatioSequence();
     // if we can't split the ratio because it has too few edges in either the numerator or denominator
     if ((numEdges1 == 1) || (numEdges2 == 1)) {
-        rs.push_back(Ratio(t1_edges, t2_edges));
+        rs.push_back_value(Ratio(t1_edges, t2_edges));
         return Geodesic(rs);
     }
 

@@ -21,7 +21,7 @@ RatioSequence::RatioSequence(string ptA, string ptB) {
     size_t len = dblvecA.size();
     _RatioSequence.reserve(len);
     for (size_t i=0; i < len; ++i) {
-        this->push_back(Ratio(dblvecA[i], dblvecB[i]));
+        this->push_back_value(Ratio(dblvecA[i], dblvecB[i]));
     }
 }
 
@@ -260,8 +260,12 @@ RatioSequence RatioSequence::getNonDesRSWithMinDist() {
 //}
 size_t RatioSequence::size() { return _RatioSequence.size(); }
 
-void RatioSequence::push_back(Ratio item) {
+void RatioSequence::push_back(Ratio& item) {
     _RatioSequence.push_back(item);
+}
+
+void RatioSequence::push_back_value(Ratio item) {
+    _RatioSequence.push_back(std::move(item));
 }
 
 void RatioSequence::erase(size_t index) {

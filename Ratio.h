@@ -38,7 +38,7 @@ public:
 
     static double geoAvg(double d1, double d2);
 
-    static double geoAvg(vector<PhyloTreeEdge> edges);
+    static double geoAvg(vector<PhyloTreeEdge>& edges);
 
     const vector<PhyloTreeEdge>& getEEdges();
 

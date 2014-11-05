@@ -43,10 +43,10 @@ double Ratio::geoAvg(double d1, double d2) {
     return sqrt(pow(d1, 2) + pow(d2, 2));
 }
 
-double Ratio::geoAvg(vector<PhyloTreeEdge> edges) {
+double Ratio::geoAvg(vector<PhyloTreeEdge>& edges) {
     double gAvg = 0.0;
 
-    for (PhyloTreeEdge e: edges) {
+    for (PhyloTreeEdge &e: edges) {
         gAvg += pow(e.getLength(), 2);
     }
 

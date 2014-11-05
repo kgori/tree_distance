@@ -46,7 +46,9 @@ public:
 
 //    RatioSequence reverse();
 
-    void push_back(Ratio item);
+    void push_back_value(Ratio item);
+
+    void push_back(Ratio& item);
 
     void erase(size_t index);
 
