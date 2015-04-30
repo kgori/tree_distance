@@ -27,11 +27,11 @@ double Distance::getWeightedRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2,
 
     // Collect length differences for internal edges...
     for (PhyloTreeEdge &pte : eic) {
-        wrf_value += pte.getLength();
+        wrf_value += abs(pte.getLength());
     }
 
     for (PhyloTreeEdge &pte : enic) {
-        wrf_value += pte.getLength();
+        wrf_value += abs(pte.getLength());
     }
 
     // ... and leaves

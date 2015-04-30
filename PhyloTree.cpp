@@ -253,10 +253,10 @@ void PhyloTree::getEdgesNotInCommonWith(PhyloTree &t, vector<PhyloTreeEdge>& des
     }
     for (auto &this_edge : edges) {
         not_common = true;
-        if (this_edge.isZero()) continue;
+        //if (this_edge.isZero()) continue;
 
         for (auto &that_edge : t.edges) {
-            if (that_edge.isZero()) continue;
+            //if (that_edge.isZero()) continue;
             if (this_edge.sameBipartition(that_edge)) {
                 not_common = false;
             }
