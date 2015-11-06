@@ -99,7 +99,7 @@ cdef class PhyloTree:
     def __dealloc__(self):
          del self.inst
 
-    def __init__(self, bytes newick ,  rooted=False ):
+    def __init__(self, newick ,  rooted=False ):
         """
         Arguments:
         ----------
@@ -109,6 +109,8 @@ cdef class PhyloTree:
         Parameter 'rooted' should match whether the tree is rooted (has a bifurcation at the root)
         DEFAULT: rooted=False
         """
+        if isinstance(newick, str):
+            newick = newick.encode()
         assert isinstance(newick, bytes), 'arg newick wrong type'
         assert isinstance(rooted, (int, long)), 'arg rooted wrong type'
         self.inst = new _PhyloTree((<libcpp_string>newick), (<bool>rooted))

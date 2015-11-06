@@ -10,7 +10,7 @@ import platform, re, subprocess
 def is_clang(bin):
     proc = subprocess.Popen([bin, '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
-    output = '\n'.join([stdout, stderr])
+    output = b'\n'.join([stdout, stderr]).decode()
     return not re.search(r'clang', output) is None
 
 class my_build_ext(build_ext):
@@ -27,23 +27,23 @@ class my_build_ext(build_ext):
 
 ext = Extension("tree_distance",
                 language='c++',
-                sources = ['BipartiteGraph.cpp',
-                           'Bipartition.cpp',
-                           'Distance.cpp',
-                           'Geodesic.cpp',
-                           'PhyloTree.cpp',
-                           'PhyloTreeEdge.cpp',
-                           'Ratio.cpp',
-                           'RatioSequence.cpp',
-                           'Tools.cpp',
+                sources = ['src/BipartiteGraph.cpp',
+                           'src/Bipartition.cpp',
+                           'src/Distance.cpp',
+                           'src/Geodesic.cpp',
+                           'src/PhyloTree.cpp',
+                           'src/PhyloTreeEdge.cpp',
+                           'src/Ratio.cpp',
+                           'src/RatioSequence.cpp',
+                           'src/Tools.cpp',
                            'cython/tree_distance.pyx'],
-                # include_dirs = [data_dir],
+                include_dirs = ['src/include'],
                 extra_compile_args=['-std=c++11'],
                )
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="0.0.7",
+      version="0.0.8",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
