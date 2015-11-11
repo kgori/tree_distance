@@ -10,7 +10,7 @@ import platform, re, subprocess
 def is_clang(bin):
     proc = subprocess.Popen([bin, '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
-    output = b'\n'.join([stdout, stderr]).decode()
+    output = str(b'\n'.join([stdout, stderr]).decode('ascii', 'ignore'))
     return not re.search(r'clang', output) is None
 
 class my_build_ext(build_ext):
@@ -43,7 +43,7 @@ ext = Extension("tree_distance",
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="0.0.9",
+      version="0.0.10",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
