@@ -1,6 +1,8 @@
 #ifndef __DISTANCE_H__
 #define __DISTANCE_H__
-
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "Geodesic.h"
 #include "PhyloTree.h"
 #include <string>
@@ -18,13 +20,13 @@ public:
 
     static double getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalise);
 
-    static double getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
+    static double getRobinsonFouldsDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2);
 
-    static double getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
+    static double getWeightedRobinsonFouldsDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2);
 
-    static double getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2);
+    static double getEuclideanDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2);
 
-    static double getGeodesicDistance(string &t1, string &t2, bool normalise, bool rooted1, bool rooted2);
+    static double getGeodesicDistance(const string &t1, const string &t2, bool normalise, bool rooted1, bool rooted2);
 };
 
 #endif /* __DISTANCE_H__ */

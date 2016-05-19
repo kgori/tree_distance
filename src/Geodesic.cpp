@@ -1,3 +1,6 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "BipartiteGraph.h"
 #include "Geodesic.h"
 
@@ -14,12 +17,12 @@ Geodesic::Geodesic(RatioSequence rs) {
     this->rs = rs;
 }
 
-Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges) {
+Geodesic::Geodesic(const RatioSequence& rs, const vector<PhyloTreeEdge>& cEdges) {
     this->rs = rs;
     commonEdges = cEdges;
 }
 
-Geodesic::Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafContributionSquared) {
+Geodesic::Geodesic(const RatioSequence& rs, const vector<PhyloTreeEdge>& cEdges, double leafContributionSquared) {
     this->rs = rs;
     commonEdges = cEdges;
     this->leafContributionSquared = leafContributionSquared;
@@ -170,7 +173,7 @@ RatioSequence &Geodesic::getRS() {
     return this->rs;
 }
 
-void Geodesic::setRS(RatioSequence rs) {
+void Geodesic::setRS(const RatioSequence& rs) {
     this->rs = rs;
 }
 
@@ -445,7 +448,7 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
     edgesB1.reserve(numEdges1);
     edgesB2.reserve(numEdges2);
 
-    for (PhyloTreeEdge e : t1_edges) {
+    for (PhyloTreeEdge e : t1_edges) { // have to copy e
         e.clear();
         edgesA1.push_back(e);
         edgesB1.push_back(e);

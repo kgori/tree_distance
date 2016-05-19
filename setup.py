@@ -5,7 +5,7 @@ except ImportError:
 
 from Cython.Distutils import build_ext
 import pkg_resources
-import platform, re, subprocess
+import os, platform, re, subprocess
 
 def is_clang(bin):
     proc = subprocess.Popen([bin, '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -25,6 +25,8 @@ class my_build_ext(build_ext):
 
         build_ext.build_extensions(self)
 
+data_dir = pkg_resources.resource_filename("autowrap", os.path.join("data_files", "autowrap"))
+
 ext = Extension("tree_distance",
                 language='c++',
                 sources = ['src/BipartiteGraph.cpp',
@@ -37,19 +39,20 @@ ext = Extension("tree_distance",
                            'src/RatioSequence.cpp',
                            'src/Tools.cpp',
                            'cython/tree_distance.pyx'],
-                include_dirs = ['src/include'],
+                include_dirs = ['src/include', data_dir],
                 extra_compile_args=['-std=c++11'],
                )
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="0.0.10",
+      version="1.0.0",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
       url='https://bitbucket.org/kgori/cgtp.git',
       ext_modules = [ext],
       install_requires=[
-        'cython',
+          'cython',
+          'autowrap',
       ],
      )

@@ -1,7 +1,8 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "Bipartition.h"
 #include "Tools.h"
-//#include <boost/dynamic_bitset.hpp>
-//#include <memory>
 
 using namespace std;
 

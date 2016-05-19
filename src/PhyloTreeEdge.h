@@ -1,12 +1,16 @@
 #ifndef __PHYLOTREE_EDGE_H__
 #define __PHYLOTREE_EDGE_H__
 
-#include "boost/dynamic_bitset.hpp"
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
+
 #include <memory>
 #include <string>
 #include <tuple>
 #include <vector>
 #include "Bipartition.h"
+#include "boost/dynamic_bitset.hpp"
 
 using namespace std;
 
@@ -20,6 +24,8 @@ public:
     PhyloTreeEdge(string s);
 
     PhyloTreeEdge(boost::dynamic_bitset<> edge);
+
+    PhyloTreeEdge(boost::dynamic_bitset<> edge, double length, int id);
 
     PhyloTreeEdge(double attrib);
 

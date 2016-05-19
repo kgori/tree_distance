@@ -4,6 +4,7 @@
 #include "Bipartition.h"
 #include "PhyloTreeEdge.h"
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -15,6 +16,13 @@ public:
     }
 };
 
+struct EdgeInfo {
+    double length=0.0;
+    string name="";
+    int id=0;
+    bool leaf=false;
+};
+
 class PhyloTree {
 public:
     PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<double> &leafEdgeLengths);
@@ -22,6 +30,8 @@ public:
     PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap);
 
     PhyloTree(const PhyloTree &t); // copy-constructor
+
+    PhyloTree(const PhyloTree&, const vector<int>& missing); // pruning constructor
 
     PhyloTree(string t, bool rooted);
 
@@ -33,7 +43,7 @@ public:
 
     vector<PhyloTreeEdge> getEdges();
 
-    const vector<PhyloTreeEdge> &getEdgesByRef();
+    const vector<PhyloTreeEdge> &getEdgesByRef() const;
 
     void getEdges(vector<PhyloTreeEdge> &edges_to_add);
 
@@ -77,6 +87,8 @@ public:
 
     vector<double> getLeafEdgeLengths();
 
+    const vector<double>& getLeafEdgeLengthsByRef() const;
+
 //    vector<EdgeAttribute> getLeafEdgeAttribs() const;
 
     void setLeafEdgeLengths(vector<double> &leafEdgeLengths);
@@ -96,6 +108,8 @@ public:
     string toString();
 
     string newick;
+
+    std::pair<std::vector<int>, std::vector<int>> leaf_difference(const PhyloTree& other);
 
 private:
     vector<PhyloTreeEdge> edges;

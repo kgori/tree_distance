@@ -1,6 +1,8 @@
 #ifndef __RATIO_H__
 #define __RATIO_H__
-
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "Bipartition.h"
 #include "PhyloTreeEdge.h"
 #include <string>

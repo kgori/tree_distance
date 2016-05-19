@@ -1,6 +1,8 @@
 #ifndef __VERTEX_H__
 #define __VERTEX_H__
-
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 class Vertex {
 
 public :

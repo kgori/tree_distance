@@ -1,9 +1,11 @@
 #include "PhyloTree.h"
 #include "Tools.h"
+#include "bitset_hash.h"
+#include <unordered_map>
 #include <cmath>
-#include <deque>
 
 #define LENGTH_DEFAULT 0.0
+//#define DEBUGPRINT
 
 using namespace std;
 
@@ -138,7 +140,7 @@ vector<PhyloTreeEdge> PhyloTree::getEdges() {
     return edges;
 }
 
-const vector<PhyloTreeEdge>& PhyloTree::getEdgesByRef() {
+const vector<PhyloTreeEdge>& PhyloTree::getEdgesByRef() const {
     return edges;
 }
 
@@ -287,6 +289,10 @@ bool PhyloTree::equals(PhyloTree t) {
 //}
 
 vector<double> PhyloTree::getLeafEdgeLengths() {
+    return leafEdgeLengths;
+}
+
+const vector<double>& PhyloTree::getLeafEdgeLengthsByRef() const {
     return leafEdgeLengths;
 }
 
@@ -472,10 +478,10 @@ bool PhyloTree::removeSplit(const Bipartition &e) {
 //}
 
 string PhyloTree::toString() {
-    size_t nlabels = leaf2NumMap.size();
-    size_t nedges = edges.size();
-    size_t nleaves = leafEdgeLengths.size();
-    if (nlabels == nedges == nleaves == 0) return "";
+    size_t nlabels = this->leaf2NumMap.size();
+    size_t nedges = this->edges.size();
+    size_t nleaves = this->leafEdgeLengths.size();
+    if (nlabels == 0 || nedges == 0 || nleaves == 0) return "Empty";
     stringstream ss;
     ss << "Leaves: ";
     for (size_t i = 0; i < nlabels - 1; ++i) {
@@ -610,4 +616,163 @@ PhyloTreeEdge PhyloTree::getFirstCommonEdge(vector<PhyloTreeEdge> &t1_edges, vec
         }
     }
     throw edge_not_found_exception("No common edges");
+}
+
+/*
+ * Remove taxa at indices in `missing` from PhyloTree `tree`,
+ * returning a new pruned tree
+ */
+PhyloTree::PhyloTree(const PhyloTree& other, const vector<int>& missing)
+{
+    vector<double> pruned_lengths;  // temp store relevant edge lengths from other tree
+
+    // TODO: combine these into a single loop
+    Tools::prune_container(other.leaf2NumMap.begin(), other.leaf2NumMap.end(),
+            missing.begin(), missing.end(), std::back_inserter(this->leaf2NumMap)); // fill pruned leaf2NumMap
+    Tools::prune_container(other.leafEdgeLengths.begin(), other.leafEdgeLengths.end(),
+            missing.begin(), missing.end(), std::back_inserter(pruned_lengths)); // fill temp lengths store
+
+    this->leafEdgeLengths.resize(this->leaf2NumMap.size(), 0); // initialise leaf lengths vector
+
+#ifdef DEBUGPRINT
+    cout << "DEBUG - pruned_names" << endl;
+    Tools::vector_print(this->leaf2NumMap.begin(), this->leaf2NumMap.end());
+
+    cout << "DEBUG - pruned_lengths" << endl;
+    Tools::vector_print(pruned_lengths.begin(), pruned_lengths.end());
+    cout << "DEBUG end" << endl;
+#endif
+
+    std::unordered_map<string, size_t> name_indices;
+    for (size_t i = 0; i<this->leaf2NumMap.size(); i++) {
+        name_indices[this->leaf2NumMap[i]] = i;
+    }
+#ifdef DEBUGPRINT
+    cout << "DEBUG - name_indices" << endl;
+    for (auto& item: name_indices) {
+        cout << item.first << " " << item.second << endl;
+    }
+    cout << "DEBUG end" << endl;
+#endif
+
+    std::unordered_map<bitset_t, EdgeInfo, BitsetHash> hashmap;
+    int inner_edge_counter = 0;
+    for (auto& edge: other.edges) {
+        auto pruned = Tools::prune_bitset(edge.getPartition(), missing);
+
+#ifdef DEBUGPRINT
+        auto edge_copy = &edge;
+        cout << "DEBUG - edge = " << const_cast<PhyloTreeEdge*>(edge_copy)->toString() << " pruned = " << pruned
+                << endl;
+#endif
+
+        EdgeInfo info;
+        if (hashmap.find(pruned)==hashmap.end()) {
+            if (hashmap.find(~pruned)==hashmap.end()) {
+                info.length = edge.getLength();
+                if (Tools::is_leaf(pruned)) {
+                    size_t ix = Tools::leaf_index_nothrow(pruned);
+                    info.name = this->leaf2NumMap[ix];
+                    info.length += pruned_lengths[ix];
+                    info.leaf = true;
+                }
+                else {
+                    info.id = inner_edge_counter++;
+                }
+                hashmap[pruned] = info;
+            }
+            else {
+                info = hashmap[~pruned];
+            }
+
+#ifdef DEBUGPRINT
+            cout << "DEBUG - adding hashmap[" << pruned << "] = {" << info.length << ", " << info.name
+                    << ", " << info.id << ", " << info.leaf << "}" << endl;
+            cout << "DEBUG end" << endl;
+#endif
+        }
+        else {
+            info = hashmap[pruned];
+            info.length += edge.getLength();
+#ifdef DEBUGPRINT
+            cout << "DEBUG - altering hashmap[" << pruned << "] = {" << info.length << ", " << info.name
+                    << ", " << info.id << ", " << info.leaf << "}" << endl;
+            cout << "DEBUG end" << endl;
+#endif
+        }
+    }
+    // Add remaining leaves
+    size_t size = this->leaf2NumMap.size();
+    for (size_t i=0; i < size; ++i) {
+        bitset_t leaf_split(size);
+        leaf_split[size - i - 1] = true;
+        size_t index = Tools::leaf_index_nothrow(leaf_split);
+        if (hashmap.find(leaf_split)==hashmap.end() && hashmap.find(~leaf_split)==hashmap.end()) {
+            EdgeInfo info;
+            info.name = this->leaf2NumMap[index];
+            info.length = pruned_lengths[index];
+            info.leaf = true;
+            hashmap[leaf_split] = info;
+        }
+    }
+
+    // All info to build this PhyloTree is in the hashmap
+    for (auto& item : hashmap) {
+#ifdef DEBUGPRINT
+        cout << "DEBUG - hashmap key: " << item.first << ", value: {" << item.second.length << ", " << item.second.name
+                << ", " << item.second.id << ", " << item.second.leaf << "}" << endl;
+#endif
+        if (item.second.leaf) {
+            this->leafEdgeLengths[name_indices[item.second.name]] = item.second.length;
+        }
+        else {
+            if (!item.first.all() && !item.first.none()) {
+                this->edges.emplace_back(item.first, item.second.length, item.second.id);
+            }
+#ifdef DEBUGPRINT
+            cout << "DEBUG - PhyloTreeEdge check" << endl;
+            PhyloTreeEdge check(item.first, item.second.length, item.second.id);
+            cout << check.toString() << " " << check.getLength() << endl;
+            cout << "DEBUG end" << endl;
+#endif
+        }
+    }
+}
+
+std::pair<std::vector<int>, std::vector<int>> PhyloTree::leaf_difference(const PhyloTree& other) {
+    std::pair<std::vector<int>, std::vector<int>> out;
+    if (this->leaf2NumMap == other.leaf2NumMap) {
+        return std::move(out);
+    }
+
+    auto beg1 = this->leaf2NumMap.begin();
+    auto beg2 = other.leaf2NumMap.begin();
+    auto end1 = this->leaf2NumMap.end();
+    auto end2 = other.leaf2NumMap.end();
+    auto o1 = std::back_inserter(out.first);
+    auto o2 = std::back_inserter(out.second);
+    auto front1 = beg1;
+    auto front2 = beg2;
+
+    while (beg1 != end1 && beg2 != end2) {
+        if ((*beg1) < (*beg2)) {
+            (*o1++) = std::distance(front1, beg1++);
+        }
+        else if ((*beg1) == (*beg2)) {
+            beg1++;
+            beg2++;
+        }
+        else if ((*beg2) < (*beg1)) {
+            (*o2++) = std::distance(front2, beg2++);
+        }
+    }
+
+    while (beg1 != end1) {
+        (*o1++) = std::distance(front1, beg1++);
+    }
+
+    while (beg2 != end2) {
+        (*o2++) = std::distance(front2, beg2++);
+    }
+    return std::move(out);
 }

@@ -1,3 +1,7 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
+
 #include "PhyloTreeEdge.h"
 #include <cmath>
 #include <sstream>
@@ -21,6 +25,9 @@ PhyloTreeEdge::PhyloTreeEdge(string s) : super(s) {
 }
 
 PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge) : super(edge) {
+}
+
+PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge, double length, int id) : super(edge), length(length), originalID(id) {
 }
 
 PhyloTreeEdge::PhyloTreeEdge(double attrib) : super(), length(attrib) {

@@ -1,8 +1,9 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "RatioSequence.h"
 #include "Tools.h"
 #include <random>
-//#include <algorithm>
-//#include <stddef.h>
 
 RatioSequence::RatioSequence(){
 

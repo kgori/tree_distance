@@ -1,6 +1,9 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "BipartiteGraph.h"
 
-BipartiteGraph::BipartiteGraph(vector<deque<bool>>& IncidenceMatrix, vector<double> Aweight, vector<double> Bweight) : edge(IncidenceMatrix), nA(Aweight.size()), nB(Bweight.size()) {
+BipartiteGraph::BipartiteGraph(vector<deque<bool>>& IncidenceMatrix, const vector<double>& Aweight, const vector<double>& Bweight) : edge(IncidenceMatrix), nA(Aweight.size()), nB(Bweight.size()) {
     this->n = max(nA, nB);
     Avertex.reserve(nA);
     Bvertex.reserve(nB);
@@ -20,7 +23,7 @@ vector<deque<bool>> BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge>& ed
     return incidenceMatrix;
 };
 
-vector<vector<size_t>> BipartiteGraph::vertex_cover(vector<size_t> Aindex, vector<size_t> Bindex) {
+vector<vector<size_t>> BipartiteGraph::vertex_cover(const vector<size_t>& Aindex, const vector<size_t>& Bindex) {
     size_t nAVC = Aindex.size(), nBVC = Bindex.size(); //nAVC,nBVC=size of A and B
     double total = 0;
     vector<vector<double>> ABflow(nA, vector<double>(nB, 0.0));
@@ -61,6 +64,7 @@ vector<vector<size_t>> BipartiteGraph::vertex_cover(vector<size_t> Aindex, vecto
         for (j = 0; j < nBVC; j++) {
             Bvertex[Bindex[j]].label = -1;
             Bvertex[Bindex[j]].pred = -1;
+            Bvertex[j].label = -1;
         }
         AScanListSize = 0;
         for (i = 0; i < nAVC; i++) {
@@ -73,9 +77,9 @@ vector<vector<size_t>> BipartiteGraph::vertex_cover(vector<size_t> Aindex, vecto
                 Avertex[Aindex[i]].label = -1;
             }
         }
-        for (i = 0; i < nBVC; i++) {
-            Bvertex[i].label = -1;
-        }
+//        for (i = 0; i < nBVC; i++) {
+//            Bvertex[i].label = -1;
+//        }
 
         // scan for an augmenting path
         bool scanning = true;

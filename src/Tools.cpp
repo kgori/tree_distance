@@ -1,7 +1,35 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "Tools.h"
+#include "PhyloTree.h"
 #include <iomanip>
-//#include <sstream>
+//#include <utility>
 #define PRECISION 5
+
+bool Tools::is_leaf(const bitset_t split) {
+    return (split.count() == 1 || split.count() == split.size() - 1);
+}
+
+size_t Tools::leaf_index(const bitset_t split) {
+    if (split.count() == 1) {
+        return split.size() - split.find_first() - 1;
+    }
+    else if (split.count() == split.size() - 1) {
+        return split.size() - (~split).find_first() - 1;
+    }
+    else {
+        throw std::invalid_argument("Not a leaf");
+    }
+}
+
+size_t Tools::leaf_index_nothrow(const bitset_t split) {
+    if (split.count() == split.size() - 1) {
+        return split.size() - (~split).find_first() - 1;
+    } else {
+        return split.size() - split.find_first() - 1;
+    }
+}
 
 std::vector<std::string> Tools::string_split(std::string &to_split, const std::string &delimiters, const std::string &to_trim) {
     std::vector<std::string> results;

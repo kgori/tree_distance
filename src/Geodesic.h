@@ -1,6 +1,8 @@
 #ifndef __GEODESIC_H__
 #define __GEODESIC_H__
-
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "PhyloTree.h"
 #include "PhyloTreeEdge.h"
 #include "RatioSequence.h"
@@ -13,9 +15,9 @@ class Geodesic {
 public:
     Geodesic(RatioSequence rs);
 
-    Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges);
+    Geodesic(const RatioSequence& rs, const vector<PhyloTreeEdge>& cEdges);
 
-    Geodesic(RatioSequence rs, vector<PhyloTreeEdge> cEdges, double leafContributionSquared);
+    Geodesic(const RatioSequence& rs, const vector<PhyloTreeEdge>& cEdges, double leafContributionSquared);
 
     Geodesic(const Geodesic &other);
 
@@ -23,7 +25,7 @@ public:
 
     RatioSequence &getRS();
 
-    void setRS(RatioSequence rs);
+    void setRS(const RatioSequence& rs);
 
     double getDist();
 

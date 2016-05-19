@@ -1,6 +1,8 @@
 #ifndef __BIPARTITION_H__
 #define __BIPARTITION_H__
-
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include <boost/dynamic_bitset.hpp>
 #include <memory>
 #include <string>
@@ -13,39 +15,39 @@ public:
 
     Bipartition(const Bipartition &e); // copy-constructor
 
-    Bipartition(boost::dynamic_bitset<> &edge);
+    Bipartition(boost::dynamic_bitset<>& edge);
 
-    Bipartition(const boost::dynamic_bitset<> &edge);
+    Bipartition(const boost::dynamic_bitset<>& edge);
 
     Bipartition(string s);
 
     boost::dynamic_bitset<> getPartition() const;
 
-    inline bool operator==(const Bipartition &other) const {
+    inline bool operator==(const Bipartition& other) const {
         return (*this).equals(other);
     }
 
-    inline bool operator!=(const Bipartition &other) const {
+    inline bool operator!=(const Bipartition& other) const {
         return !(*this == other);
     }
 
-    inline bool operator<(const Bipartition &other) const {
+    inline bool operator<(const Bipartition& other) const {
         return (this->partition) < (other.partition);
     }
 
-    inline bool operator>(const Bipartition &other) const {
+    inline bool operator>(const Bipartition& other) const {
         return other < *this;
     }
 
-    inline bool operator<=(const Bipartition &other) const {
+    inline bool operator<=(const Bipartition& other) const {
         return !(*this > other);
     }
 
-    inline bool operator>=(const Bipartition &other) const {
+    inline bool operator>=(const Bipartition& other) const {
         return !(*this < other);
     }
 
-    inline Bipartition &operator&=(const Bipartition &other) {
+    inline Bipartition &operator&=(const Bipartition& other) {
         partition &= (other.partition);
         return *this;
     }

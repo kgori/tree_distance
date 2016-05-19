@@ -1,3 +1,6 @@
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 #include "Distance.h"
 #include <cmath>
 
@@ -80,25 +83,25 @@ double Distance::getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalis
     return distance;
 }
 
-double Distance::getEuclideanDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+double Distance::getEuclideanDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2) {
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getEuclideanDistance(a, b, normalise);
 }
 
-double Distance::getGeodesicDistance(string &t1, string &t2, bool normalise, bool rooted1, bool rooted2) {
+double Distance::getGeodesicDistance(const string &t1, const string &t2, bool normalise, bool rooted1, bool rooted2) {
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getGeodesicDistance(a, b, normalise);
 }
 
-double Distance::getRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+double Distance::getRobinsonFouldsDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2) {
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getRobinsonFouldsDistance(a, b, normalise);
 }
 
-double Distance::getWeightedRobinsonFouldsDistance(string t1, string t2, bool normalise, bool rooted1, bool rooted2) {
+double Distance::getWeightedRobinsonFouldsDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2) {
     PhyloTree a(t1, rooted1);
     PhyloTree b(t2, rooted2);
     return getWeightedRobinsonFouldsDistance(a, b, normalise);
