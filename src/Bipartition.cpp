@@ -76,7 +76,7 @@ bool Bipartition::isCompatibleWith(const vector<Bipartition>& splits) {
 }
 
 bool Bipartition::isEmpty() {
-    return partition.none();
+    return partition.none() || partition.all();
 }
 
 size_t Bipartition::size() {

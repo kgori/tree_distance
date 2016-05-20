@@ -5,7 +5,7 @@
 #include <cmath>
 
 #define LENGTH_DEFAULT 0.0
-//#define DEBUGPRINT
+#define DEBUGPRINT
 
 using namespace std;
 
@@ -59,13 +59,15 @@ PhyloTree::PhyloTree(string t, bool rooted) {
     t = t.substr(t.find_first_of("(") + 1);
     t = t.erase(t.find_last_of(")"));
 
+    std::unordered_map<bitset_t, size_t, BitsetHash> hashmap; // Maintain store of edges keyed by bitset, value is index of edges[index]
     try {
         size_t end_of_label, end_of_length, alt_end_of_label;
         leafEdgeLengths = vector<double>(leaf2NumMap.size());
+        size_t lastLeaf = leaf2NumMap.size();
         while (i < t.size()) {
             switch (t.at(i)) {
                 case '(': {
-                    q.push_front(PhyloTreeEdge(string(leaf2NumMap.size(), '0')));
+                    q.emplace_front(string(leaf2NumMap.size(), '0'));
                     i++;
                     break;
                 }
@@ -79,7 +81,23 @@ PhyloTree::PhyloTree(string t, bool rooted) {
                         length = LENGTH_DEFAULT;
                     }
                     q.front().setAttribute(stod(length));
-                    edges.push_back(q.front());
+
+                    if (!rooted) {
+                        if (q.front().partition[0]) {
+                            q.front().partition.flip();
+                        }
+                        if (hashmap.find(q.front().partition) == hashmap.end()) {  // never before seen edge
+                            hashmap[q.front().partition] = edges.size();
+                            edges.push_back(q.front());
+                        }
+                        else {
+                            size_t index = hashmap[q.front().partition];
+                            edges[index].setAttribute(q.front().length + edges[index].getLength());
+                        }
+                    }
+                    else {
+                        edges.push_back(q.front());
+                    }
                     q.pop_front();
                     i = end_of_length;
                     break;
@@ -121,14 +139,14 @@ PhyloTree::PhyloTree(string t, bool rooted) {
         throw range_err;
     }
 
-    if (!rooted) {
-        for (auto &e : edges) {
-            size_t lastLeaf = leaf2NumMap.size() - 1;
-            if (e.contains(lastLeaf)) {
-                e.complement(lastLeaf + 1);
-            }
-        }
-    }
+//    if (!rooted) {
+//        size_t lastLeaf = leaf2NumMap.size() - 1;
+//        for (auto &e : edges) {
+//            if (e.contains(lastLeaf)) {
+//                e.complement(lastLeaf + 1);
+//            }
+//        }
+//    }
 
     for (size_t k = 0; k < edges.size(); ++k) {
         edges[k].setOriginalEdge(make_shared<Bipartition>(edges[k].asSplit()));
@@ -666,9 +684,10 @@ PhyloTree::PhyloTree(const PhyloTree& other, const vector<int>& missing)
                 << endl;
 #endif
 
-        EdgeInfo info;
+
         if (hashmap.find(pruned)==hashmap.end()) {
             if (hashmap.find(~pruned)==hashmap.end()) {
+                EdgeInfo info;
                 info.length = edge.getLength();
                 if (Tools::is_leaf(pruned)) {
                     size_t ix = Tools::leaf_index_nothrow(pruned);
@@ -680,19 +699,24 @@ PhyloTree::PhyloTree(const PhyloTree& other, const vector<int>& missing)
                     info.id = inner_edge_counter++;
                 }
                 hashmap[pruned] = info;
+#ifdef DEBUGPRINT
+                cout << "DEBUG - adding hashmap[" << pruned << "] = {" << info.length << ", " << info.name
+                        << ", " << info.id << ", " << info.leaf << "}" << endl;
+                cout << "DEBUG end" << endl;
+#endif
             }
             else {
-                info = hashmap[~pruned];
-            }
-
+                auto& info = hashmap[~pruned];
+                info.length += edge.getLength();
 #ifdef DEBUGPRINT
-            cout << "DEBUG - adding hashmap[" << pruned << "] = {" << info.length << ", " << info.name
-                    << ", " << info.id << ", " << info.leaf << "}" << endl;
-            cout << "DEBUG end" << endl;
+                cout << "DEBUG - altering hashmap[" << ~pruned << "] = {" << info.length << ", " << info.name
+                        << ", " << info.id << ", " << info.leaf << "} (complement)" << endl;
+                cout << "DEBUG end" << endl;
 #endif
+            }
         }
         else {
-            info = hashmap[pruned];
+            auto& info = hashmap[pruned];
             info.length += edge.getLength();
 #ifdef DEBUGPRINT
             cout << "DEBUG - altering hashmap[" << pruned << "] = {" << info.length << ", " << info.name
@@ -713,6 +737,11 @@ PhyloTree::PhyloTree(const PhyloTree& other, const vector<int>& missing)
             info.length = pruned_lengths[index];
             info.leaf = true;
             hashmap[leaf_split] = info;
+#ifdef DEBUGPRINT
+            cout << "DEBUG - adding leaf hashmap[" << leaf_split << "] = {" << info.length << ", " << info.name
+                    << ", " << info.id << ", " << info.leaf << "}" << endl;
+            cout << "DEBUG end" << endl;
+#endif
         }
     }
 

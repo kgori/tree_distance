@@ -15,6 +15,6 @@ set(SOURCE_FILES
     src/RatioSequence.cpp
     src/Tools.cpp)
 
-add_executable(cgtp ${SOURCE_FILES} src/test.cpp src/bitset_hash.h)
+add_executable(tests ${SOURCE_FILES} src/test.cpp src/bitset_hash.h)
 add_executable(timer ${SOURCE_FILES} src/main.cpp src/bitset_hash.h)
 add_executable(build_tree ${SOURCE_FILES} src/build_tree.cpp src/bitset_hash.h)

@@ -15,6 +15,7 @@
 using namespace std;
 
 class PhyloTreeEdge : public Bipartition {
+    friend class PhyloTree;
 private:
     typedef Bipartition super;
 

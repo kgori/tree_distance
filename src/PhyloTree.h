@@ -24,6 +24,7 @@ struct EdgeInfo {
 };
 
 class PhyloTree {
+    friend class Geodesic;
 public:
     PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap, vector<double> &leafEdgeLengths);
 

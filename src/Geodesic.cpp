@@ -270,13 +270,16 @@ void Geodesic::setLeafContributionSquared(double leafContributionSquared) {
 
 Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
     double leafContributionSquared = 0;
-    vector<double> t1_leaf_lengths = t1.getLeafEdgeLengths();
-    vector<double> t2_leaf_lengths = t2.getLeafEdgeLengths();
+    vector<double>& t1_leaf_lengths = t1.leafEdgeLengths;
+    vector<double>& t2_leaf_lengths = t2.leafEdgeLengths;
     Geodesic geo = Geodesic(RatioSequence());
 
     // get the leaf contributions
-    auto ref_leaf_num_map = t1.getLeaf2NumMap();
-    auto chk_leaf_num_map = t2.getLeaf2NumMap();
+    auto& ref_leaf_num_map = t1.leaf2NumMap;
+    auto& chk_leaf_num_map = t2.leaf2NumMap;
+    if (ref_leaf_num_map.size() != chk_leaf_num_map.size()) {
+        throw invalid_argument("Error getting geodesic: trees do not have the same number of leaves");
+    }
     for (size_t i = 0; i < ref_leaf_num_map.size(); i++) {
         if (ref_leaf_num_map[i] != chk_leaf_num_map[i]) {
             throw invalid_argument("Error getting geodesic: trees do not have the same sets of leaves");
@@ -290,9 +293,9 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
 
     // get the pairs of trees with no common edges put into aTreesNoCommonEdges and bTreesNoCommonEdges
     //  aTreesNoCommonEdges[i] goes with bTreesNoCommonEdges[i]
-    auto t1_edges = t1.getEdges();
-    auto t2_edges = t2.getEdges();
-    auto l2nm = t1.getLeaf2NumMap();
+    auto& t1_edges = t1.edges;
+    auto& t2_edges = t2.edges;
+    auto& l2nm = t1.leaf2NumMap;
     splitOnCommonEdge(t1_edges, t2_edges, l2nm, aTreesNoCommonEdges, bTreesNoCommonEdges);
 //    splitOnCommonEdge(t1, t2, aTreesNoCommonEdges, bTreesNoCommonEdges);
     //set the common edges
@@ -309,8 +312,8 @@ Geodesic Geodesic::getGeodesic(PhyloTree &t1, PhyloTree &t2) {
 }
 
 Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
-    auto t1_edges = t1.getEdges();
-    auto t2_edges = t2.getEdges();
+    auto& t1_edges = t1.edges;
+    auto& t2_edges = t2.edges;
     size_t numEdges1 = t1_edges.size(); // number of edges in tree 1
     size_t numEdges2 = t2_edges.size(); // number of edges in tree 2
 
@@ -448,13 +451,13 @@ void Geodesic::splitOnCommonEdge(vector<PhyloTreeEdge> &t1_edges, vector<PhyloTr
     edgesB1.reserve(numEdges1);
     edgesB2.reserve(numEdges2);
 
-    for (PhyloTreeEdge e : t1_edges) { // have to copy e
+    for (PhyloTreeEdge e : t1_edges) { // have to copy e <= DO NOT MAKE e A REFERENCE
         e.clear();
         edgesA1.push_back(e);
         edgesB1.push_back(e);
     }
 
-    for (PhyloTreeEdge e : t2_edges) {
+    for (PhyloTreeEdge e : t2_edges) { // as above
         e.clear();
         edgesA2.push_back(e);
         edgesB2.push_back(e);

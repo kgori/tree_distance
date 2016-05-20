@@ -149,33 +149,94 @@ PhyloTree prune_tree(const PhyloTree& tree, const Container& missing) {
 
 
 int main(int argc, char const *argv[]) {
-    string bignewick1("((a:1,b:2):3,(c:4,d:5):6,(e:7,f:8):9);");
-    string bignewick2("((a:1,(b:2,c:3):4):5,(d:6,e:7):8,f:9);");
-    string smallnewick1("((a:1,b:2):3,c:10,f:17);");
-    string smallnewick2("(a:1,(b:2,c:3):4,f:14);");
-    PhyloTree bigtree1(bignewick1, false);
-    PhyloTree bigtree2(bignewick2, false);
-    PhyloTree smalltree1(smallnewick1, false);
-    PhyloTree smalltree2(smallnewick2, false);
-    PhyloTree prunedtree1(bigtree1, std::vector<int>{3,4});
-    PhyloTree prunedtree2(bigtree2, std::vector<int>{3,4});
+//    string bignewick1("((a:1,b:2):3,(c:4,d:5):6,(e:7,f:8):9);");
+//    string bignewick2("((a:1,(b:2,c:3):4):5,(d:6,e:7):8,f:9);");
+//    string smallnewick1("((a:1,b:2):3,c:10,f:17);");
+//    string smallnewick2("(a:1,(b:2,c:3):4,f:14);");
+    string t1_rooted_newick("((((a:0.0589988989102,(b:0.0418326893396,c:0.859140507521):2.61261891006):0.990549866809,(d:4.14397236141,f:0.17088326593):0.0323075746352):2.02262974527,g:0.693675923359):0.428536225039,(i:1.69919541269,j:0.362508537093):0.195899634738):0.0;");
+    string t2_rooted_newick("((a:2.03481158672,((b:0.374332029372,c:3.8377563921):0.258935532423,((e:2.18939751337,f:2.17982498905):0.623171789534,g:0.12443873179):0.845298009923):0.0780727161207):0.271887473804,(h:0.125928604756,j:0.64774830898):0.240154552836):0.0;");
+    string t1_unrooted_newick("((((a:0.0589988989102,(b:0.0418326893396,c:0.859140507521):2.61261891006):0.990549866809,(d:4.14397236141,f:0.17088326593):0.0323075746352):2.02262974527,g:0.693675923359):0.624435859777,i:1.69919541269,j:0.362508537093):0.0;");
+    string t2_unrooted_newick("((a:2.03481158672,((b:0.374332029372,c:3.8377563921):0.258935532423,((e:2.18939751337,f:2.17982498905):0.623171789534,g:0.12443873179):0.845298009923):0.0780727161207):0.51204202664,h:0.125928604756,j:0.64774830898):0.0;");
+//    PhyloTree bigtree1(bignewick1, false);
+//    PhyloTree bigtree2(bignewick2, false);
+//    PhyloTree smalltree1(smallnewick1, false);
+//    PhyloTree smalltree2(smallnewick2, false);
+//    PhyloTree prunedtree1(bigtree1, std::vector<int>{3,4});
+//    PhyloTree prunedtree2(bigtree2, std::vector<int>{3,4});
+    PhyloTree t1_rooted(t1_rooted_newick, true);
+    PhyloTree t1_unrooted(t1_unrooted_newick, false);
+    PhyloTree t2_rooted(t2_rooted_newick, true);
+    PhyloTree t2_unrooted(t2_unrooted_newick, false);
+    auto p_rooted = t1_rooted.leaf_difference(t2_rooted);
+    PhyloTree t1_rooted_pruned(t1_rooted, p_rooted.first);
+    PhyloTree t2_rooted_pruned(t2_rooted, p_rooted.first);
+    auto p_unrooted = t1_unrooted.leaf_difference(t2_unrooted);
+    PhyloTree t1_unrooted_pruned(t1_unrooted, p_unrooted.first);
+    PhyloTree t2_unrooted_pruned(t2_unrooted, p_unrooted.first);
+    cout << "T1 rooted: " << endl << t1_rooted.toString() << endl;
+    cout << "T1 unrooted: " << endl << t1_unrooted.toString() << endl;
+    cout << "T2 rooted: " << endl << t2_rooted.toString() << endl;
+    cout << "T2 unrooted: " << endl << t2_unrooted.toString() << endl;
+    cout << "T1 rooted,pruned: " << endl << t1_rooted_pruned.toString() << endl;
+    cout << "T1 unrooted,pruned: " << endl << t1_unrooted_pruned.toString() << endl;
+    cout << "T2 rooted,pruned: " << endl << t2_rooted_pruned.toString() << endl;
+    cout << "T2 unrooted,pruned: " << endl << t2_unrooted_pruned.toString() << endl;
 
-    cout << Distance::getGeodesicDistance(smalltree1, smalltree2, false) << endl;
-    cout << Distance::getGeodesicDistance(prunedtree1, prunedtree2, false) << endl;
-    cout << Distance::getGeodesicDistance(smalltree1, prunedtree2, false) << endl;
-    cout << Distance::getGeodesicDistance(prunedtree1, smalltree2, false) << endl;
-    cout << Distance::getGeodesicDistance(smalltree1, smalltree1, false) << endl;
-    cout << Distance::getGeodesicDistance(prunedtree1, prunedtree1, false) << endl;
-    cout << Distance::getGeodesicDistance(smalltree1, prunedtree1, false) << endl;
-    cout << Distance::getGeodesicDistance(prunedtree1, smalltree1, false) << endl;
-    cout << Distance::getGeodesicDistance(smalltree2, smalltree2, false) << endl;
-    cout << Distance::getGeodesicDistance(prunedtree2, prunedtree2, false) << endl;
-    cout << Distance::getGeodesicDistance(smalltree2, prunedtree2, false) << endl;
-    cout << Distance::getGeodesicDistance(prunedtree2, smalltree2, false) << endl;
+    PhyloTree t1_r_as_u(t1_rooted_newick, false);
+    PhyloTree t1_u_as_r(t1_unrooted_newick, true);
 
-    auto res = bigtree1.leaf_difference(smalltree2);
-    Tools::vector_print(res.first.begin(), res.first.end());
-    Tools::vector_print(res.second.begin(), res.second.end());
+    cout << "T1 rooted as unrooted: " << endl << t1_r_as_u.toString() << endl;
+    cout << "T1 unrooted as rooted: " << endl << t1_u_as_r.toString() << endl;
+    cout << "T1 rooted: " << endl << t1_rooted.toString() << endl;
+    cout << "T1 unrooted: " << endl << t1_unrooted.toString() << endl;
+    cout << "Distance: " << Distance::getGeodesicDistance(t1_r_as_u, t1_rooted, false) << endl;
+    cout << "Distance: " << Distance::getGeodesicDistance(t1_r_as_u, t1_unrooted, false) << endl;
+    cout << "Distance: " << Distance::getGeodesicDistance(t1_u_as_r, t1_rooted, false) << endl;
+    cout << "Distance: " << Distance::getGeodesicDistance(t1_u_as_r, t1_unrooted, false) << endl;
+//
+//    cout << Distance::getGeodesicDistance(smalltree1, smalltree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(prunedtree1, prunedtree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(smalltree1, prunedtree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(prunedtree1, smalltree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(smalltree1, smalltree1, false) << endl;
+//    cout << Distance::getGeodesicDistance(prunedtree1, prunedtree1, false) << endl;
+//    cout << Distance::getGeodesicDistance(smalltree1, prunedtree1, false) << endl;
+//    cout << Distance::getGeodesicDistance(prunedtree1, smalltree1, false) << endl;
+//    cout << Distance::getGeodesicDistance(smalltree2, smalltree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(prunedtree2, prunedtree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(smalltree2, prunedtree2, false) << endl;
+//    cout << Distance::getGeodesicDistance(prunedtree2, smalltree2, false) << endl;
+
+//    cout << "TESTING" << endl;
+//    try {
+//        auto rooted_dist = Distance::getGeodesicDistance(t1_rooted, t2_rooted, false);
+//        cout << "rooted distance: " << rooted_dist << endl;
+//    } catch (std::invalid_argument e) {
+//        cout << e.what() << endl;
+//    }
+//
+//    try {
+//        cout << "unrooted distance: " << Distance::getGeodesicDistance(t1_unrooted, t2_unrooted, false) << endl;
+//    } catch (std::invalid_argument e) {
+//        cout << e.what() << endl;
+//    }
+//
+    cout << "rooted, pruned distance: " << Distance::getGeodesicDistance(t1_rooted_pruned, t2_rooted_pruned, false) << endl;
+    cout << "unrooted, pruned distance: " << Distance::getGeodesicDistance(t1_unrooted_pruned, t2_unrooted_pruned, false) << endl;
+    cout << "rooted, pruned distance: " << Distance::getRobinsonFouldsDistance(t1_rooted_pruned, t2_rooted_pruned, false) << endl;
+    cout << "unrooted, pruned distance: " << Distance::getRobinsonFouldsDistance(t1_unrooted_pruned, t2_unrooted_pruned, false) << endl;
+
+
+    string n1("((a:3,b:4):.1,(c:5,((d:6,e:7):.2,f:8):.3):.4);");
+    string n2("((a:3,c:4):.5,(d:5,((b:6,e:7):.2,f:8):.3):.4);");
+    PhyloTree t1(n1, true);
+    PhyloTree t2(n2, true);
+    cout << "t1: " << t1.toString() << endl;
+    cout << "t2: " << t2.toString() << endl;
+    cout << Distance::getRobinsonFouldsDistance(t1,t2,false);
+//    auto res = bigtree1.leaf_difference(smalltree2);
+//    Tools::vector_print(res.first.begin(), res.first.end());
+//    Tools::vector_print(res.second.begin(), res.second.end());
 //    PhyloTreeEdge e(s1);
 //    std::cout << e.toString() << std::endl;
 //    PhyloTree t(tree, false);

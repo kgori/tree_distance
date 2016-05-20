@@ -3,6 +3,8 @@
 #endif
 #include "Distance.h"
 #include <cmath>
+#include <iostream>
+#include <limits>
 
 double Distance::getRobinsonFouldsDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
     double rf_value = 0;
@@ -78,9 +80,14 @@ double Distance::getEuclideanDistance(PhyloTree &t1, PhyloTree &t2, bool normali
 }
 
 double Distance::getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalise) {
-    double distance = Geodesic::getGeodesic(t1, t2).getDist();
-    if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
-    return distance;
+    try {
+        double distance = Geodesic::getGeodesic(t1, t2).getDist();
+        if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
+        return distance;
+    } catch (std::invalid_argument e) {
+        std::cout << "ERROR! " << e.what() << std::endl;
+        return std::numeric_limits<double>::infinity();
+    }
 }
 
 double Distance::getEuclideanDistance(const string& t1, const string& t2, bool normalise, bool rooted1, bool rooted2) {
