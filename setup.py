@@ -47,11 +47,11 @@ ext = Extension("tree_distance",
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="1.0.3",
+      version="1.0.5",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
-      url='https://bitbucket.org/kgori/cgtp.git',
+      url='https://github.com/kgori/tree_distance.git',
       ext_modules = [ext],
       install_requires=[
           'cython',
