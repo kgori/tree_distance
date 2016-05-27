@@ -1,7 +1,4 @@
-try:
-    from setuptools import setup, Extension
-except ImportError:
-    from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
 from Cython.Distutils import build_ext
 import pkg_resources
@@ -25,7 +22,12 @@ class my_build_ext(build_ext):
 
         build_ext.build_extensions(self)
 
-data_dir = pkg_resources.resource_filename("autowrap", os.path.join("data_files", "autowrap"))
+try:
+    data_dir = pkg_resources.resource_filename("autowrap", os.path.join("data_files", "autowrap"))
+except ImportError:
+    from setuptools.dist import Distribution
+    Distribution().fetch_build_eggs(['autowrap'])
+    data_dir = pkg_resources.resource_filename("autowrap", os.path.join("data_files", "autowrap"))
 
 ext = Extension("tree_distance",
                 language='c++',
@@ -45,7 +47,7 @@ ext = Extension("tree_distance",
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="1.0.1",
+      version="1.0.2",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
