@@ -34,7 +34,7 @@ install:
 
 sudo: true
 
-script: nosetests
+script: nosetests 
 
 deploy:
   provider: pypi
