@@ -14,6 +14,7 @@ from Distance_h cimport getGeodesicDistance as _getGeodesicDistance_Distance_h
 from Distance_h cimport getRobinsonFouldsDistance as _getRobinsonFouldsDistance_Distance_h
 from Distance_h cimport getWeightedRobinsonFouldsDistance as _getWeightedRobinsonFouldsDistance_Distance_h
 from Distance_h cimport PhyloTree as _PhyloTree
+from Distance_h cimport Bipartition as _Bipartition
 cdef extern from "autowrap_tools.hpp":
     char * _cast_const_away(char *)
 
@@ -153,3 +154,60 @@ cdef class PhyloTree:
              self._init_1(*args)
         else:
                raise Exception('can not handle type of %s' % (args,)) 
+
+cdef class Bipartition:
+
+    cdef shared_ptr[_Bipartition] inst
+
+    def __dealloc__(self):
+         self.inst.reset()
+
+
+    def crosses(self, Bipartition other ):
+        assert isinstance(other, Bipartition), 'arg other wrong type'
+
+        cdef bool _r = self.inst.get().crosses((deref(other.inst.get())))
+        py_result = <bool>_r
+        return py_result
+
+    def contains(self, Bipartition other ):
+        assert isinstance(other, Bipartition), 'arg other wrong type'
+
+        cdef bool _r = self.inst.get().contains((deref(other.inst.get())))
+        py_result = <bool>_r
+        return py_result
+
+    def properlyContains(self, Bipartition other ):
+        assert isinstance(other, Bipartition), 'arg other wrong type'
+
+        cdef bool _r = self.inst.get().properlyContains((deref(other.inst.get())))
+        py_result = <bool>_r
+        return py_result
+
+    def __init__(self, bytes s ):
+        assert isinstance(s, bytes), 'arg s wrong type'
+
+        self.inst = shared_ptr[_Bipartition](new _Bipartition((<libcpp_string>s)))
+
+    def isEmpty(self):
+        cdef bool _r = self.inst.get().isEmpty()
+        py_result = <bool>_r
+        return py_result
+
+    def disjointFrom(self, Bipartition other ):
+        assert isinstance(other, Bipartition), 'arg other wrong type'
+
+        cdef bool _r = self.inst.get().disjointFrom((deref(other.inst.get())))
+        py_result = <bool>_r
+        return py_result
+
+    def isCompatibleWith(self, list splits ):
+        assert isinstance(splits, list) and all(isinstance(elemt_rec, Bipartition) for elemt_rec in splits), 'arg splits wrong type'
+        cdef libcpp_vector[_Bipartition] * v0 = new libcpp_vector[_Bipartition]()
+        cdef Bipartition item0
+        for item0 in splits:
+            v0.push_back(deref(item0.inst.get()))
+        cdef bool _r = self.inst.get().isCompatibleWith(deref(v0))
+        del v0
+        py_result = <bool>_r
+        return py_result
