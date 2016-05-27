@@ -47,7 +47,7 @@ ext = Extension("tree_distance",
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="1.0.2",
+      version="1.0.3",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
