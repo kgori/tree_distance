@@ -37,7 +37,7 @@ sudo: true
 
 script:
   - nosetests
-  - mkdir build && cd build && cmake .. && make && ./tests
+  - mkdir build && cd build && cmake .. && make tests && ./tests
 
 deploy:
   provider: pypi
