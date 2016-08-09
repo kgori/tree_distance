@@ -4,8 +4,8 @@ from  libcpp.set     cimport set as libcpp_set
 from  libcpp.vector  cimport vector as libcpp_vector
 from  libcpp.pair    cimport pair as libcpp_pair
 from  libcpp.map     cimport map  as libcpp_map
-from  smart_ptr cimport shared_ptr
-from  AutowrapRefHolder cimport AutowrapRefHolder
+# from  smart_ptr cimport shared_ptr                 # <--
+# from  AutowrapRefHolder cimport AutowrapRefHolder  # <--
 from  libcpp cimport bool
 from  libc.string cimport const_char
 from cython.operator cimport dereference as deref, preincrement as inc, address as address
@@ -15,8 +15,8 @@ from Distance_h cimport getRobinsonFouldsDistance as _getRobinsonFouldsDistance_
 from Distance_h cimport getWeightedRobinsonFouldsDistance as _getWeightedRobinsonFouldsDistance_Distance_h
 from Distance_h cimport PhyloTree as _PhyloTree
 from Distance_h cimport Bipartition as _Bipartition
-cdef extern from "autowrap_tools.hpp":
-    char * _cast_const_away(char *)
+# cdef extern from "autowrap_tools.hpp":             # <--
+#     char * _cast_const_away(char *)                # <--
 
 def getEuclideanDistance(PhyloTree t1, PhyloTree t2, normalise=False):
     """
@@ -35,7 +35,7 @@ def getEuclideanDistance(PhyloTree t1, PhyloTree t2, normalise=False):
     assert isinstance(t2, PhyloTree), 'arg t2 wrong type'
     assert isinstance(normalise, (int, long)), 'arg normalise wrong type'
 
-    cdef double _r = _getEuclideanDistance_Distance_h((deref(t1.inst.get())), (deref(t2.inst.get())), (<bool>normalise))
+    cdef double _r = _getEuclideanDistance_Distance_h((deref(t1.inst)), (deref(t2.inst)), (<bool>normalise))
     py_result = <double>_r
     return py_result
 
@@ -55,7 +55,7 @@ def getGeodesicDistance(PhyloTree t1, PhyloTree t2, normalise=False):
     assert isinstance(t2, PhyloTree), 'arg t2 wrong type'
     assert isinstance(normalise, (int, long)), 'arg normalise wrong type'
 
-    cdef double _r = _getGeodesicDistance_Distance_h((deref(t1.inst.get())), (deref(t2.inst.get())), (<bool>normalise))
+    cdef double _r = _getGeodesicDistance_Distance_h((deref(t1.inst)), (deref(t2.inst)), (<bool>normalise))
     py_result = <double>_r
     return py_result
 
@@ -75,7 +75,7 @@ def getRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, normalise=False):
     assert isinstance(t2, PhyloTree), 'arg t2 wrong type'
     assert isinstance(normalise, (int, long)), 'arg normalise wrong type'
 
-    cdef double _r = _getRobinsonFouldsDistance_Distance_h((deref(t1.inst.get())), (deref(t2.inst.get())), (<bool>normalise))
+    cdef double _r = _getRobinsonFouldsDistance_Distance_h((deref(t1.inst)), (deref(t2.inst)), (<bool>normalise))
     py_result = <double>_r
     return py_result
 
@@ -95,22 +95,22 @@ def getWeightedRobinsonFouldsDistance(PhyloTree t1, PhyloTree t2, normalise=Fals
     assert isinstance(t2, PhyloTree), 'arg t2 wrong type'
     assert isinstance(normalise, (int, long)), 'arg normalise wrong type'
 
-    cdef double _r = _getWeightedRobinsonFouldsDistance_Distance_h((deref(t1.inst.get())), (deref(t2.inst.get())), (<bool>normalise))
+    cdef double _r = _getWeightedRobinsonFouldsDistance_Distance_h((deref(t1.inst)), (deref(t2.inst)), (<bool>normalise))
     py_result = <double>_r
     return py_result 
 
 cdef class PhyloTree:
 
-    cdef shared_ptr[_PhyloTree] inst
+    cdef _PhyloTree *inst
 
     def __dealloc__(self):
-         self.inst.reset()
+         del self.inst
 
     
     def leaf_difference(self, PhyloTree other ):
         assert isinstance(other, PhyloTree), 'arg other wrong type'
     
-        _r = self.inst.get().leaf_difference((deref(other.inst.get())))
+        _r = self.inst.leaf_difference((deref(other.inst)))
         cdef list py_result = [_r.first, _r.second]
         return py_result
     
@@ -119,14 +119,14 @@ cdef class PhyloTree:
         assert isinstance(rooted, (int, long)), 'arg rooted wrong type'
     
     
-        self.inst = shared_ptr[_PhyloTree](new _PhyloTree((<libcpp_string>newick), (<bool>rooted)))
+        self.inst = new _PhyloTree((<libcpp_string>newick), (<bool>rooted))
     
     def _init_1(self, PhyloTree other , list missing):
         assert isinstance(other, PhyloTree), 'arg other wrong type'
         assert isinstance(missing, list) and all(isinstance(elemt_rec, (int, long)) for elemt_rec in missing), 'arg missing wrong type'
     
         cdef libcpp_vector[int] v1 = missing
-        self.inst = shared_ptr[_PhyloTree](new _PhyloTree((deref(other.inst.get())), v1))
+        self.inst = new _PhyloTree((deref(other.inst)), v1)
 
     def __init__(self, *args):
         """
@@ -157,47 +157,47 @@ cdef class PhyloTree:
 
 cdef class Bipartition:
 
-    cdef shared_ptr[_Bipartition] inst
+    cdef _Bipartition *inst
 
     def __dealloc__(self):
-         self.inst.reset()
+         del self.inst
 
 
     def crosses(self, Bipartition other ):
         assert isinstance(other, Bipartition), 'arg other wrong type'
 
-        cdef bool _r = self.inst.get().crosses((deref(other.inst.get())))
+        cdef bool _r = self.inst.crosses((deref(other.inst)))
         py_result = <bool>_r
         return py_result
 
     def contains(self, Bipartition other ):
         assert isinstance(other, Bipartition), 'arg other wrong type'
 
-        cdef bool _r = self.inst.get().contains((deref(other.inst.get())))
+        cdef bool _r = self.inst.contains((deref(other.inst)))
         py_result = <bool>_r
         return py_result
 
     def properlyContains(self, Bipartition other ):
         assert isinstance(other, Bipartition), 'arg other wrong type'
 
-        cdef bool _r = self.inst.get().properlyContains((deref(other.inst.get())))
+        cdef bool _r = self.inst.properlyContains((deref(other.inst)))
         py_result = <bool>_r
         return py_result
 
     def __init__(self, bytes s ):
         assert isinstance(s, bytes), 'arg s wrong type'
 
-        self.inst = shared_ptr[_Bipartition](new _Bipartition((<libcpp_string>s)))
+        self.inst = new _Bipartition((<libcpp_string>s))
 
     def isEmpty(self):
-        cdef bool _r = self.inst.get().isEmpty()
+        cdef bool _r = self.inst.isEmpty()
         py_result = <bool>_r
         return py_result
 
     def disjointFrom(self, Bipartition other ):
         assert isinstance(other, Bipartition), 'arg other wrong type'
 
-        cdef bool _r = self.inst.get().disjointFrom((deref(other.inst.get())))
+        cdef bool _r = self.inst.disjointFrom((deref(other.inst)))
         py_result = <bool>_r
         return py_result
 
@@ -206,8 +206,8 @@ cdef class Bipartition:
         cdef libcpp_vector[_Bipartition] * v0 = new libcpp_vector[_Bipartition]()
         cdef Bipartition item0
         for item0 in splits:
-            v0.push_back(deref(item0.inst.get()))
-        cdef bool _r = self.inst.get().isCompatibleWith(deref(v0))
+            v0.push_back(deref(item0.inst))
+        cdef bool _r = self.inst.isCompatibleWith(deref(v0))
         del v0
         py_result = <bool>_r
         return py_result

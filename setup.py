@@ -22,12 +22,15 @@ class my_build_ext(build_ext):
 
         build_ext.build_extensions(self)
 
+"""
+Removed autowrap dependency, so no need for this. Leaving it here in case it needs reinstating in the future.
 try:
     data_dir = pkg_resources.resource_filename("autowrap", os.path.join("data_files", "autowrap"))
 except ImportError:
     from setuptools.dist import Distribution
     Distribution().fetch_build_eggs(['autowrap'])
     data_dir = pkg_resources.resource_filename("autowrap", os.path.join("data_files", "autowrap"))
+"""
 
 ext = Extension("tree_distance",
                 language='c++',
@@ -41,13 +44,13 @@ ext = Extension("tree_distance",
                            'src/RatioSequence.cpp',
                            'src/Tools.cpp',
                            'cython/tree_distance.pyx'],
-                include_dirs = ['src/include', data_dir],
+                include_dirs = ['src/include'], # removed data_dir
                 extra_compile_args=['-std=c++11'],
                )
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="1.0.5",
+      version="1.0.6",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
@@ -55,6 +58,5 @@ setup(cmdclass={'build_ext':my_build_ext},
       ext_modules = [ext],
       install_requires=[
           'cython',
-          'autowrap',
       ],
      )
