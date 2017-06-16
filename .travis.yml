@@ -20,10 +20,14 @@ addons:
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - if $(awk 'BEGIN r=($TRAVIS_PYTHON_VERSION >= 3) ? 0 : 1; exit} END {exit r}'); then
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
+    fi
   - chmod +x miniconda.sh
-  - ./miniconda.sh -b
+  - ./miniconda.sh -p $HOME/miniconda -b
   - if [ -d $HOME/miniconda ]; then export PATH=$HOME/miniconda/bin:$PATH; fi
-  - if [ -d $HOME/miniconda2 ]; then export PATH=$HOME/miniconda2/bin:$PATH; fi
   - echo $PATH
   - conda update --yes conda
   - export CC=gcc-4.7
