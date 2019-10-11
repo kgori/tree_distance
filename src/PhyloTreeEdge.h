@@ -22,13 +22,13 @@ private:
 public:
     PhyloTreeEdge();
 
-    PhyloTreeEdge(string s);
+    explicit PhyloTreeEdge(string s);
 
-    PhyloTreeEdge(boost::dynamic_bitset<> edge);
+    explicit PhyloTreeEdge(boost::dynamic_bitset<> edge);
 
     PhyloTreeEdge(boost::dynamic_bitset<> edge, double length, int id);
 
-    PhyloTreeEdge(double attrib);
+    explicit PhyloTreeEdge(double attrib);
 
     PhyloTreeEdge(double attrib, int originalID);
 
@@ -60,7 +60,7 @@ public:
 
     bool isZero();
 
-    string toString();
+    string toString() override;
 
     PhyloTreeEdge clone();
 
@@ -90,7 +90,7 @@ public:
 
     string toStringVerbose(vector<string> leaf2NumMap);
 
-    bool isCompatibleWith(const vector<Bipartition>& splits);
+    bool isCompatibleWith(const vector<Bipartition>& splits) override;
 
     bool isCompatibleWith(const vector<PhyloTreeEdge>& splits);
 

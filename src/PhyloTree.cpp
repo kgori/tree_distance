@@ -3,6 +3,7 @@
 #include "bitset_hash.h"
 #include <unordered_map>
 #include <cmath>
+#include <utility>
 
 #define LENGTH_DEFAULT 0.0
 #define DEBUGPRINT
@@ -31,8 +32,7 @@ PhyloTree::PhyloTree(vector<PhyloTreeEdge> &edges, vector<string> &leaf2NumMap) 
     }
 }
 
-PhyloTree::PhyloTree(const PhyloTree &t) : edges(t.edges), leaf2NumMap(t.leaf2NumMap), leafEdgeLengths(t.leafEdgeLengths), newick(t.newick) {
-}
+PhyloTree::PhyloTree(const PhyloTree &t) = default;
 
 PhyloTree::PhyloTree(string t, bool rooted) {
     // do bracket counting sanity check
@@ -46,7 +46,7 @@ PhyloTree::PhyloTree(string t, bool rooted) {
     size_t i = 0;
 
     // remove anything before the first (
-    t = t.substr(t.find_first_of("("));
+    t = t.substr(t.find_first_of('('));
     newick = t;
 
     // remove whitespace
@@ -56,8 +56,8 @@ PhyloTree::PhyloTree(string t, bool rooted) {
 //    t = t.erase(t.find_last_of(";"));
 
     // pull off the first and last brackets (and a root length, between the last bracket and ;, if there is one.
-    t = t.substr(t.find_first_of("(") + 1);
-    t = t.erase(t.find_last_of(")"));
+    t = t.substr(t.find_first_of('(') + 1);
+    t = t.erase(t.find_last_of(')'));
 
     std::unordered_map<bitset_t, size_t, BitsetHash> hashmap; // Maintain store of edges keyed by bitset, value is index of edges[index]
     try {
@@ -170,7 +170,7 @@ void PhyloTree::getEdges(vector<PhyloTreeEdge>& edges_to_add) {
 }
 
 void PhyloTree::setEdges(vector<PhyloTreeEdge> edges) {
-    this->edges = edges;
+    this->edges = std::move(edges);
 }
 
 PhyloTreeEdge PhyloTree::getEdge(size_t i) {
@@ -186,7 +186,7 @@ vector<string> PhyloTree::getLeaf2NumMap() const {
 }
 
 void PhyloTree::setLeaf2NumMap(vector<string> leaf2NumMap) {
-    this->leaf2NumMap = leaf2NumMap;
+    this->leaf2NumMap = std::move(leaf2NumMap);
 }
 
 double PhyloTree::getAttribOfSplit(Bipartition& edge) {
@@ -298,7 +298,7 @@ PhyloTree PhyloTree::clone() {
     return PhyloTree(*this);
 }
 
-bool PhyloTree::equals(PhyloTree t) {
+bool PhyloTree::equals(const PhyloTree& t) {
     return (leaf2NumMap == t.leaf2NumMap) && Tools::vector_equal(leafEdgeLengths, t.leafEdgeLengths) && Tools::vector_equal(edges, t.edges);
 }
 
@@ -335,27 +335,27 @@ string PhyloTree::getNewick(bool branchLengths) {
     deque<string> strPieces;
     deque<PhyloTreeEdge> corrEdges;
 
-    if (edges.size() == 0) // star-tree
+    if (edges.empty()) // star-tree
     {
-        strPieces.push_back("(");
+        strPieces.emplace_back("(");
         for (size_t i = 0; i < leaf2NumMap.size() - 1; ++i) {
             strPieces.push_back(leaf2NumMap[i]);
             if (branchLengths) {
-                strPieces.push_back(":");
+                strPieces.emplace_back(":");
                 strPieces.push_back(Tools::double_to_string(leafEdgeLengths[i]));
             }
-            strPieces.push_back(",");
+            strPieces.emplace_back(",");
         }
         strPieces.push_back(leaf2NumMap.back());
-        strPieces.push_back(":");
+        strPieces.emplace_back(":");
         strPieces.push_back(Tools::double_to_string(leafEdgeLengths.back()));
-        strPieces.push_back(");");
+        strPieces.emplace_back(");");
         return Tools::string_join(strPieces, "");
     }
 
     vector<PhyloTreeEdge> edgesLeft(edges);
 
-    while (edgesLeft.size() > 0) {
+    while (!edgesLeft.empty()) {
         auto minEdge = edgesLeft.front();
         size_t pos = 0;
         for (size_t i = 1; i < edgesLeft.size(); ++i) {
@@ -426,7 +426,7 @@ string PhyloTree::getNewick(bool branchLengths) {
     if (!allLeaves.isEmpty()) {
         for (size_t i = 0; i < allLeaves.size(); i++) {
             if ((allLeaves.getPartition())[i]) {
-                newickString = newickString + leaf2NumMap[i];
+                newickString += leaf2NumMap[i];
                 if (branchLengths) {
                     newickString += ":" + Tools::double_to_string(leafEdgeLengths[i]);
                 }
@@ -441,7 +441,7 @@ string PhyloTree::getNewick(bool branchLengths) {
 }
 
 void PhyloTree::setNewick(string newick) {
-    this->newick = newick;
+    this->newick = std::move(newick);
 }
 
 size_t PhyloTree::numEdges() {
@@ -468,11 +468,11 @@ void PhyloTree::setLeaf2NumMapFromNewick(string& s) {
 
 void PhyloTree::normalize(double constant) {
     // divide by the length of the split length vector to normalize
-    for (int i = 0; i < leafEdgeLengths.size(); i++) {
-        leafEdgeLengths[i] += (1.0 / constant);
+    for (double & leafEdgeLength : leafEdgeLengths) {
+        leafEdgeLength += (1.0 / constant);
     }
-    for (int i = 0; i < edges.size(); i++) {
-        edges[i].scaleBy(1.0 / constant);
+    for (auto & edge : edges) {
+        edge.scaleBy(1.0 / constant);
     }
 }
 

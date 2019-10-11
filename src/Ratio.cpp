@@ -18,13 +18,11 @@ Ratio::Ratio(vector<PhyloTreeEdge>& e, vector<PhyloTreeEdge>& f) :
 Ratio::Ratio(double e, double f) : eLength(e), fLength(f) {
 }
 
-Ratio::Ratio(const Ratio &other) : eLength(other.eLength), fLength(other.fLength),
-                                   eEdges(other.eEdges), fEdges(other.fEdges) {
-}
+Ratio::Ratio(const Ratio &other) = default;
 
 Ratio Ratio::combine(Ratio& r1, Ratio& r2) {
     Ratio r{};
-    if ((r1.eEdges.size() == 0) && (r2.eEdges.size() == 0)) {
+    if ((r1.eEdges.empty()) && (r2.eEdges.empty())) {
         r.setELength(geoAvg(r1.eLength, r2.eLength));
     }
     else {
@@ -32,7 +30,7 @@ Ratio Ratio::combine(Ratio& r1, Ratio& r2) {
         r.addAllEEdges(r2.eEdges);
     }
 
-    if ((r1.fEdges.size() == 0) && (r2.fEdges.size() == 0)) {
+    if ((r1.fEdges.empty()) && (r2.fEdges.empty())) {
         r.setFLength(geoAvg(r1.fLength, r2.fLength));
     }
     else {
@@ -84,13 +82,13 @@ void Ratio::setAllFEdges(vector<PhyloTreeEdge>& edges) {
 }
 
 double Ratio::getELength() {
-    if (eEdges.size() == 0)
+    if (eEdges.empty())
         return eLength;
     return geoAvg(eEdges);
 }
 
 void Ratio::setELength(double eLen) {
-    if (eEdges.size() == 0)
+    if (eEdges.empty())
         eLength = eLen;
 }
 
@@ -112,13 +110,13 @@ void Ratio::addAllFEdges(vector<PhyloTreeEdge>& edges) {
 }
 
 double Ratio::getFLength() {
-    if (fEdges.size() == 0)
+    if (fEdges.empty())
         return fLength;
     return geoAvg(fEdges);
 }
 
 void Ratio::setFLength(double fLen) {
-    if (fEdges.size() == 0)
+    if (fEdges.empty())
         fLength = fLen;
 }
 
@@ -135,10 +133,10 @@ Ratio Ratio::reverse() {
     evec.reserve(eEdges.size());
     fvec.reserve(fEdges.size());
     for (auto &e : eEdges) {
-        evec.push_back(PhyloTreeEdge(e));
+        evec.emplace_back(e);
     }
     for (auto &f : fEdges) {
-        fvec.push_back(PhyloTreeEdge(f));
+        fvec.emplace_back(f);
     }
     return Ratio(fvec, evec);
 }
@@ -198,7 +196,7 @@ string Ratio::toStringCombType() {
     return ss.str();
 }
 
-string Ratio::toStringVerbose(vector<string> leaf2NumMap) {
+string Ratio::toStringVerbose(const vector<string>& leaf2NumMap) {
     std::ostringstream ss;
     ss << std::fixed << std::setprecision(8);
 

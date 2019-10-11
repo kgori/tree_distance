@@ -8,9 +8,9 @@ BipartiteGraph::BipartiteGraph(vector<deque<bool>>& IncidenceMatrix, const vecto
     Avertex.reserve(nA);
     Bvertex.reserve(nB);
     for (auto dbl : Aweight)
-        Avertex.push_back(Vertex(dbl));
+        Avertex.emplace_back(dbl);
     for (auto dbl : Bweight)
-        Bvertex.push_back(Vertex(dbl));
+        Bvertex.emplace_back(dbl);
 }
 
 vector<deque<bool>> BipartiteGraph::getIncidenceMatrix(vector<PhyloTreeEdge>& edges1, vector<PhyloTreeEdge>& edges2) {

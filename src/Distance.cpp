@@ -84,7 +84,7 @@ double Distance::getGeodesicDistance(PhyloTree &t1, PhyloTree &t2, bool normalis
         double distance = Geodesic::getGeodesic(t1, t2).getDist();
         if (normalise) return distance / (t1.getDistanceFromOrigin() + t2.getDistanceFromOrigin());
         return distance;
-    } catch (std::invalid_argument e) {
+    } catch (std::invalid_argument &e) {
         std::cout << "ERROR! " << e.what() << std::endl;
         return std::numeric_limits<double>::infinity();
     }

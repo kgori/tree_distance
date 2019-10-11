@@ -80,7 +80,7 @@ public:
 
     PhyloTree clone();
 
-    bool equals(PhyloTree t);
+    bool equals(const PhyloTree& t);
 
     bool removeSplit(Bipartition const &e);
 

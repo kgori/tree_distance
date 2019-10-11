@@ -5,9 +5,7 @@
 #include "Tools.h"
 #include <random>
 
-RatioSequence::RatioSequence(){
-
-}
+RatioSequence::RatioSequence() = default;
 
 /*
 ptA and ptB are coordinate strings in the format "1,2,3"
@@ -17,7 +15,7 @@ RatioSequence::RatioSequence(string ptA, string ptB) {
     auto strvecB = Tools::string_split(ptB, ", ", "(,)");
     auto dblvecA = Tools::stringvec_to_doublevec(strvecA);
     auto dblvecB = Tools::stringvec_to_doublevec(strvecB);
-    if (!(dblvecA.size() == dblvecB.size()))
+    if (dblvecA.size() != dblvecB.size())
         throw std::invalid_argument("Coordinates have different numbers of dimensions: (" + ptA + "),(" + ptB + ")");
     size_t len = dblvecA.size();
     _RatioSequence.reserve(len);

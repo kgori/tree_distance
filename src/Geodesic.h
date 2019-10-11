@@ -13,7 +13,7 @@ using namespace std;
 
 class Geodesic {
 public:
-    Geodesic(RatioSequence rs);
+    explicit Geodesic(const RatioSequence& rs);
 
     Geodesic(const RatioSequence& rs, const vector<PhyloTreeEdge>& cEdges);
 

@@ -5,6 +5,7 @@
 #include "PhyloTreeEdge.h"
 #include <cmath>
 #include <sstream>
+#include <utility>
 
 #define TOLERANCE 0.000000000000001
 
@@ -12,7 +13,7 @@ using namespace std;
 
 class uninitialised_data : public std::runtime_error {
 public:
-    uninitialised_data(std::string const &msg) :
+    explicit uninitialised_data(std::string const &msg) :
             std::runtime_error(msg) {
     }
 };
@@ -21,7 +22,7 @@ PhyloTreeEdge::PhyloTreeEdge() : super() {
     originalID = -1;
 }
 
-PhyloTreeEdge::PhyloTreeEdge(string s) : super(s) {
+PhyloTreeEdge::PhyloTreeEdge(string s) : super(std::move(s)) {
 }
 
 PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge) : super(edge) {
@@ -96,7 +97,7 @@ const shared_ptr<Bipartition> PhyloTreeEdge::getOriginalEdge() {
     return originalEdge;
 }
 
-void PhyloTreeEdge::setOriginalEdge(shared_ptr<Bipartition> originalEdge) {
+void PhyloTreeEdge::setOriginalEdge(const shared_ptr<Bipartition> originalEdge) {
     this->originalEdge = originalEdge;
 }
 
@@ -135,7 +136,7 @@ void PhyloTreeEdge::scaleBy(double factor) {
 
 string PhyloTreeEdge::toStringVerbose(vector<string> leaf2NumMap) {
     ostringstream ss;
-    ss << originalID << "\t\t" << "[" << length << "]" << "\t\t" << Bipartition::toStringVerbose(this->partition, leaf2NumMap);
+    ss << originalID << "\t\t" << "[" << length << "]" << "\t\t" << Bipartition::toStringVerbose(this->partition, std::move(leaf2NumMap));
     return ss.str();
 }
 
@@ -144,8 +145,8 @@ double PhyloTreeEdge::getLength() const {
 }
 
 bool PhyloTreeEdge::isCompatibleWith(const vector<Bipartition> &splits) {
-    for (size_t i = 0; i < splits.size(); ++i) {
-        if (this->crosses(splits[i])) {
+    for (const auto & split : splits) {
+        if (this->crosses(split)) {
             return false;
         }
     }
@@ -153,8 +154,8 @@ bool PhyloTreeEdge::isCompatibleWith(const vector<Bipartition> &splits) {
 }
 
 bool PhyloTreeEdge::isCompatibleWith(const vector<PhyloTreeEdge> &splits) {
-    for (size_t i = 0; i < splits.size(); ++i) {
-        if (this->crosses(splits[i])) {
+    for (const auto & split : splits) {
+        if (this->crosses(split)) {
             return false;
         }
     }

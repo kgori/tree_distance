@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <sstream>
+#include <utility>
 
 void deleteEmptyEdges(vector<PhyloTreeEdge> &v) {
     v.erase(std::remove_if(v.begin(), v.end(), [](PhyloTreeEdge &element) {
@@ -13,7 +14,7 @@ void deleteEmptyEdges(vector<PhyloTreeEdge> &v) {
     }), v.end());
 }
 
-Geodesic::Geodesic(RatioSequence rs) {
+Geodesic::Geodesic(const RatioSequence & rs) {
     this->rs = rs;
 }
 
@@ -28,9 +29,7 @@ Geodesic::Geodesic(const RatioSequence& rs, const vector<PhyloTreeEdge>& cEdges,
     this->leafContributionSquared = leafContributionSquared;
 }
 
-Geodesic::Geodesic(const Geodesic &other) : rs(other.rs), commonEdges(other.commonEdges),
-                                            leafContributionSquared(other.leafContributionSquared) {
-};
+Geodesic::Geodesic(const Geodesic &other) = default;
 
 //PhyloTree Geodesic::getTreeAt(PhyloTree t1, PhyloTree t2, double position) {
 //    /*
@@ -179,8 +178,8 @@ void Geodesic::setRS(const RatioSequence& rs) {
 
 double Geodesic::getDist() {
     double commonEdgeDistSquared = 0;
-    for (size_t i = 0; i < commonEdges.size(); ++i) {
-        commonEdgeDistSquared += pow(commonEdges[i].getLength(), 2);
+    for (auto & commonEdge : commonEdges) {
+        commonEdgeDistSquared += pow(commonEdge.getLength(), 2);
     }
     return sqrt(pow(rs.getNonDesRSWithMinDist().getDistance(), 2) + commonEdgeDistSquared + leafContributionSquared);
 }
@@ -245,7 +244,7 @@ string Geodesic::toString() {
 //}
 
 void Geodesic::setCommonEdges(vector<PhyloTreeEdge> commonEdges) {
-    this->commonEdges = commonEdges;
+    this->commonEdges = std::move(commonEdges);
 }
 
 //size_t Geodesic::numCommonEdges() {
@@ -353,7 +352,7 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
     aVertices.reserve(numEdges1);
     bVertices.reserve(numEdges2);
 
-    while (queue.size() > 0) {
+    while (!queue.empty()) {
         ratio = queue.front();
         queue.pop_front();
         aVertices.clear();
@@ -362,8 +361,8 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
         // convert the ratio to what we pass to vertex cover
         auto ratio_e_edges = ratio.getEEdges();
         auto ratio_f_edges = ratio.getFEdges();
-        for (int i = 0; i < ratio_e_edges.size(); i++) {
-            auto index_iter = std::lower_bound(t1_edges.begin(), t1_edges.end(), ratio_e_edges[i]);
+        for (const auto & ratio_e_edge : ratio_e_edges) {
+            auto index_iter = std::lower_bound(t1_edges.begin(), t1_edges.end(), ratio_e_edge);
             aVertices.push_back(std::distance(t1_edges.begin(), index_iter));
         }
 
@@ -388,23 +387,23 @@ Geodesic Geodesic::getGeodesicNoCommonEdges(PhyloTree &t1, PhyloTree &t2) {
             int j = 0;  // for index in cover array
 
             // split the ratio based on the cover
-            for (size_t i = 0; i < aVertices.size(); i++) {
-                if ((j < cover[2].size()) && (aVertices[i] == cover[2][j])) {
-                    r1.addEEdge(t1_edges[aVertices[i]]);
+            for (unsigned long aVertex : aVertices) {
+                if ((j < cover[2].size()) && (aVertex == cover[2][j])) {
+                    r1.addEEdge(t1_edges[aVertex]);
                     j++;
                 } else { // the split is not in the cover, and hence dropped first
-                    r2.addEEdge(t1_edges[aVertices[i]]);
+                    r2.addEEdge(t1_edges[aVertex]);
                 }
             }
 
             j = 0;   // reset index
             // split the ratio based on the cover
-            for (size_t i = 0; i < bVertices.size(); i++) {
-                if ((j < cover[3].size()) && (bVertices[i] == cover[3][j])) {
-                    r2.addFEdge(t2_edges[bVertices[i]]);
+            for (unsigned long bVertex : bVertices) {
+                if ((j < cover[3].size()) && (bVertex == cover[3][j])) {
+                    r2.addFEdge(t2_edges[bVertex]);
                     j++;
                 } else { // the split is not in the cover, and hence dropped first
-                    r1.addFEdge(t2_edges[bVertices[i]]);
+                    r1.addFEdge(t2_edges[bVertex]);
                 }
             }
 
