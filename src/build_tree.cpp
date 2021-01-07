@@ -139,7 +139,10 @@ PhyloTree prune_tree(const PhyloTree& tree, const Container& missing) {
             new_edges.emplace_back(item.first, item.second.length, item.second.id);
         }
     }
-    std:sort(leaf_edges.begin(), leaf_edges.end(), [](const EdgeInfo& edge1, const EdgeInfo& edge2) { return edge1.name < edge2.name; });
+    std::sort(leaf_edges.begin(), leaf_edges.end(), [](const EdgeInfo& edge1, const EdgeInfo& edge2) { return edge1.name < edge2.name; });
+    new_leaf_lengths.reserve(leaf_edges.size());
+
+    new_leaf_lengths.reserve(leaf_edges.size());
     for (auto &item : leaf_edges) {
         new_leaf_lengths.push_back(item.length);
     }

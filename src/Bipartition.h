@@ -15,11 +15,11 @@ public:
 
     Bipartition(const Bipartition &e); // copy-constructor
 
-    Bipartition(boost::dynamic_bitset<>& edge);
+    explicit Bipartition(boost::dynamic_bitset<>& edge);
 
-    Bipartition(const boost::dynamic_bitset<>& edge);
+    explicit Bipartition(const boost::dynamic_bitset<>& edge);
 
-    Bipartition(string s);
+    explicit Bipartition(const string& s);
 
     boost::dynamic_bitset<> getPartition() const;
 
@@ -82,7 +82,7 @@ public:
 
     bool equals(const Bipartition &e) const;
 
-    bool isCompatibleWith(const vector<Bipartition> &splits);
+    virtual bool isCompatibleWith(const vector<Bipartition> &splits);
 
     Bipartition &andNot(const Bipartition &other) {
         partition &= ~(other.partition);

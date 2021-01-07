@@ -17,8 +17,18 @@ class my_build_ext(build_ext):
             for e in self.extensions:
                 e.extra_compile_args.append('-stdlib=libc++')
                 if platform.system() == 'Darwin':
-                    e.extra_compile_args.append('-mmacosx-version-min=10.7')
-                    e.extra_link_args.append('-mmacosx-version-min=10.7')
+                    mac_version, _, _ = platform.mac_ver()
+                    major, minor, patch = [int(n) for n in mac_version.split('.')]
+
+                    if minor >= 9:
+                        e.extra_compile_args.append('-mmacosx-version-min=10.9')
+                        e.extra_compile_args.append('-stdlib=libc++')
+                        e.extra_link_args.append('-mmacosx-version-min=10.9')
+                        e.extra_link_args.append('-stdlib=libc++')
+
+                    else:
+                        e.extra_compile_args.append('-mmacosx-version-min=10.7')
+                        e.extra_link_args.append('-mmacosx-version-min=10.7')
 
         build_ext.build_extensions(self)
 
@@ -50,7 +60,7 @@ ext = Extension("tree_distance",
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="1.0.6",
+      version="1.0.7",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',

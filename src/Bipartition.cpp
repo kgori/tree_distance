@@ -2,6 +2,8 @@
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #endif
 #include "Bipartition.h"
+
+#include <utility>
 #include "Tools.h"
 
 using namespace std;
@@ -11,8 +13,7 @@ Bipartition::Bipartition() {
 }
 
 // copy-constructor
-Bipartition::Bipartition(const Bipartition &e) : partition(e.partition) {
-}
+Bipartition::Bipartition(const Bipartition &e) = default;
 
 Bipartition::Bipartition(boost::dynamic_bitset<> &edge) : partition(edge) {
 }
@@ -21,7 +22,7 @@ Bipartition::Bipartition(const boost::dynamic_bitset<> &edge) {
     partition = boost::dynamic_bitset<>(edge);
 }
 
-Bipartition::Bipartition(string s) {
+Bipartition::Bipartition(const string& s) {
     partition = boost::dynamic_bitset<>(s);
 }
 
@@ -67,8 +68,8 @@ boost::dynamic_bitset<> Bipartition::getPartition() const {
 }
 
 bool Bipartition::isCompatibleWith(const vector<Bipartition>& splits) {
-    for (size_t i = 0; i < splits.size(); ++i) {
-        if (this->crosses(splits[i])) {
+    for (const auto & split : splits) {
+        if (this->crosses(split)) {
             return false;
         }
     }
@@ -88,7 +89,7 @@ void Bipartition::removeOne(size_t index) {
 }
 
 void Bipartition::setPartition(boost::dynamic_bitset<> edge) {
-    partition = edge;
+    partition = std::move(edge);
 }
 
 void Bipartition::clear() {
@@ -106,9 +107,10 @@ string Bipartition::toStringVerbose(boost::dynamic_bitset<> edge, vector<string>
     size_t edge_size = edge.size();
     for (size_t i = 0; i < edge_size; i++) {
         if ((bool)edge[edge_size - i - 1]) {
-            toDisplay = toDisplay + leaf2NumMap[i] + ",";
+            toDisplay += leaf2NumMap[i];
+            toDisplay += ",";
         }
     }
     // remove the last ,
-    return Tools::substring(toDisplay, 0, toDisplay.find_last_not_of(",")+1);
+    return Tools::substring(toDisplay, 0, toDisplay.find_last_not_of(',')+1);
 }

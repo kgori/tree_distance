@@ -78,7 +78,7 @@ public:
 
     string toStringCombType();
 
-    string toStringVerbose(vector<string> leaf2NumMap);
+    string toStringVerbose(const vector<string>& leaf2NumMap);
 
     Ratio clone();
 
