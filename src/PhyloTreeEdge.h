@@ -22,7 +22,7 @@ private:
 public:
     PhyloTreeEdge();
 
-    explicit PhyloTreeEdge(string s);
+    explicit PhyloTreeEdge(const string& s);
 
     explicit PhyloTreeEdge(boost::dynamic_bitset<> edge);
 
@@ -32,7 +32,7 @@ public:
 
     PhyloTreeEdge(double attrib, int originalID);
 
-    PhyloTreeEdge(double attrib, shared_ptr<Bipartition> originalEdge, int originalID);
+    PhyloTreeEdge(double attrib, const shared_ptr<Bipartition>& originalEdge, int originalID);
 
     PhyloTreeEdge(Bipartition edge, double attrib, int originalID);
 
@@ -74,7 +74,7 @@ public:
 
     const shared_ptr<Bipartition> getOriginalEdge();
 
-    void setOriginalEdge(const shared_ptr<Bipartition> originalEdge);
+    void setOriginalEdge(const shared_ptr<Bipartition>& originalEdge);
 
     int getOriginalID();
 

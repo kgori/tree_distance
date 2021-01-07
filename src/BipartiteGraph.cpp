@@ -36,15 +36,15 @@ vector<vector<size_t>> BipartiteGraph::vertex_cover(const vector<size_t>& Aindex
     /* First set normalized weights */
     total = 0;
     for (i = 0; i < nAVC; i++)
-        total += Avertex[Aindex[i]].weight;
+        total += this->Avertex[Aindex[i]].weight;
     for (i = 0; i < nAVC; i++)
-        this->Avertex[Aindex[i]].residual = Avertex[Aindex[i]].weight / total;
+        this->Avertex[Aindex[i]].residual = this->Avertex[Aindex[i]].weight / total;
 
     total = 0;
     for (j = 0; j < nBVC; j++)
-        total += Bvertex[Bindex[j]].weight;
+        total += this->Bvertex[Bindex[j]].weight;
     for (j = 0; j < nBVC; j++)
-        this->Bvertex[Bindex[j]].residual = Bvertex[Bindex[j]].weight / total;
+        this->Bvertex[Bindex[j]].residual = this->Bvertex[Bindex[j]].weight / total;
 
     /* Now comes the flow algorithm
      * Flow on outside arcs are represented by Vertex[i].residual

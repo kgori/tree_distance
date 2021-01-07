@@ -22,7 +22,7 @@ PhyloTreeEdge::PhyloTreeEdge() : super() {
     originalID = -1;
 }
 
-PhyloTreeEdge::PhyloTreeEdge(string s) : super(std::move(s)) {
+PhyloTreeEdge::PhyloTreeEdge(const string& s) : super(s) {
 }
 
 PhyloTreeEdge::PhyloTreeEdge(boost::dynamic_bitset<> edge) : super(edge) {
@@ -38,7 +38,7 @@ PhyloTreeEdge::PhyloTreeEdge(double attrib, int originalID) : super(), length(at
     length = attrib;
 }
 
-PhyloTreeEdge::PhyloTreeEdge(double attrib, shared_ptr<Bipartition> originalEdge, int originalID) : originalEdge(originalEdge), originalID(originalID), length(attrib) {
+PhyloTreeEdge::PhyloTreeEdge(double attrib, const shared_ptr<Bipartition>& originalEdge, int originalID) : originalEdge(originalEdge), originalID(originalID), length(attrib) {
     this->partition = boost::dynamic_bitset<>(originalEdge->size());
 }
 
@@ -97,7 +97,7 @@ const shared_ptr<Bipartition> PhyloTreeEdge::getOriginalEdge() {
     return originalEdge;
 }
 
-void PhyloTreeEdge::setOriginalEdge(const shared_ptr<Bipartition> originalEdge) {
+void PhyloTreeEdge::setOriginalEdge(const shared_ptr<Bipartition>& originalEdge) {
     this->originalEdge = originalEdge;
 }
 
