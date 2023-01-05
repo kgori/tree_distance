@@ -20,7 +20,8 @@ addons:
 
 install:
   - pip install cython
-  - pip install importlib-metadata>=6
+  - pip install -U importlib-metadata
+  - pip install -U setuptools
   - pip install .
 
 sudo: true
