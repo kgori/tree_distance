@@ -20,6 +20,7 @@ Supported distances:
 
 ### Tests
 To run the tests:
+
     mkdir build
     cd build
     cmake ..
