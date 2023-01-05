@@ -137,7 +137,7 @@ public:
                 result[result_size - result_index++ - 1] = original[original_size - original_index - 1];
             }
         }
-        return std::move(result);
+        return result;
     }
 
     static bool is_leaf(const bitset_t split);
