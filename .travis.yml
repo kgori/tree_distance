@@ -29,7 +29,7 @@ sudo: true
 script:
   - nosetests
   - pushd .
-  - mkdir build && cd build && cmake .. && make tests && ./tests
+  - mkdir build_tests && cd build_tests && cmake .. && make tests && ./tests
   - popd
 
 deploy:
