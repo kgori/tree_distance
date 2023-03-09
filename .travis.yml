@@ -1,5 +1,9 @@
 language: python
 
+os:
+  - linux
+  - osx
+
 python:
   - 3.7
   - 3.8
@@ -17,6 +21,9 @@ addons:
     packages:
       - build-essential
       - cmake
+
+before_install:
+  -if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install cmake; fi
 
 install:
   - pip install cython
