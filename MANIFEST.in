@@ -1,5 +1,5 @@
 include src/*.cpp
 include src/*.h
 recursive-include src/include/boost *
-include cython/Distance_h.pxd cython/TreeDistance.pyx
+include cython/Distance_h.pxd cython/tree_distance.pyx
 exclude src/test.cpp src/main.cpp src/test_catch_helper.h

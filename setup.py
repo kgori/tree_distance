@@ -60,10 +60,12 @@ ext = Extension("tree_distance",
 
 setup(cmdclass={'build_ext':my_build_ext},
       name="tree_distance",
-      version="1.0.11",
+      version="1.0.12",
       author='Kevin Gori',
       author_email='kgori@ebi.ac.uk',
       description='Wrapper for GTP tree distances in c++',
+      long_description=open('README.md').read(),
+      long_description_content_type = 'text/markdown',
       url='https://github.com/kgori/tree_distance.git',
       ext_modules = [ext],
       install_requires=[
