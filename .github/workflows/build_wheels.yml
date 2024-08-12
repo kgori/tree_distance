@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-    paths:
-      - ''
-      - '.github/workflows/build_wheels.yml'
 
 jobs:
   build_wheels:
